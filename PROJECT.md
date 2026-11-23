@@ -83,12 +83,12 @@ Our seven additions, adopted by the owner on 2026-11-19:
 | 4 | Experiment document | A separate form for experiments: hypothesis, one changed parameter, decision rule relative to baseline | A project experiment template |
 | 5 | Separate agents | The implement step is split: the testing agent writes the tests first, the coding agent implements, the code review agent checks the diff against the spec, the DevOps agent owns CI/CD | Constitution; tasks ordered tests-first |
 | 6 | Owner's hand labelling as a gate | The owner labels a sample of answers on every labelled run; the judge's numbers count only after calibration against those labels (invariants 4–5) | Constitution; a gate before a run's judge scores are reported |
-| 7 | Run registry as evidence | Every decision cites the run that justified it; numeric targets appear only after baseline (invariant 6) | Constitution; an "Evidence" field in the spec template |
+| 7 | Run registry as evidence | Every decision cites the run that justified it; numeric targets appear only after baseline (invariant 6) | Constitution; an "Evidence" section in the spec template |
 
 Notes for whoever wires these in:
 
 - Spec Kit keeps a spec technology-agnostic. The checks of addition 3 name commands, so they sit in their own section, apart from the user scenarios and success criteria.
-- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Which mechanism carries each addition is chosen when it is implemented. The constitution (version 1.0.0) states the rules of additions 1, 2, 5, 6 and 7; the template changes of additions 3, 4, 5 and 7 are not implemented yet.
+- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Additions 3, 5 and 7 are carried by project-local overrides in `.specify/templates/overrides/`: `spec-template.md` adds the "Acceptance Checks" and "Evidence" sections, and `tasks-template.md` makes tests required and first. Spec Kit reads an override in place of its own template, which stays unchanged. The constitution (version 1.0.0) states the rules of additions 1, 2, 5, 6 and 7. The experiment template of addition 4 is not implemented yet; its mechanism is chosen when it is implemented.
 
 ## Roles and cycle
 
@@ -114,6 +114,7 @@ Cycle for one spec:
 - Dataset: WixQA.
 - Approach: spec-driven development with GitHub Spec Kit, plus the seven additions listed under "Process".
 - Spec Kit version 1.4.2, initialised for Claude Code with shell scripts; its files live in `.specify/` and `.claude/skills/`.
+- Templates: the spec and tasks templates in `.specify/templates/overrides/` are this project's versions, made from the Spec Kit 1.4.2 templates. After a Spec Kit upgrade they are compared with the new stock templates.
 - Constitution: version 1.0.0, approved by the owner on 2026-11-23, in `.specify/memory/constitution.md`.
 - Implementation language: Python.
 - Language of specs, README, and UI: English.
