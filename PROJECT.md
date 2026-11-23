@@ -71,7 +71,7 @@ Experiment candidates; the owner picks the order after baseline, cheapest first:
 
 ## Process: GitHub Spec Kit with our additions
 
-Taken from Spec Kit unchanged: its steps (constitution, specify, clarify, plan, tasks, implement, converge), its folder layout, and its GitHub extension that turns tasks into issues.
+Taken from Spec Kit unchanged: its steps (constitution, specify, clarify, plan, tasks, implement, converge) and its folder layout. Tasks stay in each spec's `tasks.md`; one GitHub issue tracks each spec.
 
 Our seven additions, adopted by the owner on 2026-11-19:
 
@@ -88,7 +88,7 @@ Our seven additions, adopted by the owner on 2026-11-19:
 Notes for whoever wires these in:
 
 - Spec Kit keeps a spec technology-agnostic. The checks of addition 3 name commands, so they sit in their own section, apart from the user scenarios and success criteria.
-- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Which mechanism carries each addition is chosen when the additions are implemented; none is implemented yet.
+- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Which mechanism carries each addition is chosen when it is implemented. The constitution (version 1.0.0) states the rules of additions 1, 2, 5, 6 and 7; the template changes of additions 3, 4, 5 and 7 are not implemented yet.
 
 ## Roles and cycle
 
@@ -114,9 +114,12 @@ Cycle for one spec:
 - Dataset: WixQA.
 - Approach: spec-driven development with GitHub Spec Kit, plus the seven additions listed under "Process".
 - Spec Kit version 1.4.2, initialised for Claude Code with shell scripts; its files live in `.specify/` and `.claude/skills/`.
+- Constitution: version 1.0.0, approved by the owner on 2026-11-23, in `.specify/memory/constitution.md`.
 - Implementation language: Python.
 - Language of specs, README, and UI: English.
-- Source code: GitHub. Task tracking: a GitHub Project.
+- Source code: GitHub. Task tracking: a GitHub Project, one issue per spec; a spec's tasks stay in its `tasks.md`.
+- Changes reach `main` through one pull request per spec, squash-merged by the owner; titles follow Conventional Commits. The convention is in the constitution under "Development Workflow".
+- Out of scope: operating a service, claims beyond WixQA, training models, editing the dataset, a general-purpose framework. See the constitution, "Scope and Non-Goals".
 - Embedding model: OpenAI `text-embedding-3-small`.
 - Vector store: PostgreSQL with the pgvector extension.
 - Lessons from another project are collected in the owner's private notes (`personal-notes/`, kept out of the repository).
@@ -132,6 +135,7 @@ The owner decides. Answers move to "Decided".
 | 3 | Budget for one full evaluation run | 3 |
 | 4 | Judge model | 4 |
 | 5 | Application scope: API only, or also UI and deployment | 6 |
+| 6 | After an experiment's change is adopted: later experiments start from the baseline, or from the configuration that includes the change | 5 |
 
 ## Glossary
 
