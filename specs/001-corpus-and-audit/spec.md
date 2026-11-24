@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-24
 
-**Status**: Draft
+**Status**: Approved by the owner on 2026-11-24
 
 **Input**: User description: "Corpus and audit (spec 1 of the "Spec order" table in PROJECT.md). Fetch the Wix/WixQA dataset at a pinned revision (the retrieval corpus wix_kb_corpus and the three question parts), build the retrieval index from the corpus in the vector store and with the embedding model that the constitution lists as decided, and audit the index against the dataset as Principle I of the constitution requires: the article ids held in the index are exactly the id values of the corpus, and every article_ids value of every question to be asked is among them; the audit queries the index that retrieval uses, any difference stops with a failure that names the ids, and the audit result is recorded. Acceptance: zero mismatches on the real data, and every kind of mismatch is caught on a small example with a known answer."
 
