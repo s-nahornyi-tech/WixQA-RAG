@@ -21,6 +21,7 @@ The rules and their reasons are in `PROJECT.md` under "Measurement invariants"; 
 |---|---|
 | `PROJECT.md` | Project facts and decisions; the single source of truth for agents |
 | `.specify/memory/constitution.md` | The constitution: binding rules, exact metric definitions, and the workflow |
+| `.specify/templates/overrides/` | The project's spec and tasks templates: acceptance checks, evidence, and tests first |
 | `evals/` | Everything used to measure quality: the golden set, hand labels, and the run registry |
 | `src/` | The system's code |
 | `tests/` | Tests |
