@@ -60,9 +60,12 @@ Markers of the acceptance checks:
 | AC-012, AC-014 | `store` | checks |
 | AC-005, AC-006, AC-009, AC-010, AC-011, AC-013 | `store`, `provider` | example |
 | AC-001, AC-002 | `real_data` | full |
-| AC-004, AC-008 | `real_data`, `store`, `provider` | full |
+| AC-004 | `real_data`, `store`, `provider` | full |
+| AC-008 | `real_data`, `store` | full |
 
-The real-data tests share two fixtures that last for the whole test run: the fetched dataset, and the index `wixqa-001`, built in this run or restored from its snapshot. The fixtures prepare what a check needs; the test itself still runs the command line of the check.
+The four real-data tests have no fixture that fetches or builds. In one run they execute in the order of their numbers, and each relies on what the one before it left, as the checks of the spec do: AC-002 on the fetch of AC-001, and AC-008 on the index that AC-004 built or that the workflow restored from its snapshot. A real-data test can therefore be run alone before its command exists, to show that it fails, without fetching or building anything.
+
+Tests are written and shown to fail story by story, before the implementation of that story. The red runs of the first two stories cannot call the provider, because the command that embeds does not exist yet. The red run of the third story embeds only the example dataset: its checks build the example index before they reach the command that is missing. The one exception is AC-008. When its test is written, the command `index build` already exists, and a run with the scope `full` would build the real index and lose it; the red run of AC-008 is therefore made in the agent's workspace, where the test fails because the command `index audit` does not exist.
 
 An agent may also run the `store` tests in its own workspace against a PostgreSQL started from the Python package `pgserver`, which brings PostgreSQL 16 with pgvector 0.6 and needs no installation rights. This shortens the loop while code is written. The run that counts is the one on GitHub Actions, with the planned versions.
 
@@ -85,7 +88,8 @@ Both run on the GitHub-hosted runner `ubuntu-24.04`, start PostgreSQL as a servi
 
 - Two workflows keep the secret away from everything that starts automatically. The label starts the workflow through the `pull_request` event, not through `pull_request_target`, so a pull request from a fork never receives the secret, and only a person who may label pull requests can start a run.
 - Two ways to start are needed because GitHub shows the "Run workflow" button only for a workflow file that is on the default branch, and its documentation states the same of the event. Until this feature is merged, the workflow file exists only on the feature branch. A label on the pull request starts the version of the workflow that the pull request contains. After the merge, and in a reader's copy of the repository, the button works.
-- Agents reach this repository only through its REST API and cannot open log pages. The workflow therefore publishes what matters as data that the API returns: the run and each step have a conclusion, every failed test is published as an annotation, and the verdict lines of the real-data commands are published as notices.
+- Agents reach this repository only through its REST API and cannot open log pages. The workflow therefore publishes what matters as data that the API returns: the run and each step have a conclusion, every failed test is published as an annotation, and the verdict lines of the real-data commands are published as notices. The annotations are made from pytest's JUnit report by a step of the workflow, so no further dependency is needed.
+- A workflow fails when its tests added or changed a file outside the ignored folders. A test must never leave a file under `evals/`: in the scope `full`, a new build record there is what starts the recording of an index (section 7). The acceptance workflow removes its label when it finishes, so that adding the label again starts the next run.
 
 **Alternatives considered**:
 
@@ -127,9 +131,12 @@ Both run on the GitHub-hosted runner `ubuntu-24.04`, start PostgreSQL as a servi
 
 1. audits the index and writes the result to `evals/indexes/<index>/audit.json`;
 2. dumps the schema of the index with `pg_dump` in custom format, using the `pg_dump` inside the service container;
-3. creates a GitHub release with the tag `index-<index>` on the commit the index was built from, and attaches the dump to it;
-4. writes `evals/indexes/<index>/snapshot.json`: the file name, its size, its SHA-256, the PostgreSQL and pgvector versions, and the release tag;
-5. commits `build.json`, `audit.json` and `snapshot.json` to the branch.
+3. saves the dump and the two record files as an artifact that is kept for 7 days, so that a failure in a later step loses nothing;
+4. creates a GitHub release with the tag `index-<index>` on the commit the index was built from, and attaches the dump to it;
+5. writes `evals/indexes/<index>/snapshot.json`: the file name, its size, its SHA-256, the PostgreSQL and pgvector versions, the repository and the release tag;
+6. commits `build.json`, `audit.json` and `snapshot.json` to the branch the run was started for.
+
+These steps never run for `main`. `main` changes only through pull requests (constitution, "Development Workflow"), so a run for `main` that built a new index stops with a message: a new index is built on a branch and reaches `main` through its pull request.
 
 Every later job that needs the index downloads the dump named in `snapshot.json`, compares its SHA-256, restores it with `pg_restore` into its own PostgreSQL, and audits the index before anything else uses it.
 

@@ -6,7 +6,7 @@ The four commands of this feature: what they take, what they print and how they 
 
 ## General rules
 
-**Where a command is typed.** In a POSIX shell, at the repository root, in the project's Python environment. A command reads `dataset.json` from the current directory; without it the command is not carried out.
+**Where a command is typed.** In a POSIX shell, at the repository root, in the project's Python environment. A command reads `dataset.json` from the current directory; without it the command is not carried out. The same holds when `dataset.json` or the manifest of the data directory breaks a rule of [data-model.md](../data-model.md): the revision is not a full commit hash, no part or several parts have the role `corpus`, or a part name is used twice.
 
 **Settings.** Read from the environment and from nowhere else (FR-017).
 

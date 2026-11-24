@@ -22,7 +22,7 @@ Nothing in this file has been run yet: the feature is not implemented. The expec
 | 3 | Start "acceptance" with the scope `full`, for the first time | The run ends green and passes all fourteen checks. The dataset is fetched at the pinned revision with 6,221, 200, 200 and 6,221 rows; the index `wixqa-001` is built; its audit reports zero mismatches. The run then adds one commit to the branch with `evals/indexes/wixqa-001/build.json`, `audit.json` and `snapshot.json`, and creates the release `index-wixqa-001` with the dump of the index |
 | 4 | Start "acceptance" with the scope `full` again | The run ends green. The index is restored from the release, `index build` reports it as already complete with `tokens embedded: 0`, and the audit passes again. The provider is called only for the example dataset |
 
-Before the feature is implemented, steps 1 to 3 end red: the acceptance tests exist and the commands do not. That red run is what the constitution asks for before the implementation starts.
+Before a story is implemented, the runs that include its tests end red: the tests exist and the commands do not. Those red runs are what the constitution asks for before an implementation starts.
 
 ### Reading a result without opening a log
 

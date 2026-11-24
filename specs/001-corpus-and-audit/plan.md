@@ -68,9 +68,9 @@ The reasons for each choice, and the alternatives, are in [research.md](research
 | Stack: secrets | Yes | Settings are read from the environment only and are never printed. The provider key is a repository secret. The job's database has no password, so none exists to commit |
 | Stack: `TODO(PYTHON_TOOLING)` | Resolved here | Python 3.14, uv, pytest, GitHub Actions. The amendment that records them (version 1.1.0) is a task of this feature and becomes binding when the owner merges the pull request |
 | Workflow: approved spec | Yes | The owner approved the spec on 2026-11-24 |
-| Workflow: tests first | Yes | The testing agent writes the acceptance tests before the implementation; a CI run shows that they fail; the coding agent does not change them |
+| Workflow: tests first | Yes | For each story the testing agent writes the acceptance tests before the implementation, and a run shows that they fail: on GitHub Actions, and for AC-008 in the agent's workspace (research.md, section 3). The coding agent does not change them |
 | Workflow: evaluation run | No | No pipeline exists yet, so this feature cannot change what a pipeline retrieves or answers: `Run: none` |
-| Workflow: one branch, one pull request | Yes | One pull request from `001-corpus-and-audit`, squash-merged by the owner. The acceptance workflow adds one commit with three record files to the branch; it never writes to `main` |
+| Workflow: one branch, one pull request | Yes | One pull request from `001-corpus-and-audit`, squash-merged by the owner. The acceptance workflow adds one commit with three record files to the branch it was started for; its recording steps never run for `main` |
 | Workflow: no link to a private agent session | Yes | The commit that the workflow adds names the identifier of the workflow run and nothing else |
 | Public texts | Yes | The README's status line changes in the same pull request, and only to what the repository then contains |
 | Governance: amendments | Yes | The amendment updates the version and the date and changes `PROJECT.md` in the same pull request |
@@ -166,14 +166,16 @@ The steps that record an index run only when every test of the `full` scope has 
 
 One pull request from the branch `001-corpus-and-audit`, opened as a draft when the implementation starts, so that the workflows have a pull request to run for.
 
-1. **Setup** (coding agent, DevOps agent): `pyproject.toml`, `uv.lock`, `.python-version`, `dataset.json`, the empty package, the two workflows, the constitution amendment and the two entries in `PROJECT.md`.
-2. **Tests first** (testing agent): the example datasets, the fourteen acceptance tests, the integration and unit tests. A run of `checks` and a run of `acceptance` show them red.
-3. **Implementation** (coding agent), story by story: dataset, index, audit. The acceptance tests are not changed.
+1. **Setup** (coding agent, DevOps agent, spec agent): `pyproject.toml`, `uv.lock`, `.python-version`, `dataset.json`, the empty package, the two workflows, the constitution amendment and the two entries in `PROJECT.md`.
+2. **Foundation**: the example datasets and the frame of the command line, tests first.
+3. **Story by story**: dataset, index, audit. For each story the testing agent writes its tests, and a run shows them red; then the coding agent implements until they are green. The acceptance tests are not changed.
 4. **Green on example data**: `checks` and `acceptance` with the scope `example`.
 5. **Review** (code review agent): the diff against the spec and the constitution.
 6. **The real index, last**: `acceptance` with the scope `full`. It builds `wixqa-001`, audits it, commits the three record files and creates the release with the snapshot.
 7. **Texts**: the README's status line and tables, `evals/README.md`.
 8. **Merge**: the owner squash-merges. The description ends with `Spec: specs/001-corpus-and-audit`, `Closes #3` and `Run: none`.
+
+The tasks are in [tasks.md](tasks.md).
 
 The real index is built last on purpose: its record names the commit of the code, and a snapshot made from code that then changes would have to be made again under a new identifier.
 
@@ -237,7 +239,7 @@ Expected spending, estimated: 0.20 to 0.28 US dollars for the one build of the r
 | The real data has an article without text, or a question that names an article outside the corpus | The audit of the real index fails and names the ids; AC-008 stays red | The finding is recorded and the owner decides; the data stays as published (spec, "Assumptions") |
 | The provider account is below usage tier 1 | The full build is slow and may exceed the time limit of the job; the build is rolled back, and nothing is recorded | The owner raises the tier, and the run is started again |
 | An agent cannot start a run or read its log through the REST API | The agent cannot go on by itself | The owner starts the run; the result is read from the run, its steps and its annotations |
-| The record files cannot be committed, or the release cannot be created, after a paid build | The index would be lost with the job | The workflow first saves the dump and the three files as a short-lived artifact, so they can be recovered by hand |
+| The record files cannot be committed, or the release cannot be created, after a paid build | The index would be lost with the job | The workflow first saves the dump and the two record files as an artifact kept for 7 days, so they can be recovered by hand |
 | The code that splits or embeds changes after `wixqa-001` was recorded | The record would no longer describe what the code does | The real index is built last; a change of the rule's output requires a new rule name and a new index identifier |
 
 ## Complexity Tracking

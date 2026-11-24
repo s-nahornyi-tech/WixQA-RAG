@@ -26,10 +26,11 @@ dataset.json ──fetch──▶ data directory ──check──▶ passed / f
 The one revision of `Wix/WixQA` that the study uses (FR-001).
 
 - **Stored in**: `dataset.json` at the repository root, in version control.
-- **Fields**: the dataset name, `Wix/WixQA`; the revision, a commit hash of 40 hexadecimal characters; the list of parts, each with a name, a role, a path inside the dataset and a row count.
+- **Fields**: `name`, the dataset name, `Wix/WixQA`; `revision`, a commit hash of 40 hexadecimal characters; `parts`, the list of parts, each with `name`, `role`, `path` (its path inside the dataset) and `rows` (its row count).
 - **Rules**:
-  - The revision is a full commit hash, never a branch name.
-  - Exactly one part has the role `corpus`; every other part has the role `questions`. Part names are unique.
+  - `revision` is a full commit hash, never a branch name.
+  - Exactly one entry of `parts` has the role `corpus`; every other entry has the role `questions`. Part names are unique.
+  - A file that breaks one of these rules is not used: the command is not carried out.
   - Every command of this feature reads the revision from this file and from nowhere else.
   - The file changes only through a pull request. A change of the revision or of a row count is an amendment of the spec.
 
@@ -57,7 +58,7 @@ A folder that holds the part files of one dataset and a `manifest.json` (FR-002,
 
 - **The default data directory** is `data/wixqa/<revision>/`, written by `dataset fetch`. It is outside version control.
 - **An example data directory** is a folder under `tests/data/`, written by the testing agent and kept in version control.
-- **Manifest fields**: the dataset name; the revision, or `null` for a dataset that is not published; the time of the fetch in UTC, or `null`; the list of parts, each with name, role, path, row count, size in bytes and SHA-256 of the file.
+- **Manifest fields**: `name`, the dataset name; `revision`, or `null` for a dataset that is not published; `fetched_at`, the time of the fetch in UTC, or `null`; `parts`, the list of parts, each with `name`, `role`, `path`, `rows`, `bytes` (the size of the file) and `sha256` (its fingerprint).
 - **Rules of the manifest**: the same as for `dataset.json`: one corpus part, unique part names.
 - **The manifest is written last.** A data directory without a manifest is not a local copy.
 
@@ -162,7 +163,7 @@ absent ──build (one transaction)──▶ complete
 What one build was made of and what it cost (FR-010, SC-005).
 
 - **Stored in**: the `build` table of the index, and a file `build.json`. For a build from the pinned dataset, which is a build without `--data-dir`, the file is `evals/indexes/<index>/build.json`, in version control. For a build with `--data-dir` the file is `data/indexes/<index>/build.json`, outside version control.
-- **Fields**: the index identifier; the dataset name, its revision and the SHA-256 of the corpus file; the embedding model as requested and as the provider reported it, and the vector size; the splitting rule and its parameters; the number of articles and of passages; the ids of the articles without passages; the number of tokens embedded; the price in US dollars per million tokens; the cost in US dollars; the start time in UTC; the commit of the code, and whether the working tree had uncommitted changes.
+- **Fields**: `index`, the index identifier; `dataset`, with the dataset name, its revision and the SHA-256 of the corpus file; `embedding`, with the model as requested and as the provider reported it, and the vector size; `splitting`, with the rule and its parameters; `articles` and `passages`, their numbers; `articles_without_passages`, the ids of the articles without passages; `tokens_embedded`; `price_usd_per_million_tokens`; `cost_usd`; `started_at`, the start time in UTC; `commit`, the commit of the code, and `uncommitted_changes`, whether the working tree differed from it.
 - **Rules**:
   - A record is written once and never changed. The build writes the file under a temporary name, commits the transaction, and then gives the file its final name.
   - `cost_usd` = `tokens_embedded` × `price_usd_per_million_tokens` ÷ 1,000,000.
@@ -202,7 +203,7 @@ An audit that is not carried out is never reported as passed or as failed.
 Where the dump of an index is kept (research.md, section 7). The acceptance workflow writes it; no command of the application reads it.
 
 - **Stored in**: `evals/indexes/<index>/snapshot.json`, in version control.
-- **Fields**: the index identifier; the name, the size in bytes and the SHA-256 of the dump file; the format; the PostgreSQL and pgvector versions it was made with; the repository and the release tag it is attached to; the time in UTC; the identifier of the workflow run.
+- **Fields**: `index`, the index identifier; `file`, `bytes` and `sha256`, the name, the size and the fingerprint of the dump file; `format`; `postgresql` and `pgvector`, the versions it was made with; `repository` and `release_tag`, where it is attached; `created_at`, the time in UTC; `workflow_run`, the identifier of the workflow run.
 
 ## Example datasets
 
