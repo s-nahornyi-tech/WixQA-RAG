@@ -45,14 +45,14 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 **Purpose**: The tooling, the pinned dataset, the two workflows and the pull request they run for
 
-- [ ] T001 Create `pyproject.toml` and `.python-version`: the project `wixqa-rag` with its package in `src/wixqa_rag/`, `requires-python = ">=3.14,<3.15"`, the dependencies `openai` and `psycopg[binary]`, a development group with `pytest` and `ruff`, the build backend `uv_build`, the range of uv versions, the pytest settings (test paths, strict markers, the markers `store`, `provider` and `real_data`) and the Ruff settings (research.md, sections 1, 2, 3 and 5)
-- [ ] T002 Create the empty package `src/wixqa_rag/__init__.py`, so that the project can be installed; it holds no behaviour
-- [ ] T003 Create `uv.lock` with `uv lock` and confirm that `uv sync --locked` builds the environment on Python 3.14 (depends on T001 and T002)
-- [ ] T004 [P] Create `dataset.json` at the repository root with the pinned revision and the four parts (contracts/records.md, "`dataset.json`"; data-model.md, "Pinned revision": `revision` is a full commit hash, and exactly one entry of `parts` has the role `corpus`)
-- [ ] T005 [P] Create `.env.example` with the names `DATABASE_URL` and `OPENAI_API_KEY` and no values (contracts/cli.md, "Settings")
-- [ ] T006 [P] Add to `.gitattributes` the rule that keeps every file under `tests/data/` free of line-ending conversion (research.md, section 11)
-- [ ] T007 [P] Amend `.specify/memory/constitution.md`: replace the `TODO(PYTHON_TOOLING)` line with the tooling of the plan, set the version to 1.1.0 and "Last Amended" to the day of the change (research.md, "Constitution amendment that this plan leads to")
-- [ ] T008 [P] Update `PROJECT.md` for the same amendment: add the two entries under "Decided", the tooling and where the commands run, and change its two mentions of the constitution's version to 1.1.0 (research.md, same section)
+- [x] T001 Create `pyproject.toml` and `.python-version`: the project `wixqa-rag` with its package in `src/wixqa_rag/`, `requires-python = ">=3.14,<3.15"`, the dependencies `openai` and `psycopg[binary]`, a development group with `pytest` and `ruff`, the build backend `uv_build`, the range of uv versions, the pytest settings (test paths, strict markers, the markers `store`, `provider` and `real_data`) and the Ruff settings (research.md, sections 1, 2, 3 and 5)
+- [x] T002 Create the empty package `src/wixqa_rag/__init__.py`, so that the project can be installed; it holds no behaviour
+- [x] T003 Create `uv.lock` with `uv lock` and confirm that `uv sync --locked` builds the environment on Python 3.14 (depends on T001 and T002)
+- [x] T004 [P] Create `dataset.json` at the repository root with the pinned revision and the four parts (contracts/records.md, "`dataset.json`"; data-model.md, "Pinned revision": `revision` is a full commit hash, and exactly one entry of `parts` has the role `corpus`)
+- [x] T005 [P] Create `.env.example` with the names `DATABASE_URL` and `OPENAI_API_KEY` and no values (contracts/cli.md, "Settings")
+- [x] T006 [P] Add to `.gitattributes` the rule that keeps every file under `tests/data/` free of line-ending conversion (research.md, section 11)
+- [x] T007 [P] Amend `.specify/memory/constitution.md`: replace the `TODO(PYTHON_TOOLING)` line with the tooling of the plan, set the version to 1.1.0 and "Last Amended" to the day of the change (research.md, "Constitution amendment that this plan leads to")
+- [x] T008 [P] Update `PROJECT.md` for the same amendment: add the two entries under "Decided", the tooling and where the commands run, and change its two mentions of the constitution's version to 1.1.0 (research.md, same section)
 
 ### CI/CD (DevOps agent)
 

@@ -168,8 +168,8 @@ Rules for every feature:
 - Dependencies are pinned by a lock file committed to the repository.
 - Secrets such as API keys and database passwords are read from the environment and are never
   committed.
-- TODO(PYTHON_TOOLING): the Python version, the dependency manager, the test runner and the CI
-  system are chosen in the plan of spec 1 and then recorded here by amendment.
+- Python tooling: Python 3.14; uv manages the environment and the dependencies, and `uv.lock` is
+  the lock file; tests run with pytest; CI runs on GitHub Actions.
 
 ## Metric Definitions
 
@@ -343,4 +343,4 @@ been measured yet. A public text claims only what the repository contains at tha
   review agent checks every pull request against the principles. A violation blocks the merge
   until the change is corrected or the constitution is amended.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-23
+**Version**: 1.1.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-25

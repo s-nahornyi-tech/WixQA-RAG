@@ -1,0 +1,47 @@
+[project]
+name = "wixqa-rag"
+version = "0.1.0"
+description = "An open, reproducible study of retrieval-augmented answering over the WixQA support knowledge base."
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "openai",
+    "psycopg[binary]",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.32,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv]
+required-version = ">=0.11.32,<0.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers"]
+markers = [
+    "store: needs a PostgreSQL with pgvector, reached through DATABASE_URL",
+    "provider: calls the embedding provider and needs OPENAI_API_KEY",
+    "real_data: needs the dataset host: it fetches or reads Wix/WixQA",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+# Ruff looks at the project's code only: the Spec Kit stock files and the specs are Markdown and stay as they are
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # import order
+    "B",   # flake8-bugbear: likely bugs
+    "UP",  # pyupgrade: syntax of the target Python version
+]

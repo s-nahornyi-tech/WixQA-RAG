@@ -1,0 +1,10 @@
+{
+  "name": "Wix/WixQA",
+  "revision": "d662dc42479c14e202eccd832f8c4b66a035c4cc",
+  "parts": [
+    {"name": "wix_kb_corpus", "role": "corpus", "path": "wix_kb_corpus/wix_kb_corpus.jsonl", "rows": 6221},
+    {"name": "wixqa_expertwritten", "role": "questions", "path": "wixqa_expertwritten/test.jsonl", "rows": 200},
+    {"name": "wixqa_simulated", "role": "questions", "path": "wixqa_simulated/test.jsonl", "rows": 200},
+    {"name": "wixqa_synthetic", "role": "questions", "path": "wixqa_synthetic/test.jsonl", "rows": 6221}
+  ]
+}

@@ -88,7 +88,7 @@ Our seven additions, adopted by the owner on 2026-11-19:
 Notes for whoever wires these in:
 
 - Spec Kit keeps a spec technology-agnostic. The checks of addition 3 name commands, so they sit in their own section, apart from the user scenarios and success criteria.
-- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Additions 3, 5 and 7 are carried by project-local overrides in `.specify/templates/overrides/`: `spec-template.md` adds the "Acceptance Checks" and "Evidence" sections, and `tasks-template.md` makes tests required and first. Spec Kit reads an override in place of its own template, which stays unchanged. The constitution (version 1.0.0) states the rules of additions 1, 2, 5, 6 and 7. The experiment template of addition 4 is not implemented yet; its mechanism is chosen when it is implemented.
+- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Additions 3, 5 and 7 are carried by project-local overrides in `.specify/templates/overrides/`: `spec-template.md` adds the "Acceptance Checks" and "Evidence" sections, and `tasks-template.md` makes tests required and first. Spec Kit reads an override in place of its own template, which stays unchanged. The constitution (version 1.1.0) states the rules of additions 1, 2, 5, 6 and 7. The experiment template of addition 4 is not implemented yet; its mechanism is chosen when it is implemented.
 
 ## Roles and cycle
 
@@ -115,7 +115,7 @@ Cycle for one spec:
 - Approach: spec-driven development with GitHub Spec Kit, plus the seven additions listed under "Process".
 - Spec Kit version 1.4.2, initialised for Claude Code with shell scripts; its files live in `.specify/` and `.claude/skills/`.
 - Templates: the spec and tasks templates in `.specify/templates/overrides/` are this project's versions, made from the Spec Kit 1.4.2 templates. After a Spec Kit upgrade they are compared with the new stock templates.
-- Constitution: version 1.0.0, approved by the owner on 2026-11-23, in `.specify/memory/constitution.md`.
+- Constitution: version 1.1.0, in `.specify/memory/constitution.md`. Version 1.0.0 was approved by the owner on 2026-11-23; the amendment of 2026-11-25 records the Python tooling.
 - Implementation language: Python.
 - Language of specs, README, and UI: English.
 - Source code: GitHub. Task tracking: a GitHub Project, one issue per spec; a spec's tasks stay in its `tasks.md`.
@@ -123,6 +123,8 @@ Cycle for one spec:
 - Out of scope: operating a service, claims beyond WixQA, training models, editing the dataset, a general-purpose framework. See the constitution, "Scope and Non-Goals".
 - Embedding model: OpenAI `text-embedding-3-small`.
 - Vector store: PostgreSQL with the pgvector extension.
+- Python tooling: Python 3.14; uv manages the environment and the dependencies, and `uv.lock` is the lock file; tests run with pytest; CI runs on GitHub Actions.
+- Where the commands run (owner's decision of 2026-11-24): every command that needs the dataset host or the embedding provider runs on GitHub Actions, started by hand, with the provider key stored as a repository secret.
 - Lessons from another project are collected in the owner's private notes (`personal-notes/`, kept out of the repository).
 
 ### Open
