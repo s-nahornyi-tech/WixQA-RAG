@@ -75,14 +75,14 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 - [x] T014 [P] Test helper in `tests/conftest.py` that runs a command line exactly as the spec writes it, through a POSIX shell at the repository root, and returns the exit code and the standard output
 - [x] T015 [P] Unit tests in `tests/unit/test_cli_frame.py` for the rules of contracts/cli.md, "General rules": wrong arguments end with exit code 2; an error that the program did not expect ends with exit code 2, a `reason:` line and the verdict `not carried out` as the last line of standard output, and never with exit code 1; a command typed where no `dataset.json` exists is not carried out
 - [x] T016 [P] Unit tests in `tests/unit/test_settings.py`: a missing setting is reported by its variable name; the value of a setting never appears in a message; the default places of data-model.md ("Data directory", "Build record", "Audit result") are derived from `dataset.json` and the index identifier
-- [ ] T017 Run the workspace tier and confirm that the tests of T015 and T016 fail because the code is missing and that the test of T013 passes, since it tests the data; then confirm the same in the run of `checks` for the pull request, whose setup, lint and format steps pass
+- [x] T017 Run the workspace tier and confirm that the tests of T015 and T016 fail because the code is missing and that the test of T013 passes, since it tests the data; then confirm the same in the run of `checks` for the pull request, whose setup, lint and format steps pass
 
 **Checkpoint (red)**: The tests of the foundation exist, and those that test code fail. This is also the first run of `checks`
 
 ### Implementation of the foundation
 
-- [ ] T018 [P] Implement `src/wixqa_rag/settings.py`: the repository root, the default data directory, the places of the records, and the two settings read from the environment (contracts/cli.md, "Settings"; data-model.md, "Data directory", "Build record", "Audit result")
-- [ ] T019 Implement the frame of the command line in `src/wixqa_rag/cli.py` and `src/wixqa_rag/__main__.py`: the groups `dataset` and `index`, still without commands; result lines to standard output and progress to standard error; the `difference:` and `reason:` lines; the verdict line last; every outcome mapped to the exit codes 0, 1 and 2 (contracts/cli.md, "General rules")
+- [x] T018 [P] Implement `src/wixqa_rag/settings.py`: the repository root, the default data directory, the places of the records, and the two settings read from the environment (contracts/cli.md, "Settings"; data-model.md, "Data directory", "Build record", "Audit result")
+- [x] T019 Implement the frame of the command line in `src/wixqa_rag/cli.py` and `src/wixqa_rag/__main__.py`: the groups `dataset` and `index`, still without commands; result lines to standard output and progress to standard error; the `difference:` and `reason:` lines; the verdict line last; every outcome mapped to the exit codes 0, 1 and 2 (contracts/cli.md, "General rules")
 - [ ] T020 Run the tests of the foundation and confirm that each passes, with no test changed; the run of `checks` is green
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
