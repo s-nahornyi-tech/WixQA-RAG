@@ -1,0 +1,93 @@
+# The checks that start by themselves: lint, format, and the tests that need neither the embedding
+# provider nor the dataset host. This workflow receives no secret.
+#
+# Reasons for each choice: specs/001-corpus-and-audit/research.md, sections 3 to 6.
+# Every action is pinned to a full commit, and the image to a tag and a digest.
+
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  checks:
+    name: lint, format, tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    services:
+      # PostgreSQL 18 with pgvector 0.8.7. It accepts connections without a password, is reachable
+      # only inside this job and is discarded with it.
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg18@sha256:38681dc6eaf55308e2a4c6de392d131652dcfac70e1263e35cd9b5ea3fe39782
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: wixqa
+        ports:
+          - 5432:5432
+        # The check asks over the network address, not over the local socket: while the container
+        # prepares the database it answers on the socket only, and is not ready yet.
+        options: >-
+          --health-cmd "pg_isready --host 127.0.0.1 --username postgres --dbname wixqa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/wixqa
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The uv version comes from the range in pyproject.toml ([tool.uv] required-version).
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: false
+
+      - name: Install from the lock file
+        id: install
+        run: uv sync --locked
+
+      # Lint, format and tests each run whenever the installation worked, so that one run shows
+      # the result of all three.
+      - name: Lint (ruff check)
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: uv run ruff check --output-format=github .
+
+      - name: Format (ruff format --check)
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: uv run ruff format --check .
+
+      # The "checks" tier: every test that needs neither the provider nor the dataset host.
+      # The report is written outside the repository.
+      - name: Tests
+        id: tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: >-
+          uv run pytest -m "not provider and not real_data"
+          --junit-xml="${RUNNER_TEMP}/junit-checks.xml"
+
+      - name: Publish the test results as annotations
+        if: ${{ !cancelled() && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure') }}
+        run: >-
+          uv run python .github/scripts/junit_annotations.py
+          --name "tests"
+          "${RUNNER_TEMP}/junit-checks.xml"
+
+      - name: No file added or changed by the tests
+        if: ${{ !cancelled() && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure') }}
+        run: bash .github/scripts/check-worktree.sh

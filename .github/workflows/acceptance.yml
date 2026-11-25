@@ -1,0 +1,221 @@
+# The tests that may call the embedding provider and the dataset host. This workflow receives the
+# provider key, so it never starts by itself. A person starts it in one of two ways:
+#
+# - the label "acceptance:example" or "acceptance:full" on a pull request of this repository;
+# - the "Run workflow" button, once this file is on the default branch.
+#
+# Scope "example": every test except those that need the published dataset.
+# Scope "full": every test. The tests marked real_data fetch the published dataset and build
+# the index from it, which the provider charges for.
+#
+# Reasons for each choice: specs/001-corpus-and-audit/research.md, sections 3, 4 and 6.
+# Every action is pinned to a full commit, and the image to a tag and a digest.
+
+name: acceptance
+
+run-name: >-
+  acceptance, ${{ inputs.scope && format('scope {0}', inputs.scope)
+  || format('label {0}', github.event.label.name) }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "example: every test except those that need the published dataset. full: every test."
+        required: true
+        type: choice
+        default: example
+        options:
+          - example
+          - full
+  # The label starts the workflow as it is in the pull request. The event is pull_request, never
+  # pull_request_target: a pull request from another repository does not receive the secret.
+  pull_request:
+    types:
+      - labeled
+
+permissions:
+  contents: read
+
+# Two runs for one branch never run side by side: a later run waits for the earlier one, in turn.
+concurrency:
+  group: acceptance-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: false
+  queue: max
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  acceptance:
+    name: acceptance tests
+    # A label other than the two above starts nothing, and neither does a pull request whose
+    # branch is in another repository.
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+      || ((github.event.label.name == 'acceptance:example' || github.event.label.name == 'acceptance:full')
+      && github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    services:
+      # PostgreSQL 18 with pgvector 0.8.7. It accepts connections without a password, is reachable
+      # only inside this job and is discarded with it.
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg18@sha256:38681dc6eaf55308e2a4c6de392d131652dcfac70e1263e35cd9b5ea3fe39782
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: wixqa
+        ports:
+          - 5432:5432
+        # The check asks over the network address, not over the local socket: while the container
+        # prepares the database it answers on the socket only, and is not ready yet.
+        options: >-
+          --health-cmd "pg_isready --host 127.0.0.1 --username postgres --dbname wixqa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/wixqa
+
+    steps:
+      - name: Read the scope
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SCOPE: ${{ inputs.scope }}
+          LABEL_NAME: ${{ github.event.label.name }}
+          # Only "true" or "false" reaches this step, never the key.
+          PROVIDER_KEY_IS_SET: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            scope="${INPUT_SCOPE}"
+          else
+            scope="${LABEL_NAME#acceptance:}"
+          fi
+          case "${scope}" in
+            example | full) ;;
+            *)
+              echo "::error title=acceptance::The scope is neither example nor full."
+              exit 1
+              ;;
+          esac
+          echo "scope=${scope}" >> "${GITHUB_OUTPUT}"
+          if [ "${PROVIDER_KEY_IS_SET}" != "true" ]; then
+            echo "::warning title=acceptance::The repository secret OPENAI_API_KEY is not set. Every test that calls the embedding provider will fail."
+          fi
+
+      # The head of the branch, not the merge commit that GitHub makes for a pull request. For
+      # "Run workflow" the value is empty, and the action takes the head of the chosen branch.
+      - name: Check out the head of the branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Publish the scope and the commit
+        env:
+          SCOPE: ${{ steps.scope.outputs.scope }}
+        run: echo "::notice title=acceptance::scope ${SCOPE}, commit $(git rev-parse HEAD)"
+
+      # The uv version comes from the range in pyproject.toml ([tool.uv] required-version).
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: false
+
+      - name: Install from the lock file
+        id: install
+        run: uv sync --locked
+
+      # Both scopes run these tests; for the scope "example" they are the whole scope.
+      # Only the two steps that run pytest receive the provider key. The reports are written
+      # outside the repository.
+      - name: Tests that need no published dataset
+        id: tests_example
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          uv run pytest -m "not real_data"
+          --junit-xml="${RUNNER_TEMP}/junit-example.xml"
+
+      - name: Publish the results of these tests as annotations
+        if: ${{ !cancelled() && (steps.tests_example.outcome == 'success' || steps.tests_example.outcome == 'failure') }}
+        run: >-
+          uv run python .github/scripts/junit_annotations.py
+          --name "tests without the published dataset"
+          "${RUNNER_TEMP}/junit-example.xml"
+
+      # The scope "full" adds the tests marked real_data, so that both steps together run every
+      # test. They run on their own so that the verdict lines of their commands can be told from
+      # those of the tests on example data. They also run when a test above failed, as they would
+      # in one pytest call. The output that pytest captures for each test goes into the report.
+      - name: Tests on the published dataset
+        id: tests_real_data
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.scope.outputs.scope == 'full' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          uv run pytest -m "real_data"
+          -o junit_logging=all
+          --junit-xml="${RUNNER_TEMP}/junit-real-data.xml"
+
+      # Failed tests become errors, and the verdict lines of the commands, such as
+      # "audit: passed", become a notice.
+      - name: Publish the results and the verdict lines as annotations
+        if: ${{ !cancelled() && (steps.tests_real_data.outcome == 'success' || steps.tests_real_data.outcome == 'failure') }}
+        run: >-
+          uv run python .github/scripts/junit_annotations.py
+          --name "tests on the published dataset"
+          --verdicts
+          "${RUNNER_TEMP}/junit-real-data.xml"
+
+      # In the scope "full" one file may appear: the build record of a newly built index,
+      # evals/indexes/<index>/build.json.
+      - name: No file added or changed by the tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        env:
+          SCOPE: ${{ steps.scope.outputs.scope }}
+        run: |
+          if [ "${SCOPE}" = "full" ]; then
+            bash .github/scripts/check-worktree.sh --allow-new-build-record
+          else
+            bash .github/scripts/check-worktree.sh
+          fi
+
+  # The label is removed when the run finishes, also after a failure, so that adding it again
+  # starts the next run. This job runs no code of the repository, and it alone may write to the
+  # pull request.
+  remove-label:
+    name: remove the label
+    needs: acceptance
+    if: >-
+      ${{ always()
+      && github.event_name == 'pull_request'
+      && (github.event.label.name == 'acceptance:example' || github.event.label.name == 'acceptance:full')
+      && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Remove the label that started this run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
+          LABEL: ${{ github.event.label.name }}
+        run: |
+          # In the address of the label, the colon is written as %3A.
+          address="repos/${GITHUB_REPOSITORY}/issues/${PULL_REQUEST}/labels/${LABEL/:/%3A}"
+          if problem="$(gh api --method DELETE "${address}" 2>&1 > /dev/null)"; then
+            echo "::notice title=acceptance::The label ${LABEL} was removed. Add it again to start the next run."
+          elif grep --quiet "HTTP 404" <<< "${problem}"; then
+            echo "::notice title=acceptance::The label ${LABEL} was no longer on the pull request."
+          else
+            echo "${problem}"
+            echo "::error title=acceptance::The label ${LABEL} could not be removed. Remove it by hand; adding it again then starts the next run."
+            exit 1
+          fi
