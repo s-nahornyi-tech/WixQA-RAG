@@ -33,6 +33,7 @@ A command names a setting by its variable name and never prints its value, on ei
 4. Before a verdict of `failed`, every difference is printed on a line that starts with `difference:`.
 5. Before a verdict of `refused` or `not carried out`, the reason is printed on a line that starts with `reason:`.
 6. Ids and pairs are printed in sorted order.
+7. Wrong arguments. When the command line names one of the four commands but its arguments are wrong (an unknown option, an argument too many, a required option or its value missing), standard output gets a `reason:` line and the verdict `not carried out` of that command, and the exit code is 2. When the command line names no command (no arguments, an unknown group or command, a group without a command), no verdict line exists: the usage message goes to standard error, standard output stays empty, and the exit code is 2.
 
 **Verdict lines.**
 

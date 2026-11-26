@@ -83,7 +83,7 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 - [x] T018 [P] Implement `src/wixqa_rag/settings.py`: the repository root, the default data directory, the places of the records, and the two settings read from the environment (contracts/cli.md, "Settings"; data-model.md, "Data directory", "Build record", "Audit result")
 - [x] T019 Implement the frame of the command line in `src/wixqa_rag/cli.py` and `src/wixqa_rag/__main__.py`: the groups `dataset` and `index`, still without commands; result lines to standard output and progress to standard error; the `difference:` and `reason:` lines; the verdict line last; every outcome mapped to the exit codes 0, 1 and 2 (contracts/cli.md, "General rules")
-- [ ] T020 Run the tests of the foundation and confirm that each passes, with no test changed; the run of `checks` is green
+- [x] T020 Run the tests of the foundation and confirm that each passes, with no test changed; the run of `checks` is green
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -99,11 +99,11 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 > **NOTE: Write these tests FIRST, one for each check of spec.md that covers this story. They MUST FAIL before implementation starts**
 
-- [ ] T021 [P] [US1] Acceptance test for check AC-001 in `tests/acceptance/test_ac_001_dataset_fetch.py` (marker `real_data`)
-- [ ] T022 [P] [US1] Acceptance test for check AC-002 in `tests/acceptance/test_ac_002_dataset_check.py` (marker `real_data`)
-- [ ] T023 [P] [US1] Acceptance test for check AC-003 in `tests/acceptance/test_ac_003_dataset_check_damaged.py` (no marker)
-- [ ] T024 [P] [US1] Unit tests in `tests/unit/test_dataset_check.py`: one test for each of the differences 1 to 8 of data-model.md, "Data directory", each made on a temporary copy of `tests/data/example/`; a directory without `manifest.json` is not carried out; a `dataset.json` or a manifest that breaks a rule of data-model.md, "Pinned revision" (`revision` is not a full commit hash, no entry or several entries of `parts` have the role `corpus`, a part name is used twice), is not carried out; an empty `contents` and an empty `article_ids` list are not differences (data-model.md, `Article.contents`, `Question.article_ids`)
-- [ ] T025 [P] [US1] Unit tests in `tests/unit/test_dataset_fetch.py`, with a download double passed to the fetch: a complete, matching copy downloads nothing; a row count that differs from `dataset.json` ends as failed, names both numbers and leaves the local copy as it was; a download that fails ends as not carried out and leaves the local copy as it was; the manifest is written last; the stored files have the bytes that were downloaded (spec.md, edge cases 1 and 2; FR-002, FR-003, FR-005)
+- [x] T021 [P] [US1] Acceptance test for check AC-001 in `tests/acceptance/test_ac_001_dataset_fetch.py` (marker `real_data`)
+- [x] T022 [P] [US1] Acceptance test for check AC-002 in `tests/acceptance/test_ac_002_dataset_check.py` (marker `real_data`)
+- [x] T023 [P] [US1] Acceptance test for check AC-003 in `tests/acceptance/test_ac_003_dataset_check_damaged.py` (no marker)
+- [x] T024 [P] [US1] Unit tests in `tests/unit/test_dataset_check.py`: one test for each of the differences 1 to 8 of data-model.md, "Data directory", each made on a temporary copy of `tests/data/example/`; a directory without `manifest.json` is not carried out; a `dataset.json` or a manifest that breaks a rule of data-model.md, "Pinned revision" (`revision` is not a full commit hash, no entry or several entries of `parts` have the role `corpus`, a part name is used twice), is not carried out; an empty `contents` and an empty `article_ids` list are not differences (data-model.md, `Article.contents`, `Question.article_ids`)
+- [x] T025 [P] [US1] Unit tests in `tests/unit/test_dataset_fetch.py`, with a download double passed to the fetch: a complete, matching copy downloads nothing; a row count that differs from `dataset.json` ends as failed, names both numbers and leaves the local copy as it was; a download that fails ends as not carried out and leaves the local copy as it was; the manifest is written last; the stored files have the bytes that were downloaded (spec.md, edge cases 1 and 2; FR-002, FR-003, FR-005)
 - [ ] T026 [US1] Run the tests of User Story 1 and confirm that each fails because the behaviour is missing: the workspace tier for T023 to T025, then `checks`, then `acceptance` with the scope `full` for T021 and T022. This run cannot call the provider, because no command exists that embeds
 
 **Checkpoint (red)**: Every test of User Story 1 exists and fails. No implementation task of this story starts before this point

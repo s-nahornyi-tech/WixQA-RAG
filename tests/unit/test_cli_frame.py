@@ -3,6 +3,9 @@
 Covers, for `python -m wixqa_rag` before any command of a story exists:
 
 - "Exit codes": wrong arguments end with exit code 2, never with 0 or 1;
+- "Output", rule 7: wrong arguments of the two dataset commands end with a `reason:` line and
+  the verdict `not carried out` of that command; a command line that names no command has no
+  verdict line, and its usage message goes to standard error;
 - "Exit codes" and "Output", rules 3 and 5: an error that the program did not expect ends
   with exit code 2, a `reason:` line and the verdict `not carried out` as the last line of
   standard output, and never with exit code 1 (research.md, section 16);
@@ -104,6 +107,59 @@ def test_wrong_arguments_report_no_result_of_a_check(run_command):
         f"{result.exit_code}. Standard error:\n{result.stderr}"
     )
     assert not result.last_line.endswith((": passed", ": done", ": failed"))
+
+
+# --- Wrong arguments: with or without a verdict line (contracts/cli.md, "Output", rule 7) ----
+
+
+@pytest.mark.parametrize(
+    ("command", "name"),
+    [
+        # An unknown option, an argument too many, and an option without its value.
+        ("python -m wixqa_rag dataset check --no-such-option", "dataset check"),
+        ("python -m wixqa_rag dataset check unexpected-argument", "dataset check"),
+        ("python -m wixqa_rag dataset check --data-dir", "dataset check"),
+        ("python -m wixqa_rag dataset check --data-dir tests/data/example again", "dataset check"),
+        ("python -m wixqa_rag dataset fetch --no-such-option", "dataset fetch"),
+        ("python -m wixqa_rag dataset fetch unexpected-argument", "dataset fetch"),
+        # `dataset fetch` takes no data directory: it fetches into the default one.
+        ("python -m wixqa_rag dataset fetch --data-dir tests/data/example", "dataset fetch"),
+    ],
+)
+def test_wrong_arguments_of_a_dataset_command_end_with_its_verdict(run_command, command, name):
+    """contracts/cli.md, "Output", rule 7: when the command line names a command and its
+    arguments are wrong, standard output gets a `reason:` line and the verdict
+    `not carried out` of that command, and the exit code is 2."""
+    result = run_command(command)
+
+    assert_not_carried_out(name, result.exit_code, result.stdout)
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "python -m wixqa_rag",
+        "python -m wixqa_rag --no-such-option",
+        "python -m wixqa_rag no-such-group",
+        "python -m wixqa_rag dataset",
+        "python -m wixqa_rag dataset no-such-command",
+        "python -m wixqa_rag dataset --no-such-option",
+        "python -m wixqa_rag index",
+        "python -m wixqa_rag index no-such-command",
+    ],
+)
+def test_a_command_line_that_names_no_command_has_no_verdict_line(run_command, command):
+    """contracts/cli.md, "Output", rule 7: when the command line names no command (no
+    arguments, an unknown group or command, a group without a command), no verdict line
+    exists: the usage message goes to standard error, standard output stays empty, and the
+    exit code is 2."""
+    result = run_command(command)
+
+    assert result.exit_code == 2, (
+        f"`{command}` ended with {result.exit_code}. Standard error:\n{result.stderr}"
+    )
+    assert result.stdout == "", "standard output stays empty when no command is named"
+    assert "usage" in result.stderr.lower(), "the usage message goes to standard error"
 
 
 # --- An error that the program did not expect -------------------------------------------------

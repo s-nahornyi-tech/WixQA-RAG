@@ -13,6 +13,8 @@ printed one, the helper replaces it before it prints or returns the text, and th
 the setting in `settings_printed`.
 """
 
+import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -30,6 +32,12 @@ SETTING_NAMES = ("DATABASE_URL", "OPENAI_API_KEY")
 
 # A shorter value is not looked for in the output: it would be found by chance.
 SHORTEST_VALUE_LOOKED_FOR = 8
+
+EXAMPLE_DATA = REPOSITORY_ROOT / "tests" / "data" / "example"
+
+# A full commit hash that is not the pinned revision of the repository, so that a place or an
+# address in a test can only come from the `dataset.json` of the temporary repository root.
+OTHER_REVISION = "0123456789abcdef0123456789abcdef01234567"
 
 
 @dataclass(frozen=True)
@@ -179,3 +187,119 @@ def temporary_root(tmp_path: Path) -> Path:
     root.mkdir()
     shutil.copyfile(REPOSITORY_ROOT / "dataset.json", root / "dataset.json")
     return root
+
+
+def count_rows(data: bytes) -> int:
+    """The rows of a part file: its non-empty lines (data-model.md, "Part")."""
+    return sum(1 for line in data.split(b"\n") if line.strip())
+
+
+@dataclass(frozen=True)
+class PinnedExample:
+    """A temporary repository root whose `dataset.json` pins a small dataset of example data.
+
+    It stands for the checkout with the published dataset: one corpus part and two question
+    parts, in folders of their own and with two files of the same name, as `Wix/WixQA` has
+    them (contracts/records.md, "`dataset.json`"). The second question part has no line feed
+    after its last row. `sources` holds, for each path inside the dataset, the bytes that the
+    dataset host would return. The default data directory does not exist until a test stores
+    a copy or fetches one.
+    """
+
+    root: Path
+    name: str
+    revision: str
+    # As `dataset.json` lists them: `name`, `role`, `path` and `rows`.
+    parts: tuple[dict, ...]
+    sources: dict[str, bytes]
+
+    @property
+    def data_dir(self) -> Path:
+        """The default data directory (data-model.md, "Data directory")."""
+        return self.root / "data" / "wixqa" / self.revision
+
+    @property
+    def manifest_file(self) -> Path:
+        return self.data_dir / "manifest.json"
+
+    def read_dataset_json(self) -> dict:
+        return json.loads((self.root / "dataset.json").read_text(encoding="utf-8"))
+
+    def write_dataset_json(self, document: object) -> None:
+        text = json.dumps(document, indent=2) + "\n"
+        (self.root / "dataset.json").write_text(text, encoding="utf-8")
+
+    def manifest_parts(self) -> list[dict]:
+        """The parts as the manifest of a complete, matching copy records them."""
+        return [
+            {
+                **part,
+                "bytes": len(self.sources[part["path"]]),
+                "sha256": hashlib.sha256(self.sources[part["path"]]).hexdigest(),
+            }
+            for part in self.parts
+        ]
+
+    def write_manifest(self, document: object) -> None:
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        text = json.dumps(document, indent=2) + "\n"
+        self.manifest_file.write_text(text, encoding="utf-8")
+
+    def store_copy(self) -> None:
+        """Write a complete, matching local copy by hand: the part files, then the manifest."""
+        for path, data in self.sources.items():
+            file = self.data_dir / path
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_bytes(data)
+        self.write_manifest(
+            {
+                "name": self.name,
+                "revision": self.revision,
+                "fetched_at": "2026-11-24T10:15:00Z",
+                "parts": self.manifest_parts(),
+            }
+        )
+
+    def stored_files(self) -> dict[str, bytes]:
+        """Every file below the default data directory: its path inside it -> its bytes."""
+        if not self.data_dir.is_dir():
+            return {}
+        return {
+            file.relative_to(self.data_dir).as_posix(): file.read_bytes()
+            for file in sorted(self.data_dir.rglob("*"))
+            if file.is_file()
+        }
+
+
+@pytest.fixture
+def pinned_example(tmp_path: Path) -> PinnedExample:
+    """A temporary repository root that pins example data; see `PinnedExample`.
+
+    The root holds `dataset.json` and nothing else. A test that works here leaves no file in
+    the checkout (specs/001-corpus-and-audit/research.md, section 4; tasks.md, T039).
+    """
+    root = tmp_path / "pinned-example-root"
+    root.mkdir()
+    articles = (EXAMPLE_DATA / "ex.jsonl").read_bytes()
+    questions = (EXAMPLE_DATA / "exq.jsonl").read_bytes()
+    sources = {
+        "ex/ex.jsonl": articles,
+        "exq/test.jsonl": questions,
+        # The same questions, published without a line feed after the last row.
+        "exq_more/test.jsonl": questions.removesuffix(b"\n"),
+    }
+    parts = tuple(
+        {"name": name, "role": role, "path": path, "rows": count_rows(sources[path])}
+        for name, role, path in (
+            ("ex", "corpus", "ex/ex.jsonl"),
+            ("exq", "questions", "exq/test.jsonl"),
+            ("exq_more", "questions", "exq_more/test.jsonl"),
+        )
+    )
+    example = PinnedExample(
+        root=root, name="Wix/WixQA", revision=OTHER_REVISION, parts=parts, sources=sources
+    )
+    example.write_dataset_json(
+        {"name": example.name, "revision": example.revision, "parts": list(parts)}
+    )
+    return example
