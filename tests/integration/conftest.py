@@ -143,6 +143,18 @@ class Store:
             sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema_of(index)))
         )
 
+    def remove_passages_of(self, index: str, article_id: str) -> int:
+        """Remove the passages of one article directly in the store, past every command, and
+        return how many there were. The index is one of this test."""
+        from psycopg import sql
+
+        assert index in self._identifiers, "a test changes only an index it created"
+        removed = self._connection.execute(
+            sql.SQL("DELETE FROM {} WHERE article_id = %s").format(self._table(index, "passages")),
+            (article_id,),
+        )
+        return removed.rowcount
+
     def remove_created(self) -> None:
         from psycopg import sql
 

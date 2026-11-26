@@ -162,6 +162,28 @@ def test_wrong_arguments_of_index_build_end_with_its_verdict(run_command, comman
 @pytest.mark.parametrize(
     "command",
     [
+        # The required `--index` left out, an option without its value, an unknown option,
+        # and an argument too many.
+        "python -m wixqa_rag index audit",
+        "python -m wixqa_rag index audit --data-dir tests/data/example",
+        "python -m wixqa_rag index audit --index",
+        "python -m wixqa_rag index audit --index example --data-dir",
+        "python -m wixqa_rag index audit --index example --json",
+        "python -m wixqa_rag index audit --index example --no-such-option",
+        "python -m wixqa_rag index audit --index example unexpected-argument",
+    ],
+)
+def test_wrong_arguments_of_index_audit_end_with_its_verdict(run_command, command):
+    """contracts/cli.md, "Output", rule 7, for `index audit`, whose verdict line starts with
+    `audit`: a `reason:` line, then `audit: not carried out`, and exit code 2."""
+    result = run_command(command, env={"DATABASE_URL": None, "OPENAI_API_KEY": None})
+
+    assert_not_carried_out("audit", result.exit_code, result.stdout)
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "python -m wixqa_rag",
         "python -m wixqa_rag --no-such-option",
         "python -m wixqa_rag no-such-group",
