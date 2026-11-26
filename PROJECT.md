@@ -125,6 +125,7 @@ Cycle for one spec:
 - Vector store: PostgreSQL with the pgvector extension.
 - Python tooling: Python 3.14; uv manages the environment and the dependencies, and `uv.lock` is the lock file; tests run with pytest; CI runs on GitHub Actions.
 - Where the commands run (owner's decision of 2026-11-24): every command that needs the dataset host or the embedding provider runs on GitHub Actions, started by hand, with the provider key stored as a repository secret.
+- Golden set (owner's decision of 2026-11-26): all questions of the two parts `wixqa_expertwritten` and `wixqa_simulated`, 200 + 200 = 400 questions. The part `wixqa_synthetic` is not in it and may become a separate set later.
 - Lessons from another project are collected in the owner's private notes (`personal-notes/`, kept out of the repository).
 
 ### Open
@@ -133,7 +134,7 @@ The owner decides. Answers move to "Decided".
 
 | # | Decision | Blocks spec |
 |---|---|---|
-| 1 | Golden set composition: which WixQA parts, how many questions, how many are hand-labelled | 2 |
+| 1 | Hand labelling: how many questions of the golden set are hand-labelled | 4 |
 | 2 | Generation model for baseline | 3 |
 | 3 | Budget for one full evaluation run | 3 |
 | 4 | Judge model | 4 |
