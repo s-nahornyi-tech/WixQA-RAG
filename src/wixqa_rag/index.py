@@ -6,6 +6,7 @@ when the identifier or a record file already exists is the table of research.md,
 
 import json
 import os
+import re
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -30,6 +31,29 @@ _FIELDS = {
     "commit": (),
     "uncommitted_changes": (),
 }
+
+
+# U+0000, which PostgreSQL refuses in a text, and a surrogate, which cannot be sent as UTF-8.
+# A character outside the basic plane is one character here, not a pair of surrogates.
+_CANNOT_BE_TAKEN = re.compile("[\\x00\ud800-\udfff]")
+
+
+def _first_text_that_cannot_be_taken(passages: list[tuple[str, int, str]]) -> str | None:
+    """Why the store or the provider cannot take a passage, for the first such passage; None
+    when every article id and every passage can be stored and sent."""
+    for article_id, _, text in passages:
+        if _CANNOT_BE_TAKEN.search(article_id):
+            return (
+                f"the article id {ascii(article_id)} holds a character "
+                "that can be neither stored nor sent"
+            )
+        found = _CANNOT_BE_TAKEN.search(text)
+        if found:
+            return (
+                f"the text of the article {article_id} holds the character "
+                f"U+{ord(found.group()):04X}, which can be neither stored nor sent"
+            )
+    return None
 
 
 def _in_order(document: dict, first: tuple | dict) -> dict:
@@ -194,6 +218,12 @@ def build(index: str, data_dir: Path | None, embedder) -> int:
                 without_passages.append(article_id)
             passages.extend((article_id, number, text) for number, text in enumerate(texts))
         without_passages.sort()
+
+        # Every passage is checked before the first request, so that nothing is paid for a
+        # build that cannot end. The data stays as published; the article is only named.
+        cannot_be_taken = _first_text_that_cannot_be_taken(passages)
+        if cannot_be_taken is not None:
+            return _stop(cannot_be_taken, "not carried out")
 
         store.create_index(connection, index, embedder.dimensions)
         tokens = 0
