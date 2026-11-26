@@ -126,3 +126,14 @@ def insert_build_row(connection: psycopg.Connection, index: str, record: dict) -
         ),
         (Jsonb(record),),
     )
+
+
+def article_ids(connection: psycopg.Connection, index: str) -> set[str]:
+    """The article ids of an index: the distinct `article_id` values of its `passages` table,
+    the table that retrieval queries."""
+    rows = connection.execute(
+        sql.SQL("SELECT DISTINCT article_id FROM {}").format(
+            sql.Identifier(schema_name(index), "passages")
+        )
+    ).fetchall()
+    return {row[0] for row in rows}

@@ -123,6 +123,12 @@ def _index_build(arguments: argparse.Namespace) -> int:
     return index.build(arguments.index, arguments.data_dir, embedding.Embedder())
 
 
+def _index_audit(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import audit
+
+    return audit.command(arguments.index, arguments.data_dir, arguments.json)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """The arguments of the command line. Wrong arguments end the program with exit code 2."""
     parser = argparse.ArgumentParser(
@@ -167,6 +173,26 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         metavar="DIR",
         help="the data directory to build from; without it, the default data directory",
+    )
+    audit = _add_command(
+        index,
+        "audit",
+        "audit",
+        _index_audit,
+        "Audit an index against a data directory.",
+    )
+    audit.add_argument("--index", required=True, metavar="ID", help="the index identifier")
+    audit.add_argument(
+        "--data-dir",
+        type=Path,
+        metavar="DIR",
+        help="the data directory to audit against; without it, the default data directory",
+    )
+    audit.add_argument(
+        "--json",
+        type=Path,
+        metavar="FILE",
+        help="where the result is written; without it, data/audits/ID/<time>.json",
     )
     return parser
 
