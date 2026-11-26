@@ -1,18 +1,18 @@
 """The command line, `python -m wixqa_rag` (contracts/cli.md, "General rules").
 
-This is the frame: the two groups `dataset` and `index`, the kinds of output line, and the
-mapping of every outcome to an exit code. The groups have no commands yet.
+The frame: the two groups `dataset` and `index`, the kinds of output line, and the mapping of
+every outcome to an exit code. The group `index` has no commands yet.
 
-A command is added to its group in `build_parser`: a parser with the arguments of the command
-and the two defaults `verdict_name`, the start of its verdict line, and `run`, a function that
-takes the parsed arguments. `run` prints the result lines, ends with `verdict(...)` and returns
-its exit code. `main` calls it through `carry_out`.
+A command is added to its group in `build_parser` with `_add_command`: the start of its
+verdict line and `run`, a function that takes the parsed arguments, prints the result lines,
+ends with `verdict(...)` and returns its exit code. `main` calls it through `carry_out`.
 """
 
 import argparse
 import sys
 import traceback
 from collections.abc import Callable, Sequence
+from pathlib import Path
 
 from wixqa_rag import settings
 
@@ -70,10 +70,50 @@ def carry_out(name: str, action: Callable[[], int]) -> int:
     return verdict(name, "not carried out")
 
 
+class _CommandParser(argparse.ArgumentParser):
+    """The arguments of one command. Wrong arguments end with the verdict of the command."""
+
+    verdict_name = ""
+
+    def error(self, message: str):
+        self.print_usage(sys.stderr)
+        sys.exit(_wrong_arguments(self.verdict_name, message))
+
+
+def _wrong_arguments(name: str, message: str) -> int:
+    """contracts/cli.md, "Output", rule 7: a named command with wrong arguments."""
+    reason(" ".join(settings.hide_values(message).split()))
+    return verdict(name, "not carried out")
+
+
 def _add_group(groups, name: str, description: str):
     """Add a group to the command line and return the place where its commands are added."""
     group = groups.add_parser(name, help=description, description=description)
-    return group.add_subparsers(dest="command", metavar="COMMAND", required=True)
+    return group.add_subparsers(
+        dest="command", metavar="COMMAND", required=True, parser_class=_CommandParser
+    )
+
+
+def _add_command(commands, name: str, verdict_name: str, run, description: str):
+    """Add a command to its group and return its parser, for the arguments of the command."""
+    command = commands.add_parser(
+        name, help=description, description=description, allow_abbrev=False
+    )
+    command.verdict_name = verdict_name
+    command.set_defaults(verdict_name=verdict_name, run=run)
+    return command
+
+
+def _dataset_fetch(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import dataset
+
+    return dataset.fetch(dataset.download)
+
+
+def _dataset_check(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import dataset
+
+    return dataset.check(arguments.data_dir)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -83,12 +123,41 @@ def build_parser() -> argparse.ArgumentParser:
         description="The dataset, the index and the audit of the WixQA study.",
     )
     groups = parser.add_subparsers(dest="group", metavar="GROUP", required=True)
-    _add_group(groups, "dataset", "The local copy of the dataset at the pinned revision.")
+
+    dataset = _add_group(groups, "dataset", "The local copy of the dataset at the pinned revision.")
+    _add_command(
+        dataset,
+        "fetch",
+        "dataset fetch",
+        _dataset_fetch,
+        "Fetch the dataset at the pinned revision into the default data directory.",
+    )
+    check = _add_command(
+        dataset,
+        "check",
+        "dataset check",
+        _dataset_check,
+        "Check a data directory against its manifest.",
+    )
+    check.add_argument(
+        "--data-dir",
+        type=Path,
+        metavar="DIR",
+        help="the data directory to check; without it, the default data directory",
+    )
+
     _add_group(groups, "index", "The retrieval index built from the corpus.")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Read the command line, carry out the command and return its exit code."""
-    arguments = build_parser().parse_args(argv)
+    parser = build_parser()
+    arguments, unrecognized = parser.parse_known_args(argv)
+    if unrecognized:
+        message = "unrecognized arguments: " + " ".join(unrecognized)
+        name = getattr(arguments, "verdict_name", None)
+        if name is None:
+            parser.error(message)
+        return _wrong_arguments(name, message)
     return carry_out(arguments.verdict_name, lambda: arguments.run(arguments))

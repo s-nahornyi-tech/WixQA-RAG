@@ -8,9 +8,7 @@ The functions that derive a place from an index identifier expect a valid identi
 (data-model.md, "Index"); a command checks the identifier before it asks for a place.
 """
 
-import json
 import os
-import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -19,8 +17,6 @@ DATASET_JSON = Path("dataset.json")
 
 # The settings (contracts/cli.md, "Settings"): read from the environment and from nowhere else.
 SETTING_NAMES = ("DATABASE_URL", "OPENAI_API_KEY")
-
-_FULL_COMMIT_HASH = re.compile(r"[0-9a-f]{40}")
 
 
 class MissingSetting(Exception):
@@ -60,17 +56,19 @@ def hide_values(text: str) -> str:
     return text
 
 
-def _pinned_revision() -> str:
-    pinned = json.loads(DATASET_JSON.read_text(encoding="utf-8"))
-    revision = pinned.get("revision") if isinstance(pinned, dict) else None
-    if not isinstance(revision, str) or not _FULL_COMMIT_HASH.fullmatch(revision):
-        raise ValueError(f"{DATASET_JSON}: revision is not a full commit hash")
-    return revision
+def data_dir_of_revision(revision: str) -> Path:
+    """`data/wixqa/<revision>`: where the dataset fetched at a revision is kept."""
+    return Path("data", "wixqa", revision)
 
 
 def default_data_dir() -> Path:
-    """`data/wixqa/<revision>`, with the revision that `dataset.json` records."""
-    return Path("data", "wixqa", _pinned_revision())
+    """`data/wixqa/<revision>`, with the revision that `dataset.json` records.
+
+    `dataset.json` is read, and its rules are checked, by `dataset.read_pinned`.
+    """
+    from wixqa_rag import dataset
+
+    return data_dir_of_revision(dataset.read_pinned().revision)
 
 
 def build_record_path(index: str, data_dir: Path | None = None) -> Path:
