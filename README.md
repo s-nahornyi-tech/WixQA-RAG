@@ -2,7 +2,7 @@
 
 What actually makes a support knowledge-base assistant answer better? An open, reproducible study on the [WixQA](https://huggingface.co/datasets/Wix/WixQA) dataset: every design decision is backed by a measurement you can re-run.
 
-**Status:** early. The commands that fetch the dataset, build the retrieval index and audit it exist and are tested on example data. The index of the real corpus is not built yet. No evaluation run and no results yet.
+**Status:** early. The dataset is pinned, and the retrieval index of the corpus is built and audited: 6,221 articles in 11,656 passages, with zero mismatches against the dataset (records in [`evals/indexes/wixqa-001/`](evals/indexes/wixqa-001/)). Nothing retrieves from the index or generates answers yet. No evaluation run and no results yet.
 
 ## Approach
 

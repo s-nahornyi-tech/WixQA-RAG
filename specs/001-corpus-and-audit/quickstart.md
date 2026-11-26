@@ -4,7 +4,7 @@
 
 How to see, end to end, that this feature works once it is implemented. Part A is the way the study itself runs it: on GitHub, with nothing installed on a computer. Part B is the same on a computer, for a reader who prefers that. The commands, their output and the files they write are described in [contracts/cli.md](contracts/cli.md) and [contracts/records.md](contracts/records.md).
 
-The commands on example data and the fetch and check of the published dataset have run on GitHub Actions. The build and the audit of the real index have not run yet. The expected outcomes below are those of the spec's acceptance checks.
+The commands on example data and the fetch and check of the published dataset have run on GitHub Actions. The build and the audit of the real index ran on 2026-11-26 (workflow run 45773433273). The expected outcomes below are those of the spec's acceptance checks.
 
 ## A. On GitHub
 
