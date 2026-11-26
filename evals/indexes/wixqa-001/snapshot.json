@@ -1,0 +1,13 @@
+{
+  "index": "wixqa-001",
+  "file": "wixqa-001.dump",
+  "bytes": 84221271,
+  "sha256": "d65237b2df650281d1ff1743fe5ad16cfe80ac7f3a39f2a3099ad7cc439a42e6",
+  "format": "pg_dump custom format, schema idx_wixqa_001",
+  "postgresql": "18.7 (Debian 18.7-1.pgdg12+2)",
+  "pgvector": "0.8.7",
+  "repository": "s-nahornyi-tech/WixQA-RAG",
+  "release_tag": "index-wixqa-001",
+  "created_at": "2026-11-26T07:14:36Z",
+  "workflow_run": 45773433273
+}

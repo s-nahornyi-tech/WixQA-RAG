@@ -1,0 +1,9 @@
+{
+  "name": "example",
+  "revision": null,
+  "fetched_at": null,
+  "parts": [
+    {"name": "ex", "role": "corpus", "path": "ex.jsonl", "rows": 5, "bytes": 1924, "sha256": "f7809aafb9777e42f6b6268086aa8af76efa406520d810bdb8da336018f039a2"},
+    {"name": "exq", "role": "questions", "path": "exq.jsonl", "rows": 3, "bytes": 1157, "sha256": "0c84d93ce3bb97ad62bcdbe162e4937a763476f890981f7cf8bd46f522a52a57"}
+  ]
+}

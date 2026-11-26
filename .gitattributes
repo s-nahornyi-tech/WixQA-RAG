@@ -1,2 +1,5 @@
 # Shell scripts must keep Unix line endings, also on Windows
 *.sh text eol=lf
+
+# Example data is fingerprinted byte by byte: never convert its line endings
+tests/data/** -text

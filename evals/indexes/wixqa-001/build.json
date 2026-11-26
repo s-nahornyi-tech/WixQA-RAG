@@ -1,0 +1,27 @@
+{
+  "index": "wixqa-001",
+  "dataset": {
+    "name": "Wix/WixQA",
+    "revision": "d662dc42479c14e202eccd832f8c4b66a035c4cc",
+    "corpus_sha256": "46b852c60b85fb1828e7c6118bb56ba796eba99120a6b69c6b984c06e1c5e1fe"
+  },
+  "embedding": {
+    "provider": "openai",
+    "model_requested": "text-embedding-3-small",
+    "model_reported": "text-embedding-3-small",
+    "dimensions": 1536
+  },
+  "splitting": {
+    "rule": "line-pack-v1",
+    "max_chars": 2000
+  },
+  "articles": 6221,
+  "passages": 11656,
+  "articles_without_passages": [],
+  "tokens_embedded": 2946269,
+  "price_usd_per_million_tokens": 0.02,
+  "cost_usd": 0.058925380000000006,
+  "started_at": "2026-11-26T07:11:51Z",
+  "commit": "a967e5722fbe3edac3bf105490e4e074f84c046f",
+  "uncommitted_changes": false
+}

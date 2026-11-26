@@ -2,7 +2,7 @@
 
 What actually makes a support knowledge-base assistant answer better? An open, reproducible study on the [WixQA](https://huggingface.co/datasets/Wix/WixQA) dataset: every design decision is backed by a measurement you can re-run.
 
-**Status:** early setup. No code or results yet.
+**Status:** early. The dataset is pinned, and the retrieval index of the corpus is built and audited: 6,221 articles in 11,656 passages, with zero mismatches against the dataset (records in [`evals/indexes/wixqa-001/`](evals/indexes/wixqa-001/)). Nothing retrieves from the index or generates answers yet. No evaluation run and no results yet.
 
 ## Approach
 
@@ -22,12 +22,37 @@ The rules and their reasons are in `PROJECT.md` under "Measurement invariants"; 
 | `PROJECT.md` | Project facts and decisions; the single source of truth for agents |
 | `.specify/memory/constitution.md` | The constitution: binding rules, exact metric definitions, and the workflow |
 | `.specify/templates/overrides/` | The project's spec and tasks templates: acceptance checks, evidence, and tests first |
-| `evals/` | Everything used to measure quality: the golden set, hand labels, and the run registry |
+| `.claude/agents/` | The role files of the five agents: testing, coding, code review, DevOps and spec |
+| `specs/` | One folder per feature: its spec, plan, contracts and task list |
+| `dataset.json` | The pinned revision of the dataset, with the path and the row count of each part |
+| `evals/` | Everything used to measure quality: the golden set, hand labels, the run registry, and the records of indexes |
+| `evals/indexes/` | For each index built from the pinned dataset: its build record, the audit made right after the build, and where its snapshot is kept |
 | `src/` | The system's code |
-| `tests/` | Tests |
-| `data/` | Downloaded datasets; kept out of Git |
+| `tests/` | Tests, and the small example datasets they use |
+| `data/` | Downloaded datasets, and the records of indexes built from example data; kept out of Git |
+| `.github/workflows/` | The two CI workflows: `checks.yml` runs for every pull request; `acceptance.yml` runs when a person starts it |
 
-`.specify/` and `.claude/skills/` hold GitHub Spec Kit (version 1.4.2). `specs/` appears when the first feature is specified.
+`.specify/` and `.claude/skills/` hold GitHub Spec Kit (version 1.4.2).
+
+## Setting up
+
+The commands of the specs are typed at the repository root, in the project's Python environment. It needs [uv](https://docs.astral.sh/uv/), version 0.11.32 or a later 0.11 release; uv installs Python 3.14 and the locked dependencies:
+
+```sh
+uv sync --locked
+source .venv/bin/activate
+```
+
+Two things can then be tried with nothing else installed:
+
+```sh
+python -m wixqa_rag dataset check --data-dir tests/data/example
+pytest -m "not store and not provider and not real_data"
+```
+
+The first checks one of the example datasets and ends with `dataset check: passed`. The second runs the tests that need neither a database nor a key. Without activating the environment, put `uv run` in front of a command.
+
+Building and auditing an index needs a PostgreSQL with pgvector, and building also needs a key of the embedding provider. The steps, on GitHub Actions and on a computer, are in [`specs/001-corpus-and-audit/quickstart.md`](specs/001-corpus-and-audit/quickstart.md); the names of the two settings are in `.env.example`.
 
 ## How we work
 
