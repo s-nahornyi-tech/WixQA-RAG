@@ -1,7 +1,7 @@
 """The command line, `python -m wixqa_rag` (contracts/cli.md, "General rules").
 
 The frame: the two groups `dataset` and `index`, the kinds of output line, and the mapping of
-every outcome to an exit code. The group `index` has no commands yet.
+every outcome to an exit code.
 
 A command is added to its group in `build_parser` with `_add_command`: the start of its
 verdict line and `run`, a function that takes the parsed arguments, prints the result lines,
@@ -116,6 +116,13 @@ def _dataset_check(arguments: argparse.Namespace) -> int:
     return dataset.check(arguments.data_dir)
 
 
+def _index_build(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import embedding, index
+
+    # The embedder makes its client, and reads the provider key, at its first request.
+    return index.build(arguments.index, arguments.data_dir, embedding.Embedder())
+
+
 def build_parser() -> argparse.ArgumentParser:
     """The arguments of the command line. Wrong arguments end the program with exit code 2."""
     parser = argparse.ArgumentParser(
@@ -146,7 +153,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="the data directory to check; without it, the default data directory",
     )
 
-    _add_group(groups, "index", "The retrieval index built from the corpus.")
+    index = _add_group(groups, "index", "The retrieval index built from the corpus.")
+    build = _add_command(
+        index,
+        "build",
+        "index build",
+        _index_build,
+        "Build an index from the corpus of a data directory.",
+    )
+    build.add_argument("--index", required=True, metavar="ID", help="the index identifier")
+    build.add_argument(
+        "--data-dir",
+        type=Path,
+        metavar="DIR",
+        help="the data directory to build from; without it, the default data directory",
+    )
     return parser
 
 
