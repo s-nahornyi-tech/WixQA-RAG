@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,8 +31,9 @@
 
 ## Notes
 
-- Validated on 2026-11-26, first iteration: every item passes except "No [NEEDS CLARIFICATION] markers remain".
-- Two markers remain, both for the owner: FR-003 (whether the golden-set record holds a copy of each question's gold article ids) and FR-008 (which questions an audit checks when no question set is named, once the golden set exists). The spec is written with the recommended answer to each; another answer changes FR-003 or FR-008 and the checks that depend on them. The plan does not start before both are answered and the owner has approved the spec.
+- Validated on 2026-11-26. First iteration: every item passed except "No [NEEDS CLARIFICATION] markers remain"; two markers stood in FR-003 and FR-008. Second iteration, after the owner's answers of 2026-11-26: all items pass.
+- The two answers are recorded in the spec under "Clarifications": the golden-set record carries the gold article ids of each question (FR-003), and an audit that names no golden set keeps checking every question of the question parts (FR-008). The spec was already written with these two answers, so no acceptance check changed.
+- The spec is a draft until the owner approves it; the plan does not start before that.
 - "Acceptance Checks" names commands, files and exit codes by design (PROJECT.md, "Process", addition 3). The items about implementation details were applied to every other section. FR-022 names SHA-256 because the constitution defines the answer hash that way.
 - "User value and business needs" was read as the needs of the operator and of a reader who repeats the study: the study has no customers and operates no service (constitution, "Scope and Non-Goals").
 - Every user story, functional requirement and success criterion is covered by at least one acceptance check: 4 user stories, 31 functional requirements, 7 success criteria, 32 acceptance checks.
