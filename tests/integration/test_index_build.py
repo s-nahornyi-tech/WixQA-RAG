@@ -700,3 +700,140 @@ def test_the_data_files_are_the_same_after_a_build(store, build, build_root, exa
 
     assert files_of(examples / "example") == example_before
     assert build_root.example.stored_files() == default_before
+
+
+# --- A passage that the store or the provider cannot take ------------------------------------
+
+# U+0000, which PostgreSQL refuses in a text, and an unpaired surrogate, which cannot be sent
+# as UTF-8. A JSON file carries them as `\u0000` and `\ud800`.
+NUL = "\x00"
+UNPAIRED_SURROGATE = "\ud800"
+
+
+def copy_with_escaped_articles(source: Path, target: Path, articles: list[dict]) -> Path:
+    """A copy of an example directory with the given articles. Every character outside ASCII
+    is written as a JSON escape, so the file can carry U+0000 and an unpaired surrogate. The
+    manifest is written again from the file, so the copy passes the dataset check."""
+    shutil.copytree(source, target)
+    data = "".join(json.dumps(row, ensure_ascii=True) + "\n" for row in articles).encode("ascii")
+    (target / "ex.jsonl").write_bytes(data)
+    manifest = json.loads((target / "manifest.json").read_text(encoding="utf-8"))
+    for part in manifest["parts"]:
+        if part["name"] == "ex":
+            part.update(
+                rows=len(articles), bytes=len(data), sha256=hashlib.sha256(data).hexdigest()
+            )
+    (target / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return target
+
+
+def example_articles(examples: Path) -> list[dict]:
+    lines = (examples / "example" / "ex.jsonl").read_text(encoding="utf-8").splitlines()
+    return [json.loads(line) for line in lines if line.strip()]
+
+
+def assert_nothing_was_embedded_or_left(built, double, store, build_root, index, before) -> None:
+    assert double.calls == [], (
+        f"the embedder was called {len(double.calls)} time(s) before the build stopped; every "
+        "passage is checked before the first request"
+    )
+    assert not store.holds(index), "no schema is left"
+    assert store.indexes() == before, "the store holds exactly the indexes it held before"
+    assert build_root.files_below("data/indexes") == {}, "no record file is left"
+    assert build_root.files_below("evals") == {}
+    assert built.settings_printed == ()
+
+
+@pytest.mark.parametrize(
+    ("character", "bad_article"),
+    [
+        (NUL, "ex-004"),
+        (UNPAIRED_SURROGATE, "ex-005"),
+        (NUL, "ex-002"),
+        (UNPAIRED_SURROGATE, "ex-003"),
+    ],
+    ids=["NUL in ex-004", "surrogate in ex-005", "NUL in ex-002", "surrogate in ex-003"],
+)
+def test_a_passage_the_store_or_the_provider_cannot_take_stops_the_build_before_any_request(
+    store, build, build_root, examples, embedder_double, tmp_path, character, bad_article
+):
+    """FR-009 and contracts/cli.md, "`index build`": a passage with U+0000, or with an
+    unpaired surrogate, cannot be stored or sent. The build splits every article and checks
+    every passage before the first request to the embedder, so that nothing is paid for a
+    build that cannot end: `reason:` names the article id, `index build: not carried out`,
+    exit code 2; the embedder was never called; no schema and no record file are left. The
+    character sits in the middle of a line of a late article, and the copy passes the dataset
+    check."""
+    articles = example_articles(examples)
+    row = next(row for row in articles if row["id"] == bad_article)
+    row["contents"] = row["contents"][:30] + character + row["contents"][30:]
+    directory = copy_with_escaped_articles(examples / "example", tmp_path / "bad", articles)
+    index = store.new_index()
+    before = store.indexes()
+    double = embedder_double()
+
+    built = build(index, directory, double)
+
+    reason = assert_stopped(built, "not carried out")
+    assert bad_article in reason, f"the reason names the article id {bad_article}: {reason}"
+    assert_nothing_was_embedded_or_left(built, double, store, build_root, index, before)
+
+
+@pytest.mark.parametrize("character", [NUL, UNPAIRED_SURROGATE], ids=["NUL", "surrogate"])
+def test_a_bad_character_in_the_last_of_many_articles_stops_the_build_before_any_request(
+    store, build, build_root, examples, embedder_double, tmp_path, character
+):
+    """FR-009: the check comes before the first request, however many passages come before
+    the one that cannot be taken. The corpus has 250 articles, more than one request carries
+    (research.md, section 13: at most 96 passages); only the last one holds the character."""
+    first = example_articles(examples)[0]
+    articles = [
+        {**first, "id": f"ex-{number:03d}", "contents": f"Article {number}\n{first['contents']}"}
+        for number in range(1, 251)
+    ]
+    articles[-1]["contents"] += f"\nA last line with {character} inside."
+    directory = copy_with_escaped_articles(examples / "example", tmp_path / "many", articles)
+    index = store.new_index()
+    before = store.indexes()
+    double = embedder_double()
+
+    built = build(index, directory, double)
+
+    reason = assert_stopped(built, "not carried out")
+    assert "ex-250" in reason, f"the reason names the article id ex-250: {reason}"
+    assert_nothing_was_embedded_or_left(built, double, store, build_root, index, before)
+
+
+def test_a_build_that_was_stopped_by_a_bad_character_changes_no_data_file(
+    store, build, examples, embedder_double, tmp_path
+):
+    """FR-005 and the constitution, "Scope and Non-Goals": the dataset is never edited. The
+    build reports the article and leaves the file as it is; it does not clean the text."""
+    articles = example_articles(examples)
+    articles[3]["contents"] += f"\nA line with {NUL} inside."
+    directory = copy_with_escaped_articles(examples / "example", tmp_path / "bad", articles)
+    files_before = files_of(directory)
+
+    built = build(store.new_index(), directory, embedder_double())
+
+    assert_stopped(built, "not carried out")
+    assert files_of(directory) == files_before
+
+
+def test_a_character_outside_the_basic_plane_is_no_reason_to_stop(
+    store, build, examples, embedder_double, tmp_path
+):
+    """The counterpart of the tests above: only an unpaired surrogate cannot be sent. A
+    character outside the Basic Multilingual Plane, which a JSON file writes as a pair of
+    surrogates, is an ordinary character, and the build stores it unchanged."""
+    articles = example_articles(examples)
+    articles[3]["contents"] += "\nA line with \U0001f600 inside."
+    directory = copy_with_escaped_articles(examples / "example", tmp_path / "pair", articles)
+    assert b"\\ud83d\\ude00" in (directory / "ex.jsonl").read_bytes()
+    index = store.new_index()
+
+    assert_done(build(index, directory, embedder_double()))
+
+    of_the_article = [p for p in store.passages(index) if p.article_id == "ex-004"]
+    assert len(of_the_article) == 1
+    assert of_the_article[0].text.endswith("A line with \U0001f600 inside.")
