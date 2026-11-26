@@ -180,7 +180,7 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 - [x] T058 [US3] Add to `src/wixqa_rag/store.py` the reading of the distinct article ids of an index, and the test whether an index exists and is complete (data-model.md, "Index": the `build` row is the mark of completion)
 - [x] T059 [US3] Implement `src/wixqa_rag/audit.py`: `AuditOutcome`, `AuditResult`, `AuditNotPassed`, `audit_index` and `require_passed_audit` as contracts/audit-gate.md fixes them; the comparison of data-model.md, "Audit result" (`missing_from_index`, `not_in_corpus`, `unknown_references`, `questions_without_article_ids`, `outcome`); the question references of data-model.md, "Question"; the conversion to and from the JSON document of contracts/records.md (depends on T058)
 - [x] T060 [US3] Add the command `index audit` to `src/wixqa_rag/cli.py`: the order of steps, the report, the result file at `--json` or at the default place, the verdicts and the exit codes (contracts/cli.md, "`index audit`")
-- [ ] T061 [US3] Run the tests of User Story 3 and confirm that each passes, with no acceptance test changed: the workspace tier, `checks`, and `acceptance` with the scope `example`. AC-008 is not part of this scope; it is confirmed in T067
+- [x] T061 [US3] Run the tests of User Story 3 and confirm that each passes, with no acceptance test changed: the workspace tier, `checks`, and `acceptance` with the scope `example`. AC-008 is not part of this scope; it is confirmed in T067
 
 **Checkpoint (green)**: All three stories work on the example data. Twelve of the fourteen checks pass on GitHub Actions: ten with the scope `example`, and AC-001 and AC-002 with the scope `full` in T031. AC-004 and AC-008 wait for the real index
 
