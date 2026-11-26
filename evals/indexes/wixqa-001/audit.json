@@ -1,0 +1,24 @@
+{
+  "index": "wixqa-001",
+  "dataset": {
+    "name": "Wix/WixQA",
+    "revision": "d662dc42479c14e202eccd832f8c4b66a035c4cc"
+  },
+  "question_set": {
+    "description": "every question of the question parts",
+    "parts": [
+      "wixqa_expertwritten",
+      "wixqa_simulated",
+      "wixqa_synthetic"
+    ],
+    "questions": 6621
+  },
+  "articles_in_corpus": 6221,
+  "articles_in_index": 6221,
+  "missing_from_index": [],
+  "not_in_corpus": [],
+  "unknown_references": [],
+  "questions_without_article_ids": 0,
+  "outcome": "passed",
+  "audited_at": "2026-11-26T07:14:37Z"
+}
