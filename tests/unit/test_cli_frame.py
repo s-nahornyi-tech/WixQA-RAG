@@ -138,6 +138,30 @@ def test_wrong_arguments_of_a_dataset_command_end_with_its_verdict(run_command, 
 @pytest.mark.parametrize(
     "command",
     [
+        # The required `--index` left out, `--index` or `--data-dir` without its value, an
+        # unknown option, and an argument too many.
+        "python -m wixqa_rag index build",
+        "python -m wixqa_rag index build --data-dir tests/data/example",
+        "python -m wixqa_rag index build --index",
+        "python -m wixqa_rag index build --index example --data-dir",
+        "python -m wixqa_rag index build --index example --no-such-option",
+        "python -m wixqa_rag index build --index example unexpected-argument",
+        # `index build` writes no result file: `--json` belongs to `index audit`.
+        "python -m wixqa_rag index build --index example --json result.json",
+    ],
+)
+def test_wrong_arguments_of_index_build_end_with_its_verdict(run_command, command):
+    """contracts/cli.md, "Output", rule 7: when the command line names a command and its
+    arguments are wrong, standard output gets a `reason:` line and the verdict
+    `not carried out` of that command, and the exit code is 2."""
+    result = run_command(command, env={"DATABASE_URL": None, "OPENAI_API_KEY": None})
+
+    assert_not_carried_out("index build", result.exit_code, result.stdout)
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "python -m wixqa_rag",
         "python -m wixqa_rag --no-such-option",
         "python -m wixqa_rag no-such-group",
