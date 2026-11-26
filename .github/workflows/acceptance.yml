@@ -184,18 +184,36 @@ jobs:
       # The scope "full" adds the tests marked real_data, so that both steps together run every
       # test. They run on their own so that the verdict lines of their commands can be told from
       # those of the tests on example data. They start only when every step above succeeded:
-      # an index built in a run with a failed test would not be recorded, and the provider
+      # an index built in a run with a failed test would not be published, and the provider
       # would have been paid for nothing. The output that pytest captures for each test goes
       # into the report.
+      #
+      # The build of the real index takes many minutes, and its own progress lines reach the log
+      # only when its test ends: the test helper holds the output of a command until the command
+      # has ended, whatever pytest is told about capturing. So that the job log shows the build
+      # moving, a second process asks the store once a minute how large the database is and
+      # since when a transaction is open, and prints one line. The build is one transaction, so
+      # its rows are not visible from outside before it ends; the size of the database is, and
+      # it grows by roughly 7 kB with each passage. At the end a notice states how long the step
+      # took.
       - name: Tests on the published dataset
         id: tests_real_data
         if: ${{ success() && steps.scope.outputs.scope == 'full' }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: >-
-          uv run pytest -m "real_data"
-          -o junit_logging=all
-          --junit-xml="${RUNNER_TEMP}/junit-real-data.xml"
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          started="$(date +%s)"
+          bash .github/scripts/watch-store.sh 60 &
+          watcher="$!"
+          status=0
+          uv run pytest -m "real_data" -o junit_logging=all \
+            --junit-xml="${RUNNER_TEMP}/junit-real-data.xml" || status="$?"
+          kill "${watcher}" 2> /dev/null || true
+          wait "${watcher}" 2> /dev/null || true
+          seconds="$(( $(date +%s) - started ))"
+          echo "::notice title=timing::The tests on the published dataset took $(( seconds / 60 )) min $(( seconds % 60 )) s. The limit of the whole job is 60 minutes."
+          exit "${status}"
 
       # Failed tests become errors, and the verdict lines of the commands, such as
       # "audit: passed", become a notice.
@@ -237,38 +255,35 @@ jobs:
             --json "${folder}/audit.json" | tee "${folder}/audit.txt"
           echo "::notice title=round trip of a snapshot::The index example was dumped ($(stat --format=%s "${folder}/example.dump") bytes), restored into a second database and audited there. $(tail -n 1 "${folder}/audit.txt")"
 
-      # Scope "full", after every test passed: was an index built in this run? A new, untracked
-      # evals/indexes/<index>/build.json says so. Nothing is recorded for main, which changes
-      # only through pull requests: there the run stops here with a message.
+      # Scope "full": was an index built in this run? A new, untracked
+      # evals/indexes/<index>/build.json says so. This step and the two after it run whenever
+      # the installation worked, also after a failed test: an index that the provider was paid
+      # for is always saved, together with the audit result that names every id that differs.
       - name: Look for a newly built index
         id: new_index
-        if: ${{ success() && steps.scope.outputs.scope == 'full' }}
-        env:
-          BRANCH: ${{ github.head_ref || github.ref_name }}
-          REF_TYPE: ${{ github.ref_type }}
-          EVENT_NAME: ${{ github.event_name }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.scope.outputs.scope == 'full' }}
         run: |
           found="$(git status --porcelain --untracked-files=all \
             | sed -n -E 's#^\?\? evals/indexes/([a-z0-9]+(-[a-z0-9]+)*)/build\.json$#\1#p')"
           if [ -z "${found}" ]; then
-            echo "::notice title=record of an index::No index was built in this run, so there is nothing to record."
+            echo "::notice title=record of an index::No index was built in this run, so there is nothing to save or to record."
             exit 0
           fi
           if [ "$(wc -l <<< "${found}")" -ne 1 ]; then
-            echo "::error title=record of an index::More than one index was built in this run: $(tr '\n' ' ' <<< "${found}"). The workflow records one index per run; nothing was recorded."
-            exit 1
-          fi
-          if [ "${BRANCH}" = "main" ] || { [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${REF_TYPE}" != "branch" ]; }; then
-            echo "::error title=record of an index::This run built the index ${found}, and it is not recorded: a record is added only to a branch other than main, because main changes only through pull requests. Build a new index on a branch; it reaches main through its pull request."
+            echo "::error title=record of an index::More than one index was built in this run: $(tr '\n' ' ' <<< "${found}"). The workflow saves and records one index per run; nothing was saved."
             exit 1
           fi
           echo "index=${found}" >> "${GITHUB_OUTPUT}"
 
-      # The audit made right after the build, the dump, and the snapshot record are written to
-      # a folder outside the checkout, next to a copy of the build record. The audit has to
-      # pass: a record is published only for an index with zero mismatches.
-      - name: Audit and dump the new index
-        if: ${{ success() && steps.new_index.outputs.index != '' }}
+      # Everything goes to a folder outside the checkout: a copy of the build record, the dump,
+      # the snapshot record, and the result of an audit made right after the build. The dump
+      # comes first, because it is what cannot be made again without paying. A failed audit
+      # still leaves its result file, with every id; its first differences become an annotation.
+      # The step fails when the audit did not pass or the dump could not be made, after it has
+      # written what it could.
+      - name: Dump and audit the new index
+        id: audit_new_index
+        if: ${{ !cancelled() && steps.new_index.outputs.index != '' }}
         env:
           INDEX: ${{ steps.new_index.outputs.index }}
           POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
@@ -276,17 +291,51 @@ jobs:
           folder="${RUNNER_TEMP}/index-record"
           mkdir -p "${folder}"
           cp "evals/indexes/${INDEX}/build.json" "${folder}/build.json"
-          uv run python -m wixqa_rag index audit --index "${INDEX}" --json "${folder}/audit.json" \
-            | tee "${RUNNER_TEMP}/audit-of-the-new-index.txt"
-          echo "::notice title=record of an index::Audit of the new index ${INDEX}: $(tail -n 1 "${RUNNER_TEMP}/audit-of-the-new-index.txt")"
-          bash .github/scripts/snapshot.sh dump "${INDEX}" "${folder}/${INDEX}.dump"
-          bash .github/scripts/snapshot.sh describe "${INDEX}" "${folder}/${INDEX}.dump" > "${folder}/snapshot.json"
-          cat "${folder}/snapshot.json"
 
-      # Saved first, so that a failure in a later step loses nothing: the dump and the record
-      # files can be taken from this artifact by hand for 7 days. The dump is compressed already.
-      - name: Save the dump and the record files as an artifact
-        if: ${{ success() && steps.new_index.outputs.index != '' }}
+          dumped=true
+          if bash .github/scripts/snapshot.sh dump "${INDEX}" "${folder}/${INDEX}.dump"; then
+            bash .github/scripts/snapshot.sh describe "${INDEX}" "${folder}/${INDEX}.dump" > "${folder}/snapshot.json"
+            cat "${folder}/snapshot.json"
+          else
+            dumped=false
+          fi
+
+          code=0
+          uv run python -m wixqa_rag index audit --index "${INDEX}" --json "${folder}/audit.json" \
+            > "${folder}/audit-output.txt" || code="$?"
+          cat "${folder}/audit-output.txt"
+          verdict="$(tail -n 1 "${folder}/audit-output.txt")"
+          if [ "${code}" -eq 0 ]; then
+            echo "::notice title=audit of the new index::${INDEX}: ${verdict}"
+          elif [ -f "${folder}/audit.json" ]; then
+            # The numbers of ids that differ and the first ten of each list, on separate lines.
+            message="$(jq --raw-output '
+              def first_of(name; list): "\(name): \(list | length)", (list[:10][] | "  \(tojson)"),
+                (if (list | length) > 10 then "  ... and \((list | length) - 10) more" else empty end);
+              first_of("missing from index"; .missing_from_index),
+              first_of("not in corpus"; .not_in_corpus),
+              first_of("unknown question references"; .unknown_references)
+            ' "${folder}/audit.json")"
+            message="${INDEX}: ${verdict}. Every id is in audit.json of the artifact index-${INDEX} of this run."$'\n'"${message}"
+            message="${message//'%'/%25}"
+            message="${message//$'\r'/%0D}"
+            message="${message//$'\n'/%0A}"
+            echo "::error title=audit of the new index::${message}"
+          else
+            reason="$(grep -m 1 '^reason: ' "${folder}/audit-output.txt" || true)"
+            echo "::error title=audit of the new index::${INDEX}: ${verdict}. ${reason}"
+          fi
+
+          if [ "${code}" -ne 0 ] || [ "${dumped}" != true ]; then
+            exit 1
+          fi
+
+      # Saved whenever an index was built, also after a failure, and before anything is
+      # published: the dump and the files can be taken from this artifact for 7 days. The dump
+      # is compressed already.
+      - name: Save the dump, the build record and the audit result as an artifact
+        id: saved
+        if: ${{ !cancelled() && steps.new_index.outputs.index != '' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: index-${{ steps.new_index.outputs.index }}
@@ -295,15 +344,32 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      # The record of an index is permanent, so it has to describe a build from the commit
-      # alone. The step before the real-data tests makes sure of that; this one reads what the
-      # build wrote. When it fails, nothing is published, and the artifact above keeps the files.
+      # An index that was built and is not going to be published: say where it is kept.
+      - name: Say where an index that is not published is kept
+        if: ${{ failure() && steps.new_index.outputs.index != '' && steps.saved.outcome == 'success' }}
+        env:
+          INDEX: ${{ steps.new_index.outputs.index }}
+        run: echo "::warning title=record of an index::This run built the index ${INDEX} and does not publish it, because a step failed. Its dump, its build record and its audit result are in the artifact index-${INDEX} of this run, kept for 7 days."
+
+      # The index is handed over to be published only when every step of this job succeeded:
+      # every test, the audit and the dump. Nothing is recorded for main, which changes only
+      # through pull requests: there the run stops here with a message. The record of an index
+      # is permanent, so it has to describe a build from the commit alone; the step before the
+      # real-data tests makes sure of that, and this one reads what the build wrote. When this
+      # step fails, nothing is published, and the artifact above keeps the files.
       - name: Hand the index over to be recorded
         id: prepared
         if: ${{ success() && steps.new_index.outputs.index != '' }}
         env:
           INDEX: ${{ steps.new_index.outputs.index }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          if [ "${BRANCH}" = "main" ] || { [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${REF_TYPE}" != "branch" ]; }; then
+            echo "::error title=record of an index::This run built the index ${INDEX}, and it is not recorded: a record is added only to a branch other than main, because main changes only through pull requests. Build a new index on a branch; it reaches main through its pull request. The dump and the files are in the artifact index-${INDEX} of this run."
+            exit 1
+          fi
           if [ "$(jq '.uncommitted_changes' "${RUNNER_TEMP}/index-record/build.json")" != "false" ]; then
             echo "::error title=record of an index::The build record of ${INDEX} does not state \"uncommitted_changes\": false, so the index is not recorded. The dump and the record files are in the artifact index-${INDEX} of this run."
             exit 1

@@ -10,7 +10,8 @@ opening a log. This script reads the JUnit report that pytest wrote and prints w
 - with --verdicts: one notice with the verdict lines that the commands under test printed, for
   example "audit: passed". They are read from the output that pytest captured for each test,
   so the report has to be written with "-o junit_logging=all", and a test has to pass the
-  output of its command on to its own standard output.
+  output of its command on to its own standard output. A second notice states how long each
+  test took, which for the test that builds an index is the time of the build.
 
 The same facts are added to the summary page of the job.
 
@@ -56,6 +57,7 @@ class Case:
     reason: str = ""
     line: int | None = None
     verdicts: list[str] = field(default_factory=list)
+    seconds: float = 0.0
 
 
 def escape_data(text: str) -> str:
@@ -129,6 +131,18 @@ def line_of_failure(text: str, file: str | None) -> int | None:
     return lines[-1] if lines else None
 
 
+def seconds_of(testcase: ET.Element) -> float:
+    try:
+        return float(testcase.get("time") or 0)
+    except ValueError:
+        return 0.0
+
+
+def duration(seconds: float) -> str:
+    whole = round(seconds)
+    return f"{whole // 60} min {whole % 60} s"
+
+
 def read_case(testcase: ET.Element, root: Path) -> Case:
     test_id, file = identify(testcase.get("classname") or "", testcase.get("name") or "", root)
     problems = [child for child in testcase if child.tag in ("failure", "error")]
@@ -163,6 +177,7 @@ def read_case(testcase: ET.Element, root: Path) -> Case:
         reason=keep_end("\n\n".join(reasons), DETAIL_LIMIT),
         line=line,
         verdicts=verdicts,
+        seconds=seconds_of(testcase),
     )
 
 
@@ -266,6 +281,16 @@ def main(arguments: list[str]) -> int:
                 "No verdict line of a command was found in the output captured for these tests.",
                 title=f"{name}: verdict lines",
             )
+
+        emit(
+            "notice",
+            listing(
+                [f"{duration(case.seconds)}  [{case.test_id}, {case.status}]" for case in cases],
+                LIST_LIMIT,
+            )
+            or "The report holds no test.",
+            title=f"{name}: how long each test took",
+        )
 
     write_job_summary(name, counts, failed, verdicts)
     return 0
