@@ -35,7 +35,7 @@ allowed=""
 while IFS= read -r line; do
   [ -n "${line}" ] || continue
   if [ "${allow_new_build_record}" = true ] && [[ "${line}" =~ ${new_build_record} ]]; then
-    echo "::warning title=new build record::${BASH_REMATCH[1]} is new: this run built an index. This workflow does not record an index yet, so the index exists only in the database of this job."
+    echo "::notice title=new build record::${BASH_REMATCH[1]} is new: this run built that index."
     allowed="yes"
     continue
   fi
