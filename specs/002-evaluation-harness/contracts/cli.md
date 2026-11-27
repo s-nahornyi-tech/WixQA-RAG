@@ -411,6 +411,8 @@ The identifiers under `left out:`, `gained:` and `lost:` are in the order of the
 | The comparison was made | as above | `run compare: done` | 0 |
 | A record does not pass its check | `reason: the run check failed for <ID>` | `run compare: refused` | 2 |
 | The runs are on different question sets | `reason: the runs are on different question sets: <V> and <W>` | `run compare: refused` | 2 |
-| The runs are on one version with different fingerprints | `reason: the runs are on different records of the question set <V>: <fingerprint> and <fingerprint>` | `run compare: refused` | 2 |
+| The runs are on one version, and the record of the set changed between the checks of the two runs | `reason: the runs are on different records of the question set <V>: <fingerprint> and <fingerprint>` | `run compare: refused` | 2 |
 | A run does not exist, or `ID` is not a run identifier | `reason: run <ID> does not exist in <runs directory>` | `run compare: not carried out` | 2 |
 | Any other error | `reason: …` | `run compare: not carried out` | 2 |
+
+A run whose config records another fingerprint than the record of its question set does not pass its check (data-model.md, difference 4). Its comparison is refused by the first row, with `reason: the run check failed for <ID>`; `run check --run <ID>` names both fingerprints (FR-029, as the owner decided on 2026-11-27).
