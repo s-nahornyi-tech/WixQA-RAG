@@ -125,7 +125,7 @@ Cycle for one spec:
 - Vector store: PostgreSQL with the pgvector extension.
 - Python tooling: Python 3.14; uv manages the environment and the dependencies, and `uv.lock` is the lock file; tests run with pytest; CI runs on GitHub Actions.
 - Where the commands run (owner's decision of 2026-11-24): every command that needs the dataset host or the embedding provider runs on GitHub Actions, started by hand, with the provider key stored as a repository secret.
-- Golden set (owner's decision of 2026-11-26): all questions of the two parts `wixqa_expertwritten` and `wixqa_simulated`, 200 + 200 = 400 questions. The part `wixqa_synthetic` is not in it and may become a separate set later.
+- Question sets (owner's decision of 2026-11-27, which replaces the composition decided on 2026-11-26). The golden set, on which decisions are taken: 100 questions of `wixqa_expertwritten` and 100 of `wixqa_simulated`, drawn at random with a recorded seed. The held-out set: the other 100 + 100 questions of the same two parts. The synthetic held-out set: 300 questions of `wixqa_synthetic`, drawn at random with a recorded seed, reported on its own. A held-out set is used rarely, at the baseline and at milestones the owner names, and never to choose a setting; the reason is that a system tuned on one set of questions can become fitted to it.
 - Lessons from another project are collected in the owner's private notes (`personal-notes/`, kept out of the repository).
 
 ### Open
@@ -145,6 +145,7 @@ The owner decides. Answers move to "Decided".
 
 - **Gold article** — an article listed in a question's `article_ids`.
 - **Golden set** — the fixed list of questions on which all pipeline versions are compared.
+- **Held-out set** — a fixed list of questions kept apart from the golden set: used rarely, and never to choose a setting.
 - **Run** — one execution of the pipeline on the golden set, with config and results recorded.
 - **Run registry** — where all runs are stored; the source of numbers for specs.
 - **Baseline** — the first full run of the end-to-end skeleton; the reference point for thresholds.
