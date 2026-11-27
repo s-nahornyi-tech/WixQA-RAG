@@ -376,6 +376,173 @@ def test_median_and_percentile_95_are_none_for_no_value():
     assert metrics.percentile_95([]) is None
 
 
+# --- Exact arithmetic (FR-017; research.md, section 7; review finding A3) ----------------------
+
+
+@pytest.mark.parametrize(
+    ("values", "median"),
+    [
+        ([0.1, 0.2], 0.15),
+        ([0.2, 0.1], 0.15),
+        ([0.1, 0.7], 0.4),
+        ([0.3, 0.6], 0.45),
+        ([1.1, 1.3], 1.2),
+        ([0.05, 0.1, 0.2, 9.0], 0.15),
+    ],
+)
+def test_the_median_of_an_even_number_of_values_is_their_exact_mean(values, median):
+    """research.md, section 7: "A median of an even number of latencies is the exact mean of
+    the two middle values", with every number read as the decimal number that its JSON text
+    states: 0.1 is 1/10 and 0.2 is 2/10, so their mean is 0.15. Neither the sum in
+    floating-point numbers nor the exact mean of the two binary values gives that number."""
+    assert (values[-2] + values[-1]) / 2 != median or len(values) > 2, (
+        "the case tells exact arithmetic from floating point"
+    )
+
+    found = load_metrics().median(values)
+
+    assert float(found) == median
+    assert repr(float(found)) == repr(median)
+
+
+def test_a_number_is_read_as_the_decimal_number_that_its_text_states():
+    """research.md, section 7: "A price is read as the decimal number that the JSON text
+    states (`0.02` is 2/100)", not as the binary value of the floating-point number, which
+    is a little more or less. One token at 0.1 costs exactly 1e-07; from the binary value
+    of 0.1 the result is 1.0000000000000001e-07. Eleven tokens at 0.3 cost 3.3e-06; from the
+    binary value, 3.2999999999999997e-06."""
+    metrics = load_metrics()
+
+    def prices(input_price: float, output_price: float) -> list[dict]:
+        return [
+            {
+                "model": "example-model",
+                "usd_per_million_input_tokens": input_price,
+                "usd_per_million_output_tokens": output_price,
+            }
+        ]
+
+    assert float(Fraction(0.1) / 1_000_000) != 1e-07, "the case tells the two readings apart"
+    assert metrics.entry_cost([tokens(1, 0)], prices(0.1, 0.0)) == 1e-07
+    assert float(Fraction(0.3) * 11 / 1_000_000) != 3.3e-06
+    assert metrics.entry_cost([tokens(0, 11)], prices(0.0, 0.3)) == 3.3e-06
+    assert metrics.entry_cost([tokens(17, 0)], prices(0.02, 0.0)) == 3.4e-07
+    assert metrics.entry_cost([tokens(5, 11)], prices(1.1, 0.7)) == float(
+        Fraction(55 + 77, 10_000_000)
+    )
+
+
+def gold_of(number: int) -> list[str]:
+    return [f"a-{place}" for place in range(1, number + 1)]
+
+
+@pytest.mark.parametrize(
+    ("gold", "found", "questions", "mean"),
+    [
+        # Three shares of 1/10: in floating-point numbers their sum is 0.30000000000000004.
+        (10, 1, 3, 0.1),
+        # Three shares of 1/3, and ten shares of 1/10, which add up to exactly 1.
+        (3, 1, 3, float(Fraction(1, 3))),
+        (10, 1, 10, 0.1),
+        # Seven shares of 3/10: 2.1 in all, exactly.
+        (10, 3, 7, 0.3),
+        (3, 2, 6, float(Fraction(2, 3))),
+    ],
+)
+def test_a_mean_of_shares_is_the_exact_sum_divided_by_the_number(gold, found, questions, mean):
+    """research.md, section 7: "`share_found` of a question is a fraction of two whole
+    numbers. A mean is the exact sum of the fractions divided by their number", turned into a
+    floating-point number once. The mean of equal shares is that share, whatever their
+    number; a sum of floating-point numbers does not always give it."""
+    pairs = [(f"q-{number:03d}", gold_of(gold)) for number in range(1, questions + 1)]
+    entries = [entry(question, "answered", gold_of(found), gold_of(found)) for question, _ in pairs]
+
+    numbers = load_metrics().summarize(pairs, entries, PRICES)
+
+    for name in ("generation_list", "retrieved_list"):
+        of_list = numbers["breakdowns"]["all"][name]
+        assert of_list["questions"] == questions
+        assert of_list["mean_share_found"] == mean, name
+        assert repr(of_list["mean_share_found"]) == repr(mean), name
+
+
+def test_the_floating_point_sum_of_three_tenths_is_not_three_tenths():
+    """The ground of the first case above: it does tell the two ways of adding apart."""
+    assert (0.1 + 0.1 + 0.1) / 3 != 0.1
+    assert float(Fraction(3, 10) / 3) == 0.1
+
+
+def test_a_mean_does_not_depend_on_the_order_of_the_questions():
+    """research.md, section 7: "Sums of floating-point numbers depend on the order of the
+    additions; exact fractions do not". The same questions in two orders have the same mean,
+    total cost and cost per question."""
+    metrics = load_metrics()
+    shares = [(10, 1), (3, 1), (7, 3), (10, 7), (3, 2), (9, 4), (6, 1)]
+    pairs, entries = [], []
+    for number, (gold, found) in enumerate(shares, 1):
+        pairs.append((f"q-{number:03d}", gold_of(gold)))
+        row = entry(pairs[-1][0], "answered", gold_of(found), gold_of(found))
+        row["tokens"] = [tokens(100 * number + 1, 7 * number)]
+        entries.append(row)
+
+    forwards = metrics.summarize(pairs, entries, PRICES)["breakdowns"]["all"]
+    backwards = metrics.summarize(pairs[::-1], entries[::-1], PRICES)["breakdowns"]["all"]
+
+    exact = sum(Fraction(found, gold) for gold, found in shares) / len(shares)
+    assert forwards["generation_list"]["mean_share_found"] == float(exact)
+    assert backwards["generation_list"] == forwards["generation_list"]
+    assert backwards["cost_usd"] == forwards["cost_usd"]
+
+
+@pytest.mark.parametrize(
+    ("gold", "kind"),
+    [
+        (["a", "a"], "single_article"),
+        (["a", "a", "a"], "single_article"),
+        (["a", "b", "a"], "multi_article"),
+        (("a", "a"), "single_article"),
+    ],
+)
+def test_kind_of_counts_a_gold_article_that_is_given_twice_once(gold, kind):
+    """spec.md, "Edge Cases": "What happens when a question names the same gold article
+    twice? The article counts once". data-model.md: single-article means "exactly one
+    distinct gold article id". contracts/harness.md shows `gold` as a set and does not say
+    that it must be one; a question set gives the ids as a list, repeats kept. Given such a
+    list directly, the function counts the distinct ids."""
+    assert load_metrics().kind_of(gold) == kind
+
+
+@pytest.mark.parametrize(
+    ("gold", "items", "share", "flag"),
+    [
+        (["a", "a"], ["a"], Fraction(1), 1),
+        (["a", "a"], ["b"], Fraction(0), 0),
+        (["a", "b", "a"], ["a"], Fraction(1, 2), 0),
+        (["a", "b", "a"], ["b", "a", "b"], Fraction(1), 1),
+        (["a", "a"], [], Fraction(0), 0),
+    ],
+)
+def test_the_share_counts_a_gold_article_that_is_given_twice_once(gold, items, share, flag):
+    """The same for `share_found` and `all_found`: data-model.md, "The numbers, defined":
+    "*G* is the set of its distinct gold article ids", and the share is divided "by the
+    number of ids in *G*". A gold id that is given twice is one gold article: found once, it
+    is found."""
+    metrics = load_metrics()
+
+    assert metrics.share_found(gold, items) == share
+    assert metrics.all_found(gold, items) == flag
+    assert gold == list(gold), "the gold ids are left as they were"
+
+
+def test_a_question_without_a_gold_article_given_as_an_empty_list():
+    """The same reading for no gold article: an empty list is a question without one."""
+    metrics = load_metrics()
+
+    assert metrics.kind_of([]) is None
+    assert metrics.share_found([], ["a"]) is None
+    assert metrics.all_found([], ["a"]) is None
+
+
 # --- `summarize` on the four example runs (FR-012 to FR-017) -----------------------------------
 
 

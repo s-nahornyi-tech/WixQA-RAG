@@ -921,6 +921,82 @@ def test_the_time_of_the_audit_is_not_compared(registry_copy, differences):
     assert differences(RUN_A) == []
 
 
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda audit: audit.update(missing_from_index=["hx-006"]),
+        lambda audit: audit.update(not_in_corpus=["hx-999"]),
+        lambda audit: audit.update(
+            unknown_references=[{"question": "hxb-002", "article_id": "hx-006"}]
+        ),
+        lambda audit: audit.update(missing_from_index=["hx-006"], articles_in_index=5),
+        lambda audit: audit.update(
+            missing_from_index=["hx-006"],
+            articles_in_index=5,
+            unknown_references=[
+                {"question": "hxb-002", "article_id": "hx-006"},
+                {"question": "hxb-003", "article_id": "hx-006"},
+            ],
+        ),
+    ],
+    ids=[
+        "an article missing from the index",
+        "an article that is not in the corpus",
+        "an unknown question reference",
+        "an article missing, with the count of the index to match",
+        "the whole result of a failed audit under the outcome passed",
+    ],
+)
+def test_difference_10_an_audit_that_says_passed_and_lists_a_difference(
+    registry_copy, differences, change
+):
+    """data-model.md, difference 10: the audit result is "a result of spec 1's form" whose
+    "outcome is `passed`" (FR-021: "the result that spec 1 defines ... with the outcome
+    passed"). specs/001-corpus-and-audit/data-model.md, "Audit result": the outcome is
+    "`passed` when the three lists are empty, otherwise `failed`". A result that states
+    `passed` and holds an entry in `missing_from_index`, `not_in_corpus` or
+    `unknown_references` is not a passed audit result of that form, whatever its `outcome`
+    field says (Principle I)."""
+    registry_copy.change_summary(RUN_A, lambda document: change(document["audit"]))
+
+    found = differences(RUN_A)
+
+    assert naming(found, "audit"), found
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("articles_in_index", 5), ("articles_in_index", 7), ("articles_in_corpus", 5)],
+    ids=["fewer articles in the index", "more articles in the index", "fewer in the corpus"],
+)
+def test_difference_10_a_passed_audit_whose_two_counts_of_articles_differ(
+    registry_copy, differences, field, value
+):
+    """specs/001-corpus-and-audit/contracts/records.md, "Audit result": `articles_in_corpus`
+    is "the number of distinct article ids in the corpus part" and `articles_in_index` "the
+    number of distinct article ids in the index"; `missing_from_index` and `not_in_corpus`
+    are the ids of the one and not of the other. With both lists empty, as a passed audit
+    has them, the corpus and the index hold the same ids, so the two numbers are equal. No
+    document states this as a rule of its own; it follows from the definitions. A result
+    that states `passed`, two empty lists and two different numbers contradicts itself."""
+    registry_copy.change_summary(RUN_A, lambda document: document["audit"].update({field: value}))
+
+    found = differences(RUN_A)
+
+    assert naming(found, "audit"), found
+
+
+def test_the_audit_of_a_sound_record_has_three_empty_lists_and_equal_counts(registry_copy):
+    """The counterpart: the four sound records state `passed` with three empty lists and six
+    articles in the corpus and in the index, and they pass (see "Records that pass")."""
+    for run in SOUND:
+        audit = registry_copy.summary(run)["audit"]
+        assert audit["outcome"] == "passed"
+        assert audit["missing_from_index"] == audit["not_in_corpus"] == []
+        assert audit["unknown_references"] == []
+        assert audit["articles_in_corpus"] == audit["articles_in_index"] == 6
+
+
 # --- Difference 11: the summary names the run -----------------------------------------------------
 
 
@@ -1137,6 +1213,99 @@ def test_difference_12_questions_without_gold_articles_that_the_set_does_not_hav
     assert len(differences(RUN_A)) == 1
 
 
+# --- Difference 2 again: a whole number is written as a whole number (review finding A6) ---------
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda d: d.update(questions=8.0),
+        lambda d: d.update(questions_without_gold_articles=0.0),
+        lambda d: d["breakdowns"]["all"].update(questions=8.0),
+        lambda d: d["breakdowns"]["multi_article"].update(questions=4.0),
+        lambda d: d["breakdowns"]["all"]["status"].update(answered=4.0),
+        lambda d: d["breakdowns"]["single_article"]["status"].update(timeout=0.0),
+        lambda d: d["breakdowns"]["all"]["generation_list"].update(questions=6.0),
+        lambda d: d["breakdowns"]["all"]["generation_list"].update(all_found=2.0),
+        lambda d: d["breakdowns"]["multi_article"]["retrieved_list"].update(all_found=3.0),
+        lambda d: d["audit"]["question_set"].update(questions=8.0),
+    ],
+    ids=[
+        "the questions of the summary",
+        "the questions without gold articles",
+        "the questions of all",
+        "the questions of a breakdown",
+        "the count of a status",
+        "a count of 0 of a status",
+        "the questions of a list",
+        "all_found of the generation list",
+        "all_found of the retrieved list",
+        "the questions of the audit result",
+    ],
+)
+def test_difference_2_a_count_of_the_summary_that_is_not_a_whole_number(
+    registry_copy, differences, change
+):
+    """data-model.md, difference 2: a field "has the wrong type"; "Summary" and "One
+    breakdown": `questions`, the count of each status, `all_found` and
+    `questions_without_gold_articles` have the type integer. `8.0` is a number with a
+    fraction part in its text, not a whole number, although it is equal to 8: the summary is
+    compared with what `runs.summary_document` gives, and that gives `8`."""
+    registry_copy.change_summary(RUN_A, change)
+    text = registry_copy.file(RUN_A, "summary.json").read_text(encoding="utf-8")
+    assert ".0\n" in text or ".0," in text, "the file holds the count with a fraction part"
+
+    assert differences(RUN_A), "a count that is written as 8.0 is a difference"
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda rows: rows[0]["tokens"][0].update(input_tokens=1000.0),
+        lambda rows: rows[0]["tokens"][0].update(output_tokens=100.0),
+    ],
+    ids=["the input tokens", "the output tokens"],
+)
+def test_difference_2_a_token_count_that_is_not_a_whole_number(registry_copy, differences, change):
+    """data-model.md, `tokens`: "`input_tokens`, `output_tokens`, whole numbers of 0 or
+    more". `1000.0` is not written as a whole number."""
+    registry_copy.change_entries(RUN_A, change)
+
+    assert naming(differences(RUN_A), "hxa-001"), differences(RUN_A)
+
+
+@pytest.mark.parametrize(
+    ("change", "field"),
+    [
+        (lambda config: config.update(concurrency=1.0), "concurrency"),
+        (lambda config: config["limits"].update(max_calls=4.0), "max_calls"),
+    ],
+)
+def test_difference_2_a_whole_number_of_the_config_that_is_not_one(
+    registry_copy, differences, change, field
+):
+    """data-model.md, "Identity and config": `concurrency` is an integer of at least 1, and
+    `max_calls` a "whole number of at least 1". `timeout_seconds` is a number and may be
+    written `20.0`."""
+    registry_copy.change_run(RUN_C, lambda document: change(document["config"]))
+
+    assert naming(differences(RUN_C), field), differences(RUN_C)
+
+
+def test_a_number_that_need_not_be_whole_may_be_written_either_way(registry_copy, differences):
+    """The counterpart: `timeout_seconds` is a "number above 0", so `20.0` is as good as
+    `20`; a latency of `1` is a number of 0 or more."""
+    registry_copy.change_run(
+        RUN_C, lambda document: document["config"]["limits"].update(timeout_seconds=20.0)
+    )
+    registry_copy.change_run(
+        RUN_D, lambda document: document["config"]["limits"].update(timeout_seconds=20.0)
+    )
+
+    assert differences(RUN_C) == []
+    assert differences(RUN_D) == []
+
+
 # --- Differences 13 to 16: an experiment run ------------------------------------------------------
 
 
@@ -1172,14 +1341,58 @@ def test_difference_13_a_baseline_whose_own_record_does_not_pass(registry_copy, 
 
 def test_difference_14_a_baseline_on_another_question_set(registry_copy, differences):
     """data-model.md, difference 14: "the baseline is on another question set (version or
-    fingerprint)"; FR-023. `example-b` names `example-c`, which is on `harness-hxc`."""
+    fingerprint)"; FR-023. `example-b` names `example-c`, which is on `harness-hxc`.
+
+    contracts/cli.md, "`run check`", fixes the start of the line, `the baseline <run id> …`,
+    and its general rules say that a line names the version concerned. The words after the
+    run are not fixed, so the test reads: exactly one line about the question set of the
+    baseline, which starts as the contract says and names both versions. The line of
+    difference 16 for a second parameter starts otherwise and is not counted here."""
     registry_copy.change_run(
         RUN_B, lambda document: document["config"]["experiment"].update(baseline=RUN_C)
     )
 
     found = differences(RUN_B)
 
-    assert [text for text in found if text.startswith(f"the baseline {RUN_C} ")], found
+    about_the_set = [
+        text
+        for text in found
+        if text.startswith(f"the baseline {RUN_C} ")
+        and names(text, "harness-hxc")
+        and names(text, "harness")
+    ]
+    assert len(about_the_set) == 1, found
+    assert RUN_B not in about_the_set[0], "the line is about the baseline, named once"
+
+
+def test_difference_14_a_baseline_on_another_record_of_the_same_version(registry_copy, differences):
+    """data-model.md, difference 14: "(version or fingerprint)". The baseline `example-a`
+    records another fingerprint for `harness` than `example-b`, in its config, its summary
+    and its audit result. With one sets directory such a baseline also fails its own check
+    (difference 4), which is difference 13; difference 14 is reported next to it, in a line
+    of its own that starts `the baseline <run id> ` and names the version."""
+    other = "f" * 64
+    registry_copy.change_run(
+        RUN_A, lambda document: document["config"]["question_set"].update(fingerprint=other)
+    )
+
+    def change(document):
+        document["question_set"]["fingerprint"] = other
+        document["audit"]["question_set"]["fingerprint"] = other
+
+    registry_copy.change_summary(RUN_A, change)
+
+    found = differences(RUN_B)
+
+    about_the_baseline = [text for text in found if text.startswith(f"the baseline {RUN_A} ")]
+    assert len(about_the_baseline) == 2, found
+    assert len([text for text in about_the_baseline if names(text, "harness")]) == 1, (
+        f"one of the two lines is about the record of the question set `harness`: {found}"
+    )
+    assert not any("which is not the parameter the experiment names" in text for text in found), (
+        "the two configs differ in the one parameter only; the fingerprint is no parameter of "
+        f"an experiment: {found}"
+    )
 
 
 def test_difference_15_an_experiment_on_a_held_out_set_is_stated_once(registry_copy, differences):
