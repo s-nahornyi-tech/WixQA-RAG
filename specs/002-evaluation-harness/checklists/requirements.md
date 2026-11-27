@@ -37,7 +37,7 @@
 - The rule "a held-out set is never used to choose a setting" is only partly checkable by a program. The spec states the checkable part as requirements (FR-033 to FR-036) and names the rest, which only discipline keeps, under "What a program cannot check"; that paragraph is on purpose not a numbered requirement, because it cannot be tested.
 - The spec states no statistical threshold for the difference between two runs; it says that 200 working questions make a small difference harder to tell from chance.
 - The spec is written against the constitution in version 1.2.0, the amendment of 2026-11-27 that gives held-out sets their rules. The owner's answer of 2026-11-27 on the draw (plain, 100 per part, no balancing; a new version and never another seed as the remedy) is recorded under "Clarifications" and in FR-005.
-- The spec is a draft until the owner approves it; the plan does not start before that.
+- The owner approved the spec on 2026-11-27.
 - "Acceptance Checks" names commands, files and exit codes by design (PROJECT.md, "Process", addition 3). The items about implementation details were applied to every other section. FR-022 names SHA-256 because the constitution defines the answer hash that way.
 - "User value and business needs" was read as the needs of the operator and of a reader who repeats the study: the study has no customers and operates no service (constitution, "Scope and Non-Goals").
 - Every user story, functional requirement and success criterion is covered by at least one acceptance check: 4 user stories, 36 functional requirements, 8 success criteria, 46 acceptance checks.

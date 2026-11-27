@@ -199,6 +199,7 @@ The 36 checks without a marker are AC-003 to AC-008, AC-012 to AC-036 and AC-042
 **Rationale**:
 
 - Spec 1 already has `test_ac_001_…` to `test_ac_014_…`; pytest cannot hold two test files of the same name in folders without packages. The prefix `s2` keeps the number of the check in the name.
+- The real-data tests and the two tests marked `provider` are shown red in the workspace, where they fail before the implementation because the commands do not exist; they are shown green by the scope that their markers name.
 - pytest runs the files of a folder in the order of their names, so in a `full` run the tests of spec 1 come first: the dataset is fetched (its AC-001) and the index `example` is built (its AC-005) before the tests of this feature need them. Within this feature the order of the names is the order that the first `full` run needs: AC-001 writes `golden-001` before AC-002 checks it and AC-009 audits with it, and AC-037 and AC-038 write the two held-out sets before AC-039 to AC-041 read them.
 - AC-010 and AC-011 build the index `example`; when a test of spec 1 has built it in the same run, nothing is embedded.
 
@@ -213,7 +214,7 @@ The 36 checks without a marker are AC-003 to AC-008, AC-012 to AC-036 and AC-042
 3. When every test passed and new question-set records exist, the job copies them to a folder outside the checkout, runs `set check` for each, publishes the result lines of each check (role, numbers per part, single-article and multi-article) as a notice, and saves the files as an artifact.
 4. A second job, the only one with the right to write to the repository, adds the files to the branch in one commit. It runs no code of the repository and never runs for `main`.
 
-No provider is called for any of this: the dataset host is read, and the index `wixqa-001` is restored from its snapshot for AC-009 and AC-041.
+Producing, checking and auditing the three records calls no provider: the dataset host is read, and the index `wixqa-001` is restored from its snapshot for AC-009 and AC-041. The run as a whole still embeds the example datasets of spec 1's tests, a few hundred tokens, as every run of `acceptance` does.
 
 **Rationale**: The owner decided on 2026-11-24 that commands which need the dataset host run on GitHub Actions. The records then have to travel from a job to the branch, and the index records of spec 1 already travel that way with a path that was reviewed and has run. Recording only after every test passed means that a record reaches the branch only when its check and its audit passed in the same run.
 

@@ -160,7 +160,7 @@ data/
 | `acceptance.yml`, scope `example` | When a person starts it | PostgreSQL and `OPENAI_API_KEY` | The same, and AC-010 and AC-011 |
 | `acceptance.yml`, scope `full` | When a person starts it | PostgreSQL, `OPENAI_API_KEY`, the dataset host | Every check: AC-001, AC-002 and AC-037 to AC-040 on the fetched dataset, AC-009 and AC-041 on the restored index `wixqa-001`. It records new question sets |
 
-**Cost.** Only AC-010 and AC-011 can reach the embedding provider, through `index build` of the example index of spec 1: five passages, a few hundred tokens, and nothing when a test of spec 1 has built that index earlier in the same run. No check of this feature embeds anything else. The index `wixqa-001` is restored from its snapshot and is not built again.
+**Cost.** Of the checks of this feature, only AC-010 and AC-011 can reach the embedding provider, through `index build` of the example index of spec 1: five passages, a few hundred tokens, and nothing when a test of spec 1 has built that index earlier in the same run. No check of this feature embeds anything else. Every run of `acceptance`, in either scope, also runs the tests of spec 1, which embed the example datasets: a few hundred tokens, less than one cent. The real corpus is not embedded again: in the scope `full` the index `wixqa-001` is restored from its snapshot, and `index build` reports it as already complete. A run that can call the provider starts only with the owner's go-ahead; one go-ahead covers the runs of this feature.
 
 ### What the DevOps agent builds
 
@@ -181,16 +181,16 @@ One pull request from the branch `002-evaluation-harness`, which already exists 
 
 1. **Setup** (coding agent, DevOps agent): `SETS_DIR` and `RUNS_DIR` in `settings.py`, the empty groups `set` and `run` in `cli.py`, `.gitattributes`, and the change of the acceptance workflow and of `check-worktree.sh`.
 2. **Example data** (testing agent): `tests/data/harness/`, the ten records of `tests/data/sets/`, the two registries. All of it is copied from data-model.md and contracts/records.md; unit tests check that the example data agrees with itself (fingerprints, hashes of answers, costs).
-3. **User Story 1, question sets**: the testing agent writes the tests of AC-003 to AC-008, AC-010, AC-011, AC-033 to AC-036, AC-044 and AC-045, the unit tests of the draw and of the record, and the integration tests of the audit with a set; a run shows them red. The coding agent implements `questionsets.py` and the additions to `audit.py` and `cli.py` until they are green in `checks` and in the scope `example`.
-4. **The real question sets, early**: the testing agent adds the tests of AC-001, AC-002, AC-009 and AC-037 to AC-041. The code review agent looks at the draw and at the record of a set. Then one run of the scope `full` produces the three records, checks them, audits the index with each, and adds them to the branch. The owner reads the numbers of single-article and multi-article questions of the golden set and of the held-out set.
+3. **User Story 1, question sets**: the testing agent writes the tests of all twenty-two checks of the story (AC-001 to AC-011, AC-033 to AC-041, AC-044 and AC-045), the unit tests of the draw and of the record, and the integration tests of the audit with a set; a run shows them red. The eight real-data tests and the two tests that need the provider are shown red in the workspace, where they fail because the commands do not exist; no run of `acceptance` is spent on that. The coding agent implements `questionsets.py` and the additions to `audit.py` and `cli.py` until the fourteen checks on example data are green in `checks` and in the scope `example`.
+4. **The real question sets, early**: the code review agent checks the draw, the record of a set and the workflow change, and its findings are closed, each fix with its test first. Then one run of the scope `full` produces the three records, checks them, audits the index with each, and adds them to the branch; the eight real-data tests are green for the first time. The owner reads the numbers of single-article and multi-article questions of the golden set and of the held-out set. The tests of the later stories are written only after this run, so that it holds no test that is red by design.
 5. **User Stories 2 and 3, the numbers and the record of a run**: the tests of AC-012 to AC-029, AC-042 and AC-043 and the unit tests of `metrics.py` and of the check, red; then `metrics.py`, the check of a record in `runs.py`, and the report, in this order, because a report is made only from a record that passes its check (FR-025).
 6. **User Story 4, the comparison**: the tests of AC-030 to AC-032 and AC-046, red; then the comparison.
-7. **Review** (code review agent): the whole diff against the spec and the constitution.
-8. **A last run of the scope `full`**: every check of the feature in one run. The three builds report the records as already written, which shows that the final code draws the same questions as the code of step 4.
-9. **Texts** (coding agent): the README's status line and its table, `evals/README.md`.
-10. **Merge**: the owner squash-merges. The description ends with `Spec: specs/002-evaluation-harness`, `Closes #11` and `Run: none`.
+7. **Texts** (coding agent): the README's table and `evals/README.md`. The README's status line and the sentence of quickstart.md on what has run are kept true at each stage, not only here.
+8. **Review** (code review agent): the whole diff against the spec and the constitution. Its findings are closed before the last run, each fix with its test first.
+9. **A last run of each scope**: `example`, then `full` with every check of the feature in one run. The three builds report the records as already written, which shows that the code as reviewed draws the same questions as the code of step 4. The run adds nothing to the branch.
+10. **Merge**: the description of the pull request is rewritten to what was built and found, and the pull request is marked ready. The owner squash-merges. The description ends with `Spec: specs/002-evaluation-harness`, `Closes #11` and `Run: none`.
 
-The tasks are in `tasks.md`, which the next Spec Kit step writes.
+The tasks are in [tasks.md](tasks.md).
 
 **Why the real question sets are produced early, and why that is safe.** The record of an index names the commit of the code, so spec 1 built its index last. A question-set record names no commit and no time: it depends on the dataset, the rule and the seed only, and that is a requirement (FR-004), not a convenience. Producing it early has three gains. The dataset's own facts, which no workspace can see, are known while there is time to act on them: how the single-article and multi-article questions fell into the two halves, and whether a question text repeats. The audit of Principle I for the three sets is done once before anything else is built on them. And the records are then checked again by every later `full` run. It is safe because the draw is covered before it is used: AC-034 passes only when the implementation selects exactly the questions that this plan computed by hand, and the code review agent has read the draw. If a later change altered the draw, AC-034 would fail in an agent's workspace, and the last `full` run would refuse to rebuild the recorded sets. Should the owner want another rule after seeing the numbers, the remedy is a new version by an amendment of the spec, never another seed; the first records have then been used by no run.
 
@@ -271,9 +271,9 @@ The spec is silent on the points below. The plan reads them as follows, in each 
 
 ## The owner's part
 
-1. Start a run when an agent cannot: the label `acceptance:full` on the pull request, once after User Story 1 and once at the end; the label `acceptance:example` when asked.
+1. Give the go-ahead, once, for the runs of `acceptance` of this feature: each embeds the example datasets, a few hundred tokens and less than one cent, and none embeds the real corpus. Start a run when an agent cannot: the label `acceptance:full` on the pull request, once after User Story 1 and once at the end; the label `acceptance:example` when asked.
 2. After the first of the two `full` runs: read the numbers of single-article and multi-article questions of the golden set and of the held-out set, which the run shows in a notice and the agents report. If the two halves look lopsided, say so. The remedy is then a new version with a balanced rule, by an amendment of the spec; never another seed. If nothing is said, the work goes on with `golden-001`.
-3. Merge the pull request.
+3. Merge the pull request by squash, with the title and the description of the pull request as the commit message.
 
 No new secret, no new account, nothing installed on the owner's computer. Expected spending: less than one cent, for the example index only.
 
