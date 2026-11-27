@@ -67,7 +67,9 @@ def kind_of(gold: Collection[str]) -> str | None:
 # --- Cost and latency ---------------------------------------------------------------------------
 
 
-def _exact_cost(tokens: Sequence[dict], prices: Sequence[dict]) -> Fraction:
+def exact_entry_cost(tokens: Sequence[dict], prices: Sequence[dict]) -> Fraction:
+    """The cost of one entry as an exact fraction, for a caller that compares it before it
+    is turned into a floating-point number. Raises `ValueError` for a model without a price."""
     by_model = {price["model"]: price for price in prices}
     cost = Fraction(0)
     for count in tokens:
@@ -82,7 +84,7 @@ def _exact_cost(tokens: Sequence[dict], prices: Sequence[dict]) -> Fraction:
 def entry_cost(tokens: Sequence[dict], prices: Sequence[dict]) -> float:
     """The cost of one entry: `tokens` and `prices` as the documents of `tokens` and of
     `config.prices`. Raises `ValueError` for a model without a price."""
-    return float(_exact_cost(tokens, prices))
+    return float(exact_entry_cost(tokens, prices))
 
 
 def _exact_median(values: Sequence[Fraction]) -> Fraction | None:
@@ -153,7 +155,7 @@ def _list_numbers(rows: Sequence[tuple[set[str], dict]], name: str) -> dict:
 
 def _breakdown(rows: Sequence[tuple[set[str], dict]], prices: Sequence[dict]) -> dict:
     number = len(rows)
-    total = sum((_exact_cost(entry["tokens"], prices) for _, entry in rows), Fraction(0))
+    total = sum((exact_entry_cost(entry["tokens"], prices) for _, entry in rows), Fraction(0))
     latencies = [entry["latency_seconds"] for _, entry in rows]
     return {
         "questions": number,

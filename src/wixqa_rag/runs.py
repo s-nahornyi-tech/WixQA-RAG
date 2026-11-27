@@ -14,6 +14,7 @@ no store, no provider and no setting (FR-031). No function changes a file.
 
 import hashlib
 import json
+import math
 import re
 from collections import Counter
 from collections.abc import Sequence
@@ -96,6 +97,8 @@ _BREAKDOWN = {
 }
 _LIST = {"generation_list": "generation list", "retrieved_list": "retrieved list"}
 _LIST_NUMBERS = ("questions", "mean_share_found", "all_found", "share_all_found")
+# The numbers of a breakdown that are counts: whole numbers.
+_COUNTS = ("questions", "all_found")
 
 
 # --- The run identifier -------------------------------------------------------------------------
@@ -239,6 +242,35 @@ def _is_whole(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _not_finite(text: str):
+    """`Infinity`, `-Infinity` and `NaN` are no JSON numbers, although `json` reads them."""
+    raise ValueError(f"{text} is not a JSON number")
+
+
+def _finite(text: str) -> float:
+    """A number with a fraction or an exponent; one too large for a floating-point number,
+    such as `1e999`, is no number of a record."""
+    number = float(text)
+    if not math.isfinite(number):
+        raise ValueError(f"{text} is too large for a number of a record")
+    return number
+
+
+def _parse(text: str) -> object:
+    """The JSON value of a text. Every number that it gives is a whole number or a finite
+    floating-point number, so no number of a record can be infinite or "not a number".
+    Raises `ValueError` for a text that is not such JSON."""
+    return json.loads(text, parse_constant=_not_finite, parse_float=_finite)
+
+
+def _exact_text(number) -> str:
+    """An exact number as a line states it."""
+    try:
+        return str(number)
+    except ValueError:
+        return "a number too large to write"
+
+
 def _read_text(file: Path, differences: list[str]) -> str | None:
     """The text of one of the three files, or None with difference 1."""
     if not file.is_file():
@@ -257,7 +289,7 @@ def _read_object(file: Path, differences: list[str]) -> dict | None:
     if text is None:
         return None
     try:
-        document = json.loads(text)
+        document = _parse(text)
     except ValueError:
         differences.append(f"{file.name} is not JSON")
         return None
@@ -277,7 +309,7 @@ def _read_entries(file: Path, differences: list[str]) -> tuple[list[dict], bool]
         if not line.strip():
             continue
         try:
-            entry = json.loads(line)
+            entry = _parse(line)
         except ValueError:
             entry = None
         if isinstance(entry, dict):
@@ -539,12 +571,22 @@ def _differences_of_an_entry(
     if "cost_usd" in entry and not _is_number(entry["cost_usd"]):
         found.append(f"{question} has a cost_usd that is not a number")
     elif "cost_usd" in entry and "tokens" in entry and not of_tokens and prices is not None:
-        computed = metrics.entry_cost(entry["tokens"], prices)
-        if entry["cost_usd"] != computed:
+        # The comparison is exact where the cost is too large for a floating-point number.
+        exact = metrics.exact_entry_cost(entry["tokens"], prices)
+        try:
+            computed = float(exact)
+        except OverflowError:
             found.append(
                 f"{question} has cost_usd {_show(entry['cost_usd'])}, "
-                f"its tokens and the prices give {_show(computed)}"
+                f"its tokens and the prices give {_exact_text(exact)}"
             )
+            usable = False
+        else:
+            if entry["cost_usd"] != computed:
+                found.append(
+                    f"{question} has cost_usd {_show(entry['cost_usd'])}, "
+                    f"its tokens and the prices give {_show(computed)}"
+                )
     if "latency_seconds" in entry and not (
         _is_number(entry["latency_seconds"]) and entry["latency_seconds"] >= 0
     ):
@@ -583,6 +625,20 @@ def _differences_of_the_audit(
     if "outcome" in audit and audit["outcome"] != "passed":
         found.append(f"the audit result has the outcome {_show(audit['outcome'])}, not passed")
 
+    # A passed audit has three empty lists, and so as many articles in the index as in the
+    # corpus (spec 1's data-model.md, "Audit result").
+    if audit.get("outcome") == "passed":
+        found.extend(
+            f"the audit result has the outcome passed and {len(audit[field])} entries in {field}"
+            for field in ("missing_from_index", "not_in_corpus", "unknown_references")
+            if isinstance(audit.get(field), list) and audit[field]
+        )
+        in_corpus, in_index = audit.get("articles_in_corpus"), audit.get("articles_in_index")
+        if "articles_in_corpus" in audit and "articles_in_index" in audit and in_corpus != in_index:
+            found.append(
+                f"the audit result has the outcome passed with {_show(in_corpus)} articles in "
+                f"the corpus and {_show(in_index)} in the index"
+            )
     if config is not None:
         if "index" in audit and "index" in config and audit["index"] != config["index"]:
             found.append(
@@ -608,7 +664,12 @@ def _differences_of_the_audit(
                 for key in ("version", "fingerprint")
                 if key in of_config and named[key] != of_config[key]
             )
-        if question_set is not None and named["questions"] != len(question_set.questions):
+        if not _is_whole(named["questions"]):
+            found.append(
+                f"the audit result states questions {_show(named['questions'])}, "
+                "which is not a whole number"
+            )
+        elif question_set is not None and named["questions"] != len(question_set.questions):
             found.append(
                 f"the audit result is of {_show(named['questions'])} questions, "
                 f"the question set holds {len(question_set.questions)}"
@@ -697,7 +758,8 @@ def _differences_of_a_breakdown(name: str, stated: object, computed: dict | None
     found = []
 
     def compare(path: tuple[str, ...], line) -> None:
-        """One number: absent, of a wrong kind, or another number than the results give."""
+        """One number: absent, of a wrong kind, or another number than the results give. A
+        count is a whole number: `8.0` is not one, although it is equal to 8."""
         value, given = stated, computed
         for key in path:
             if not isinstance(value, dict) or key not in value:
@@ -705,6 +767,12 @@ def _differences_of_a_breakdown(name: str, stated: object, computed: dict | None
                 return
             value = value[key]
             given = None if given is None else given[key]
+        if path[-1] in _COUNTS or path[0] == "status":
+            if not _is_whole(value):
+                found.append(
+                    f"{SUMMARY_FILE}: breakdowns.{name}.{'.'.join(path)} is not a whole number"
+                )
+                return
         if value is not None and not _is_number(value):
             found.append(f"{SUMMARY_FILE}: breakdowns.{name}.{'.'.join(path)} is not a number")
         elif computed is not None and (value != given or (value is None) != (given is None)):
@@ -907,9 +975,15 @@ def _examine(
         if usable and question_set is not None and run_document is not None and prices is not None:
             unique = len({price["model"] for price in prices}) == len(prices)
             if unique and "run_id" in run_document:
-                computed = summary_document(
-                    run_document, question_set, entries, summary.get("audit")
-                )
+                try:
+                    computed = summary_document(
+                        run_document, question_set, entries, summary.get("audit")
+                    )
+                except OverflowError:
+                    differences.append(
+                        "the numbers of the summary cannot be computed from the results: "
+                        "a number of the results is too large for a floating-point number"
+                    )
         differences.extend(
             _differences_of_the_summary(summary, run_document, question_set, computed)
         )
