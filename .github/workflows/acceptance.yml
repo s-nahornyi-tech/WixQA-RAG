@@ -15,7 +15,16 @@
 # is audited, dumped and recorded: a release holds the dump, and one commit adds the three record
 # files to the branch the run was started for. Nothing is recorded for main.
 #
-# Reasons for each choice: specs/001-corpus-and-audit/research.md, sections 3, 4, 6 and 7.
+# Scope "full" also records question sets. The real-data tests produce the question sets of the
+# study from the published dataset, which calls no provider; a set that is already in the checkout
+# is found written, and nothing new appears. When every step succeeded and new files
+# evals/golden/<version>.json exist, each is checked with "set check", the lines of the check are
+# published, and one commit adds the records to the branch, after the commit of an index record
+# when there is one. Nothing is recorded when a step failed: a question set costs nothing to
+# produce, and the next run produces it again. Nothing is recorded for main.
+#
+# Reasons for each choice: specs/001-corpus-and-audit/research.md, sections 3, 4, 6 and 7, and
+# specs/002-evaluation-harness/research.md, sections 13 and 14.
 # Every action is pinned to a full commit, and the image to a tag and a digest.
 
 name: acceptance
@@ -71,6 +80,12 @@ jobs:
     outputs:
       index: ${{ steps.prepared.outputs.index }}
       commit: ${{ steps.prepared.outputs.commit }}
+      # Set only when this run produced new question sets, every step succeeded and the records
+      # were handed over; the job "record the question sets" starts only then. The versions and
+      # the SHA-256 of each record, in the same order, separated by spaces.
+      question_sets: ${{ steps.prepared_sets.outputs.versions }}
+      question_set_sums: ${{ steps.prepared_sets.outputs.sums }}
+      question_sets_commit: ${{ steps.prepared_sets.outputs.commit }}
 
     services:
       # PostgreSQL 18 with pgvector 0.8.7. It accepts connections without a password, is reachable
@@ -225,15 +240,17 @@ jobs:
           --verdicts
           "${RUNNER_TEMP}/junit-real-data.xml"
 
-      # In the scope "full" one file may appear: the build record of a newly built index,
-      # evals/indexes/<index>/build.json.
+      # In the scope "full" two kinds of file may appear: the build record of a newly built index,
+      # evals/indexes/<index>/build.json, and the records of newly produced question sets,
+      # evals/golden/<version>.json. A file of either folder that existed and was changed is
+      # still reported.
       - name: No file added or changed by the tests
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         env:
           SCOPE: ${{ steps.scope.outputs.scope }}
         run: |
           if [ "${SCOPE}" = "full" ]; then
-            bash .github/scripts/check-worktree.sh --allow-new-build-record
+            bash .github/scripts/check-worktree.sh --allow-new-build-record --allow-new-question-sets
           else
             bash .github/scripts/check-worktree.sh
           fi
@@ -377,10 +394,161 @@ jobs:
           echo "index=${INDEX}" >> "${GITHUB_OUTPUT}"
           echo "commit=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
 
+      # Scope "full": were question sets produced in this run? New, untracked files
+      # evals/golden/<version>.json say so. The version has the form of an index identifier and
+      # at most 40 characters; a new .json file of that folder with any other name is an error,
+      # and nothing is recorded. The step runs whenever the installation worked, so that every
+      # run of the scope says what it found.
+      - name: Look for new question sets
+        id: new_sets
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.scope.outputs.scope == 'full' }}
+        run: |
+          any_record='^\?\? "?(evals/golden/[^/]*\.json)"?$'
+          valid_record='^\?\? evals/golden/([a-z0-9]+(-[a-z0-9]+)*)\.json$'
+          versions=""
+          invalid=""
+          while IFS= read -r line; do
+            [[ "${line}" =~ ${any_record} ]] || continue
+            file="${BASH_REMATCH[1]}"
+            if [[ "${line}" =~ ${valid_record} ]] && [ "${#BASH_REMATCH[1]}" -le 40 ]; then
+              versions+="${versions:+ }${BASH_REMATCH[1]}"
+            else
+              invalid+="${invalid:+, }${file}"
+            fi
+          done <<< "$(git status --porcelain --untracked-files=all -- evals/golden)"
+          if [ -n "${invalid}" ]; then
+            echo "::error title=record of the question sets::New in evals/golden/ and not named by a valid version of a question set: ${invalid}. Nothing is recorded."
+            exit 1
+          fi
+          if [ -z "${versions}" ]; then
+            echo "::notice title=record of the question sets::No question set was produced in this run, so there is nothing to check or to record."
+            exit 0
+          fi
+          echo "New question sets: ${versions}"
+          echo "versions=${versions}" >> "${GITHUB_OUTPUT}"
+
+      # Only when every step above succeeded: every test, and for a new index its audit and its
+      # dump. The records are copied to a folder outside the checkout, and each is checked
+      # against the dataset with "set check". The lines of each check, among them the numbers of
+      # single-article and multi-article questions, become a notice and a part of the summary
+      # page; a check that does not pass becomes an error, and the step fails after every set
+      # was checked. The command reads no setting, and the step receives no secret.
+      - name: Check the new question sets
+        id: checked_sets
+        if: ${{ success() && steps.new_sets.outputs.versions != '' }}
+        env:
+          VERSIONS: ${{ steps.new_sets.outputs.versions }}
+        run: |
+          folder="${RUNNER_TEMP}/question-sets"
+          outputs="${RUNNER_TEMP}/question-set-checks"
+          mkdir -p "${folder}" "${outputs}"
+          for version in ${VERSIONS}; do
+            cp "evals/golden/${version}.json" "${folder}/${version}.json"
+          done
+
+          # One annotation per check; a line break inside a workflow command is written as %0A.
+          annotate() {
+            local message="$3"
+            message="${message//'%'/%25}"
+            message="${message//$'\r'/%0D}"
+            message="${message//$'\n'/%0A}"
+            echo "::$1 title=$2::${message}"
+          }
+
+          failed=""
+          sums=""
+          for version in ${VERSIONS}; do
+            result="${outputs}/${version}.txt"
+            code=0
+            uv run python -m wixqa_rag set check --version "${version}" > "${result}" || code="$?"
+            cat "${result}"
+            verdict="$(tail -n 1 "${result}")"
+            if [ "${code}" -eq 0 ] && [ "${verdict}" = "set check: passed" ]; then
+              annotate notice "check of the question set ${version}" "$(cat "${result}")"
+            else
+              # The report and the first twenty lines that name a difference or a reason.
+              report="$(grep --invert-match -E '^(difference|reason): ' "${result}" || true)"
+              named="$(grep -E '^(difference|reason): ' "${result}" || true)"
+              count="$(grep --count -E '^(difference|reason): ' "${result}" || true)"
+              message="exit code ${code}"$'\n'"${report:-The command printed no result line; what it wrote as an error is in the log of this step.}"
+              if [ "${count}" -gt 0 ]; then
+                message+=$'\n'"$(head -n 20 <<< "${named}")"
+              fi
+              if [ "${count}" -gt 20 ]; then
+                message+=$'\n'"... and $(( count - 20 )) more; every line is in the log of this step"
+              fi
+              annotate error "check of the question set ${version}" "${message}"
+              failed+="${failed:+, }${version}"
+            fi
+            {
+              echo "### Check of the question set ${version}"
+              echo
+              echo '```text'
+              cat "${result}"
+              echo '```'
+              echo
+            } >> "${GITHUB_STEP_SUMMARY}"
+            if ! cmp --silent "evals/golden/${version}.json" "${folder}/${version}.json"; then
+              annotate error "check of the question set ${version}" "evals/golden/${version}.json changed while it was checked. Nothing is recorded."
+              failed+="${failed:+, }${version}"
+            fi
+            sum="$(sha256sum "${folder}/${version}.json" | cut --delimiter=' ' --fields=1)"
+            echo "SHA-256 of ${version}.json: ${sum}"
+            sums+="${sums:+ }${sum}"
+          done
+
+          if [ -n "${failed}" ]; then
+            echo "::error title=record of the question sets::The check did not pass for: ${failed}. Nothing is recorded."
+            exit 1
+          fi
+          echo "sums=${sums}" >> "${GITHUB_OUTPUT}"
+
+      # The records as they were checked, for the job that adds them to the branch.
+      - name: Save the question-set records as an artifact
+        if: ${{ success() && steps.new_sets.outputs.versions != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: question-sets
+          path: ${{ runner.temp }}/question-sets/
+          retention-days: 7
+          if-no-files-found: error
+
+      # Question sets that were produced and are not going to be recorded: say so. Nothing has to
+      # be kept, because the same dataset, rule and seed give the same record again.
+      - name: Say that question sets are not recorded
+        if: ${{ failure() && steps.new_sets.outputs.versions != '' }}
+        env:
+          VERSIONS: ${{ steps.new_sets.outputs.versions }}
+        run: echo "::warning title=record of the question sets::This run produced the question sets ${VERSIONS} and does not record them, because a step failed. Nothing is lost - the next run produces them again."
+
+      # The records are handed over only when every step of this job succeeded: every test, every
+      # check of a new set and, when an index was built, its audit and its dump. Nothing is
+      # recorded for main, which changes only through pull requests: there the run stops here
+      # with a message.
+      - name: Hand the question sets over to be recorded
+        id: prepared_sets
+        if: ${{ success() && steps.new_sets.outputs.versions != '' }}
+        env:
+          VERSIONS: ${{ steps.new_sets.outputs.versions }}
+          SUMS: ${{ steps.checked_sets.outputs.sums }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "${BRANCH}" = "main" ] || { [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${REF_TYPE}" != "branch" ]; }; then
+            echo "::error title=record of the question sets::This run produced the question sets ${VERSIONS}, and they are not recorded: a record is added only to a branch other than main, because main changes only through pull requests. Produce a new question set on a branch; it reaches main through its pull request."
+            exit 1
+          fi
+          {
+            echo "versions=${VERSIONS}"
+            echo "sums=${SUMS}"
+            echo "commit=$(git rev-parse HEAD)"
+          } >> "${GITHUB_OUTPUT}"
+
   # Runs only when the tests passed and a new index was built and prepared. It creates the
-  # release with the dump and adds the three record files to the branch in one commit. It alone
-  # may write to the contents of the repository, and it runs no code of the repository: it
-  # copies files and calls git and gh. It never runs for main.
+  # release with the dump and adds the three record files to the branch in one commit. Only it
+  # and the job "record the question sets" may write to the contents of the repository, and it
+  # runs no code of the repository: it copies files and calls git and gh. It never runs for main.
   record-index:
     name: record the index
     needs: acceptance
@@ -465,12 +633,134 @@ jobs:
           fi
           echo "::notice title=record of an index::Commit $(git rev-parse HEAD) on ${BRANCH} adds build.json, audit.json and snapshot.json of the index ${INDEX}."
 
+  # Runs only when the job with the tests succeeded and handed new question sets over, and when
+  # the job "record the index" succeeded or had nothing to record: it comes after that job, so
+  # that two pushes never race. It adds the records to the branch in one commit. It alone, with
+  # the job "record the index", may write to the contents of the repository, and it runs no
+  # code of the repository: it copies files and calls git. It never runs for main.
+  record-question-sets:
+    name: record the question sets
+    needs: [acceptance, record-index]
+    if: >-
+      ${{ !cancelled()
+      && needs.acceptance.result == 'success'
+      && needs.acceptance.outputs.question_sets != ''
+      && (needs.record-index.result == 'success' || needs.record-index.result == 'skipped')
+      && (github.head_ref || github.ref_name) != 'main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      VERSIONS: ${{ needs.acceptance.outputs.question_sets }}
+      SUMS: ${{ needs.acceptance.outputs.question_set_sums }}
+      COMMIT: ${{ needs.acceptance.outputs.question_sets_commit }}
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      INDEX_RECORDED: ${{ needs.record-index.result == 'success' }}
+
+    steps:
+      - name: Fetch the question-set records
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: question-sets
+          path: ${{ runner.temp }}/question-sets
+
+      # The artifact has to hold exactly the records that were handed over, each with the bytes
+      # that were checked and with its own version inside.
+      - name: Compare the records with what was checked
+        run: |
+          folder="${RUNNER_TEMP}/question-sets"
+          stop() {
+            echo "::error title=record of the question sets::$1 Nothing was recorded."
+            exit 1
+          }
+          [ "${BRANCH}" != "main" ] || stop "The branch is main."
+          [[ "${COMMIT}" =~ ^[0-9a-f]{40}$ ]] || stop "The commit handed over is not valid."
+          read -r -a versions <<< "${VERSIONS}"
+          read -r -a sums <<< "${SUMS}"
+          [ "${#versions[@]}" -ge 1 ] && [ "${#versions[@]}" -eq "${#sums[@]}" ] \
+            || stop "The versions and the SHA-256 values handed over do not belong together."
+          for position in "${!versions[@]}"; do
+            version="${versions[${position}]}"
+            [[ "${version}" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] && [ "${#version}" -le 40 ] \
+              || stop "A version handed over is not a valid version of a question set."
+            [[ "${sums[${position}]}" =~ ^[0-9a-f]{64}$ ]] || stop "A SHA-256 handed over is not valid."
+            [ -f "${folder}/${version}.json" ] || stop "The artifact lacks ${version}.json."
+            actual="$(sha256sum "${folder}/${version}.json" | cut --delimiter=' ' --fields=1)"
+            [ "${actual}" = "${sums[${position}]}" ] \
+              || stop "${version}.json of the artifact does not have the SHA-256 of the record that was checked."
+            [ "$(jq --raw-output '.version' "${folder}/${version}.json")" = "${version}" ] \
+              || stop "${version}.json does not state the version ${version}."
+          done
+          [ "$(find "${folder}" -mindepth 1 | wc -l)" -eq "${#versions[@]}" ] \
+            || stop "The artifact holds more than the records that were handed over."
+
+      # The head of the branch with its parent. The name is given as a branch, so that nothing
+      # else can be checked out under it.
+      - name: Check out the head of the branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/heads/${{ github.head_ref || github.ref_name }}
+          fetch-depth: 2
+
+      # One commit with the records, pushed to the branch the run was started for. The head of
+      # the branch has to be the commit of the tests or, when this run recorded an index, the one
+      # commit that the job "record the index" put on top of it. A record that is already on the
+      # branch is never replaced. When the branch has moved, nothing is pushed; the records stay
+      # in the artifact, and the next run produces them again.
+      - name: Commit the records to the branch
+        run: |
+          folder="${RUNNER_TEMP}/question-sets"
+          stop() {
+            echo "::error title=record of the question sets::$1 Nothing was recorded. The records are in the artifact question-sets of this run, kept for 7 days; the next run of the scope full produces them again."
+            exit 1
+          }
+          read -r -a versions <<< "${VERSIONS}"
+
+          head="$(git rev-parse HEAD)"
+          if [ "${INDEX_RECORDED}" = "true" ]; then
+            parents="$(git rev-list --parents --max-count=1 HEAD)"
+            [ "${parents}" = "${head} ${COMMIT}" ] \
+              || stop "The head of ${BRANCH} is ${head}, which is not one commit on top of ${COMMIT}, the commit of the tests: the branch has moved since the run started."
+            other="$(git diff --name-only "${COMMIT}" HEAD \
+              | grep --invert-match -E '^evals/indexes/[a-z0-9]+(-[a-z0-9]+)*/(build|audit|snapshot)\.json$' || true)"
+            [ -z "${other}" ] \
+              || stop "The head of ${BRANCH}, ${head}, changes more than the record files of an index: the branch has moved since the run started."
+          else
+            [ "${head}" = "${COMMIT}" ] \
+              || stop "The head of ${BRANCH} is ${head}, not ${COMMIT}, the commit of the tests: the branch has moved since the run started."
+          fi
+
+          mkdir -p evals/golden
+          files=()
+          for version in "${versions[@]}"; do
+            [ ! -e "evals/golden/${version}.json" ] \
+              || stop "evals/golden/${version}.json is already on ${BRANCH}; a recorded question set is never replaced."
+            cp "${folder}/${version}.json" "evals/golden/${version}.json"
+            files+=("evals/golden/${version}.json")
+          done
+          git add -- "${files[@]}"
+          staged="$(git status --porcelain --untracked-files=all)"
+          expected="$(printf 'A  %s\n' "${files[@]}" | LC_ALL=C sort)"
+          [ "$(LC_ALL=C sort <<< "${staged}")" = "${expected}" ] \
+            || stop "The commit would hold something else than the new records."
+
+          list="$(printf '%s, ' "${versions[@]}")"
+          list="${list%, }"
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --message "chore(evals): record the question sets ${list} (workflow run ${GITHUB_RUN_ID})"
+          if ! git push origin "HEAD:refs/heads/${BRANCH}"; then
+            stop "The commit with the records could not be pushed to ${BRANCH}."
+          fi
+          echo "::notice title=record of the question sets::Commit $(git rev-parse HEAD) on ${BRANCH} adds the records of the question sets ${list} to evals/golden/."
+
   # The label is removed when the run finishes, also after a failure, so that adding it again
   # starts the next run. This job runs no code of the repository, and it alone may write to the
   # pull request.
   remove-label:
     name: remove the label
-    needs: [acceptance, record-index]
+    needs: [acceptance, record-index, record-question-sets]
     if: >-
       ${{ always()
       && github.event_name == 'pull_request'
