@@ -71,14 +71,14 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 - [x] T008 Create the registry `tests/data/runs-invalid/` with nine records: the two sound records copied byte for byte, and the seven records with one defect each, every one with its own `run_id` and `started_at` (data-model.md, "Example data", "`tests/data/runs-invalid/`: a registry of nine records"; depends on T007)
 - [x] T009 [P] Unit tests in `tests/unit/test_harness_example_data.py`, which compute everything themselves and use no code of the package: the manifest of `tests/data/harness/` matches its files; the eight draw keys of data-model.md are the SHA-256 of `sha256-order-v1:7:<identifier>`, and the three smallest of `hxa` and the smallest of `hxb` are the questions of `harness-half`; every record of `tests/data/sets/` has the bytes of its own canonical form; `of_fingerprint` of the two complements is the SHA-256 of `harness-half.json`; in every run record the fingerprint of the question set is the SHA-256 of the set's file, every `answer_sha256` is the hash of its answer except in `wrong-hash`, every `cost_usd` follows from the tokens and the prices, and `run_id` is the name of the directory; the two sound records of `runs-invalid` have the bytes of those of `runs`
 - [x] T010 [P] Unit tests in `tests/unit/test_cli_groups.py` and additions to `tests/unit/test_settings.py`: the groups `set` and `run` exist next to `dataset` and `index`; a group without a command prints the usage message to standard error, nothing to standard output, and ends with exit code 2; `settings.SETS_DIR` is `evals/golden` and `settings.RUNS_DIR` is `evals/runs` (contracts/cli.md, "General rules"; contracts/harness.md, "`wixqa_rag.settings`: additions")
-- [ ] T011 Run the workspace tier and confirm that the tests of T010 fail because the code is missing and that the tests of T009 pass, since they test the data; then confirm the same in the run of `checks` for the pull request
+- [x] T011 Run the workspace tier and confirm that the tests of T010 fail because the code is missing and that the tests of T009 pass, since they test the data; then confirm the same in the run of `checks` for the pull request
 
 **Checkpoint (red)**: The example data exists and agrees with itself, and the tests of the foundation that test code fail
 
 ### Implementation of the foundation
 
-- [ ] T012 [P] Add `SETS_DIR` and `RUNS_DIR` to `src/wixqa_rag/settings.py` (contracts/harness.md, "`wixqa_rag.settings`: additions"; data-model.md, "Question set": where it is stored, and "Run record": the default runs directory)
-- [ ] T013 Add the groups `set` and `run` to `build_parser` in `src/wixqa_rag/cli.py`, still without commands, with the existing helpers (contracts/cli.md, "General rules", "Groups"; contracts/harness.md, "`wixqa_rag.cli`: additions")
+- [x] T012 [P] Add `SETS_DIR` and `RUNS_DIR` to `src/wixqa_rag/settings.py` (contracts/harness.md, "`wixqa_rag.settings`: additions"; data-model.md, "Question set": where it is stored, and "Run record": the default runs directory)
+- [x] T013 Add the groups `set` and `run` to `build_parser` in `src/wixqa_rag/cli.py`, still without commands, with the existing helpers (contracts/cli.md, "General rules", "Groups"; contracts/harness.md, "`wixqa_rag.cli`: additions")
 - [ ] T014 Run the tests of the foundation and confirm that each passes, with no test changed; the run of `checks` is green
 
 **Checkpoint**: Foundation ready - user story implementation can now begin

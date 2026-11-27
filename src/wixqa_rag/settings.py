@@ -15,6 +15,12 @@ from pathlib import Path
 # The pinned revision of the dataset (data-model.md, "Pinned revision").
 DATASET_JSON = Path("dataset.json")
 
+# The default sets directory (data-model.md, "Question set"): where question-set records are kept.
+SETS_DIR = Path("evals", "golden")
+
+# The default runs directory (data-model.md, "Run record"): the run registry.
+RUNS_DIR = Path("evals", "runs")
+
 # The settings (contracts/cli.md, "Settings"): read from the environment and from nowhere else.
 SETTING_NAMES = ("DATABASE_URL", "OPENAI_API_KEY")
 

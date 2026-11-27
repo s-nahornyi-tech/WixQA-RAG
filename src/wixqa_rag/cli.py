@@ -1,7 +1,7 @@
 """The command line, `python -m wixqa_rag` (contracts/cli.md, "General rules").
 
-The frame: the two groups `dataset` and `index`, the kinds of output line, and the mapping of
-every outcome to an exit code.
+The frame: the four groups `dataset`, `index`, `set` and `run`, the kinds of output line, and
+the mapping of every outcome to an exit code.
 
 A command is added to its group in `build_parser` with `_add_command`: the start of its
 verdict line and `run`, a function that takes the parsed arguments, prints the result lines,
@@ -194,6 +194,10 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="where the result is written; without it, data/audits/ID/<time>.json",
     )
+
+    # The commands of the two groups of the evaluation harness are added with `_add_command`.
+    _add_group(groups, "set", "The question sets: the golden set and the held-out sets.")
+    _add_group(groups, "run", "The records of the run registry.")
     return parser
 
 
