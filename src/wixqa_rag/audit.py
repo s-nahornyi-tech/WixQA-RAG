@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from wixqa_rag import cli, dataset, settings, store
+from wixqa_rag import cli, dataset, questionsets, settings, store
 
 NAME = "audit"
 
@@ -55,19 +55,28 @@ class AuditResult:
     unknown_references: tuple[tuple[str, str], ...] = ()
     questions_without_article_ids: int = 0
     audited_at: str | None = None
+    # The question set that the audit named (spec 2, FR-008); None when it named none.
+    question_set_version: str | None = None
+    question_set_role: str | None = None
+    question_set_fingerprint: str | None = None
 
     def to_document(self) -> dict:
         """The JSON document of contracts/records.md, "Audit result"."""
         if self.outcome is AuditOutcome.NOT_CARRIED_OUT:
             raise ValueError("an audit that was not carried out has no result document")
+        question_set = {
+            "description": self.question_set_description,
+            "parts": list(self.question_set_parts),
+            "questions": self.questions,
+        }
+        if self.question_set_version is not None:
+            question_set["version"] = self.question_set_version
+            question_set["role"] = self.question_set_role
+            question_set["fingerprint"] = self.question_set_fingerprint
         return {
             "index": self.index,
             "dataset": {"name": self.dataset_name, "revision": self.dataset_revision},
-            "question_set": {
-                "description": self.question_set_description,
-                "parts": list(self.question_set_parts),
-                "questions": self.questions,
-            },
+            "question_set": question_set,
             "articles_in_corpus": self.articles_in_corpus,
             "articles_in_index": self.articles_in_index,
             "missing_from_index": list(self.missing_from_index),
@@ -104,6 +113,9 @@ class AuditResult:
             ),
             questions_without_article_ids=document["questions_without_article_ids"],
             audited_at=document["audited_at"],
+            question_set_version=document["question_set"].get("version"),
+            question_set_role=document["question_set"].get("role"),
+            question_set_fingerprint=document["question_set"].get("fingerprint"),
         )
 
 
@@ -160,14 +172,29 @@ def _not_carried_out(index: str, reason: str) -> AuditResult:
     return AuditResult(index=index, outcome=AuditOutcome.NOT_CARRIED_OUT, reason=reason)
 
 
+@dataclass(frozen=True)
+class _Audited:
+    """The result of an audit and what the command prints before the reason of an audit that
+    was not carried out: the dataset check when it found a difference, and the differences
+    of the check of the question set."""
+
+    result: AuditResult
+    examination: dataset.Examination | None = None
+    differences: tuple[str, ...] = ()
+
+
 def _audit(
-    index: str, data_dir: Path | None, questions
-) -> tuple[AuditResult, dataset.Examination | None]:
-    """The audit, in the order of contracts/cli.md, "`index audit`". Besides the result it
-    returns the dataset check when that check found a difference, for the command to print."""
+    index: str,
+    data_dir: Path | None,
+    questions,
+    question_set: str | None = None,
+    sets_dir: Path | None = None,
+) -> _Audited:
+    """The audit, in the order of contracts/cli.md, "`index audit`", with step 4a of spec 2
+    when a question set is named."""
     # Step 1: the identifier.
     if not store.is_valid_identifier(index):
-        return _not_carried_out(index, f"{index} is not a valid index identifier"), None
+        return _Audited(_not_carried_out(index, f"{index} is not a valid index identifier"))
 
     pinned = dataset.read_pinned()
 
@@ -177,9 +204,9 @@ def _audit(
         connection.read_only = True
         state, _ = store.state_of(connection, index)
         if state == store.ABSENT:
-            return _not_carried_out(index, f"index {index} does not exist"), None
+            return _Audited(_not_carried_out(index, f"index {index} does not exist"))
         if state == store.NOT_COMPLETE:
-            return _not_carried_out(index, f"index {index} is not complete"), None
+            return _Audited(_not_carried_out(index, f"index {index} is not complete"))
 
         # Step 4: the data directory passes the dataset check.
         if data_dir is None:
@@ -190,7 +217,32 @@ def _audit(
             examination = dataset.examine(directory)
         if examination.differences:
             reason = f"the dataset check failed for {directory.as_posix()}"
-            return _not_carried_out(index, reason), examination
+            return _Audited(_not_carried_out(index, reason), examination=examination)
+
+        # Step 4a: the record of the question set exists and passes its check against the
+        # same data directory.
+        named = None
+        if question_set is not None:
+            sets = settings.SETS_DIR if sets_dir is None else sets_dir
+            try:
+                checked = questionsets.examine_with_complemented(question_set, directory, sets)
+            except questionsets.SetNotFound as error:
+                return _Audited(_not_carried_out(index, error.reason))
+            except questionsets.SetError as error:
+                return _Audited(_not_carried_out(index, str(error)))
+            except questionsets.ComplementedSetFailed as error:
+                return _Audited(
+                    _not_carried_out(index, str(error)), differences=tuple(error.differences)
+                )
+            if checked.differences:
+                reason = (
+                    f"question set {question_set} does not match the dataset of "
+                    f"{directory.as_posix()}"
+                )
+                return _Audited(
+                    _not_carried_out(index, reason), differences=tuple(checked.differences)
+                )
+            named = checked.question_set
 
         # Step 5: the article ids of the index, of the corpus and of the questions.
         index_ids = store.article_ids(connection, index)
@@ -198,7 +250,11 @@ def _audit(
     manifest = examination.manifest
     corpus = next(part for part in manifest.parts if part.role == "corpus")
     corpus_ids = {row["id"] for row in _rows(directory / corpus.path)}
-    if questions is None:
+    if named is not None:
+        description = f"question set {named.version} ({named.role})"
+        parts = tuple(part["name"] for part in named.document["dataset"]["parts"])
+        question_set = named.pairs()
+    elif questions is None:
         description = EVERY_QUESTION
         parts = tuple(part.name for part in manifest.parts if part.role == "questions")
         question_set = [
@@ -230,45 +286,64 @@ def _audit(
         ),
         questions_without_article_ids=compared["questions_without_article_ids"],
         audited_at=datetime.now(UTC).strftime(_TIME),
+        question_set_version=None if named is None else named.version,
+        question_set_role=None if named is None else named.role,
+        question_set_fingerprint=None if named is None else named.fingerprint,
     )
-    return result, None
+    return _Audited(result)
 
 
 def _audit_without_raising(
-    index: str, data_dir: Path | None, questions
-) -> tuple[AuditResult, dataset.Examination | None]:
+    index: str,
+    data_dir: Path | None,
+    questions,
+    question_set: str | None = None,
+    sets_dir: Path | None = None,
+) -> _Audited:
     """Every error ends as not carried out, with a reason; none looks like a failed audit."""
     try:
-        return _audit(index, data_dir, questions)
+        return _audit(index, data_dir, questions, question_set, sets_dir)
     except (settings.MissingSetting, store.Unreachable, dataset.DatasetError) as error:
-        return _not_carried_out(index, str(error)), None
+        return _Audited(_not_carried_out(index, str(error)))
     except Exception as error:
         text = settings.hide_values(f"unexpected error ({type(error).__name__}): {error}")
-        return _not_carried_out(index, " ".join(text.split())), None
+        return _Audited(_not_carried_out(index, " ".join(text.split())))
 
 
 def audit_index(
     index: str,
     data_dir: Path | None = None,
     questions: Iterable[tuple[str, Sequence[str]]] | None = None,
+    *,
+    question_set: str | None = None,
+    sets_dir: Path | None = None,
 ) -> AuditResult:
     """Audit an index against a data directory and report the outcome; it raises for none of
     the three outcomes.
 
     Without `data_dir` the default data directory of the pinned dataset is used. Without
-    `questions` the question set is every question of every question part, named by question
-    reference; otherwise it is the given pairs of a question identifier and its article ids.
+    `questions` and `question_set` the question set is every question of every question
+    part, named by question reference. `questions` gives it as pairs of a question
+    identifier and its article ids. `question_set` names a question set of spec 2 by its
+    version: its record is read from `sets_dir`, or from `evals/golden` without one, and
+    checked against the data directory, and the result names the set. The two are not given
+    together: a call with both raises `ValueError`.
     """
-    return _audit_without_raising(index, data_dir, questions)[0]
+    if questions is not None and question_set is not None:
+        raise ValueError("questions and question_set are not given together")
+    return _audit_without_raising(index, data_dir, questions, question_set, sets_dir).result
 
 
 def require_passed_audit(
     index: str,
     data_dir: Path | None = None,
     questions: Iterable[tuple[str, Sequence[str]]] | None = None,
+    *,
+    question_set: str | None = None,
+    sets_dir: Path | None = None,
 ) -> AuditResult:
     """The gate: the result of a passed audit; `AuditNotPassed` for the two other outcomes."""
-    result = audit_index(index, data_dir, questions)
+    result = audit_index(index, data_dir, questions, question_set=question_set, sets_dir=sets_dir)
     if result.outcome is not AuditOutcome.PASSED:
         raise AuditNotPassed(result)
     return result
@@ -280,16 +355,26 @@ def _print_list(name: str, items: Sequence[str]) -> None:
         print(f"  {item}")
 
 
-def command(index: str, data_dir: Path | None = None, json_file: Path | None = None) -> int:
+def command(
+    index: str,
+    data_dir: Path | None = None,
+    json_file: Path | None = None,
+    question_set: str | None = None,
+    sets_dir: Path | None = None,
+) -> int:
     """The command `index audit`: the report, the result file, the verdict and the exit code.
 
     The result is written to `json_file`, or to `data/audits/<index>/<time>.json` without
-    one, and only when the audit ran to the end.
+    one, and only when the audit ran to the end. With `question_set` the audit takes that
+    question set, read from `sets_dir`, as its question set.
     """
-    result, examination = _audit_without_raising(index, data_dir, None)
+    audited = _audit_without_raising(index, data_dir, None, question_set, sets_dir)
+    result = audited.result
     if result.outcome is AuditOutcome.NOT_CARRIED_OUT:
-        if examination is not None:
-            dataset.print_examination(examination)
+        if audited.examination is not None:
+            dataset.print_examination(audited.examination)
+        for text in audited.differences:
+            cli.difference(text)
         cli.reason(result.reason)
         return cli.verdict(NAME, "not carried out")
 
@@ -304,6 +389,8 @@ def command(index: str, data_dir: Path | None = None, json_file: Path | None = N
     cli.result("index", result.index)
     cli.result("dataset", result.dataset_name)
     cli.result("revision", result.dataset_revision or "none")
+    if result.question_set_version is not None:
+        cli.result("question set", f"{result.question_set_version} ({result.question_set_role})")
     cli.result("questions", result.questions)
     cli.result("articles in corpus", result.articles_in_corpus)
     cli.result("articles in index", result.articles_in_index)
