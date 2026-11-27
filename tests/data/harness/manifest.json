@@ -1,0 +1,11 @@
+{
+  "name": "harness",
+  "revision": null,
+  "fetched_at": null,
+  "parts": [
+    {"name": "hx", "role": "corpus", "path": "hx.jsonl", "rows": 6, "bytes": 2511, "sha256": "c6a8b1397c1b257939b01ef07913923aae2c30a51072c7b68664f5bd11b06c2f"},
+    {"name": "hxa", "role": "questions", "path": "hxa.jsonl", "rows": 5, "bytes": 1858, "sha256": "2cea478da0c4b4c40a70fe4dac41da0ac6934905658a8301a4b622be726e3070"},
+    {"name": "hxb", "role": "questions", "path": "hxb.jsonl", "rows": 3, "bytes": 1008, "sha256": "18b3c17b664b747b4f813ae4c6b8fefa20ad03256cf4a961e2e2c17d185fb5a2"},
+    {"name": "hxc", "role": "questions", "path": "hxc.jsonl", "rows": 2, "bytes": 391, "sha256": "78f31241fa70f1937c75fd52213714c7efd99447a37887c0fdf7c91bb5439f68"}
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "version": "harness-half-swapped",
+  "role": "golden",
+  "dataset": {
+    "name": "harness",
+    "revision": null,
+    "parts": [
+      {
+        "name": "hxa",
+        "rows": 5,
+        "sha256": "2cea478da0c4b4c40a70fe4dac41da0ac6934905658a8301a4b622be726e3070"
+      },
+      {
+        "name": "hxb",
+        "rows": 3,
+        "sha256": "18b3c17b664b747b4f813ae4c6b8fefa20ad03256cf4a961e2e2c17d185fb5a2"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "draw",
+    "method": "sha256-order-v1",
+    "seed": 7,
+    "take": [
+      {
+        "part": "hxa",
+        "questions": 3
+      },
+      {
+        "part": "hxb",
+        "questions": 1
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "hxa-001",
+      "article_ids": [
+        "hx-001"
+      ]
+    },
+    {
+      "id": "hxa-002",
+      "article_ids": [
+        "hx-002"
+      ]
+    },
+    {
+      "id": "hxa-003",
+      "article_ids": [
+        "hx-001",
+        "hx-003"
+      ]
+    },
+    {
+      "id": "hxb-002",
+      "article_ids": [
+        "hx-006"
+      ]
+    }
+  ],
+  "count": 4
+}

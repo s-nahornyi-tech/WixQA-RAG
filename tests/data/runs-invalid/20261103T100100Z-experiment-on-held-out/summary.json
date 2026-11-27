@@ -1,0 +1,130 @@
+{
+  "run_id": "20261103T100100Z-experiment-on-held-out",
+  "question_set": {
+    "version": "harness-hxc",
+    "role": "held-out",
+    "fingerprint": "f0229f06d276a58bcd33185500d011f2bc37a75565bdd92a9442abf7e851534c"
+  },
+  "questions": 2,
+  "audit": {
+    "index": "harness",
+    "dataset": {
+      "name": "harness",
+      "revision": null
+    },
+    "question_set": {
+      "description": "question set harness-hxc (held-out)",
+      "parts": [
+        "hxc"
+      ],
+      "questions": 2,
+      "version": "harness-hxc",
+      "role": "held-out",
+      "fingerprint": "f0229f06d276a58bcd33185500d011f2bc37a75565bdd92a9442abf7e851534c"
+    },
+    "articles_in_corpus": 6,
+    "articles_in_index": 6,
+    "missing_from_index": [],
+    "not_in_corpus": [],
+    "unknown_references": [],
+    "questions_without_article_ids": 0,
+    "outcome": "passed",
+    "audited_at": "2026-11-03T09:59:00Z"
+  },
+  "breakdowns": {
+    "all": {
+      "questions": 2,
+      "status": {
+        "answered": 2,
+        "no_answer": 0,
+        "error": 0,
+        "timeout": 0,
+        "call_limit": 0
+      },
+      "generation_list": {
+        "questions": 2,
+        "mean_share_found": 0.5,
+        "all_found": 1,
+        "share_all_found": 0.5
+      },
+      "retrieved_list": {
+        "questions": 2,
+        "mean_share_found": 0.5,
+        "all_found": 1,
+        "share_all_found": 0.5
+      },
+      "cost_usd": {
+        "total": 0.0024,
+        "per_question": 0.0012
+      },
+      "latency_seconds": {
+        "median": 1.5,
+        "p95": 2.0
+      }
+    },
+    "single_article": {
+      "questions": 2,
+      "status": {
+        "answered": 2,
+        "no_answer": 0,
+        "error": 0,
+        "timeout": 0,
+        "call_limit": 0
+      },
+      "generation_list": {
+        "questions": 2,
+        "mean_share_found": 0.5,
+        "all_found": 1,
+        "share_all_found": 0.5
+      },
+      "retrieved_list": {
+        "questions": 2,
+        "mean_share_found": 0.5,
+        "all_found": 1,
+        "share_all_found": 0.5
+      },
+      "cost_usd": {
+        "total": 0.0024,
+        "per_question": 0.0012
+      },
+      "latency_seconds": {
+        "median": 1.5,
+        "p95": 2.0
+      }
+    },
+    "multi_article": {
+      "questions": 0,
+      "status": {
+        "answered": 0,
+        "no_answer": 0,
+        "error": 0,
+        "timeout": 0,
+        "call_limit": 0
+      },
+      "generation_list": {
+        "questions": 0,
+        "mean_share_found": null,
+        "all_found": 0,
+        "share_all_found": null
+      },
+      "retrieved_list": {
+        "questions": 0,
+        "mean_share_found": null,
+        "all_found": 0,
+        "share_all_found": null
+      },
+      "cost_usd": {
+        "total": 0.0,
+        "per_question": null
+      },
+      "latency_seconds": {
+        "median": null,
+        "p95": null
+      }
+    }
+  },
+  "retrieval_misses": [
+    "hxc-002"
+  ],
+  "questions_without_gold_articles": 0
+}
