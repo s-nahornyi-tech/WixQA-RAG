@@ -26,6 +26,12 @@ tests/unit/test_cli_frame.py.
 
 The values of the settings below are invented for these tests; none of them is a credential.
 All documents named here are in specs/001-corpus-and-audit/.
+
+Added for spec 2 (specs/002-evaluation-harness/tasks.md, T010), at the end of this file: the
+two default directories of contracts/harness.md, "`wixqa_rag.settings`: additions":
+
+    SETS_DIR: Path                         # evals/golden
+    RUNS_DIR: Path                         # evals/runs
 """
 
 import importlib
@@ -306,3 +312,55 @@ def test_the_audit_results_of_two_indexes_are_kept_apart(root_with_other_revisio
     assert place(settings.audit_result_path("wixqa-001", audited_at)) == (
         root_with_other_revision / "data" / "audits" / "wixqa-001" / "20260102T030405Z.json"
     )
+
+
+# --- The default directories of spec 2 (specs/002-evaluation-harness) -------------------------
+#
+# contracts/harness.md, "`wixqa_rag.settings`: additions"; contracts/cli.md, "Directories";
+# data-model.md, "Question set" and "Run record".
+
+
+def test_the_default_sets_directory_is_evals_golden():
+    """contracts/harness.md: `SETS_DIR` is `Path("evals", "golden")`, the default sets
+    directory. contracts/cli.md, "Directories": the default of `--sets-dir` is
+    `evals/golden`."""
+    settings = load_settings()
+
+    assert isinstance(settings.SETS_DIR, Path)
+    assert settings.SETS_DIR == Path("evals", "golden")
+
+
+def test_the_default_runs_directory_is_evals_runs():
+    """contracts/harness.md: `RUNS_DIR` is `Path("evals", "runs")`, the default runs
+    directory. contracts/cli.md, "Directories": the default of `--runs-dir` is
+    `evals/runs`."""
+    settings = load_settings()
+
+    assert isinstance(settings.RUNS_DIR, Path)
+    assert settings.RUNS_DIR == Path("evals", "runs")
+
+
+@pytest.mark.parametrize(
+    ("name", "parts"), [("SETS_DIR", ("evals", "golden")), ("RUNS_DIR", ("evals", "runs"))]
+)
+def test_a_default_directory_of_spec_2_is_a_place_below_the_current_directory(
+    name, parts, root_with_other_revision
+):
+    """contracts/cli.md, "General rules": a command is typed at the repository root, and the
+    current directory stands for it. The two default directories are relative paths, so they
+    lie below the directory where the command is typed, whatever `dataset.json` pins."""
+    settings = load_settings()
+    directory = getattr(settings, name)
+
+    assert not directory.is_absolute()
+    assert place(directory) == root_with_other_revision.joinpath(*parts)
+
+
+def test_the_two_default_directories_of_spec_2_are_kept_apart():
+    """data-model.md, "Question set" and "Run record": question sets are stored in
+    `evals/golden/` and run records in `evals/runs/`; neither lies inside the other."""
+    settings = load_settings()
+
+    assert settings.SETS_DIR != settings.RUNS_DIR
+    assert settings.SETS_DIR not in settings.RUNS_DIR.parents
+    assert settings.RUNS_DIR not in settings.SETS_DIR.parents

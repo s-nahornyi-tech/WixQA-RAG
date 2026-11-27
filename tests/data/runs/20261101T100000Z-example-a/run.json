@@ -1,0 +1,47 @@
+{
+  "run_id": "20261101T100000Z-example-a",
+  "started_at": "2026-11-01T10:00:00Z",
+  "commit": "0123456789abcdef0123456789abcdef01234567",
+  "uncommitted_changes": false,
+  "config": {
+    "dataset": {
+      "name": "harness",
+      "revision": null
+    },
+    "question_set": {
+      "version": "harness",
+      "role": "golden",
+      "fingerprint": "33d428462709fa439a74a1b44b53c19a72a973646401977e8583c5b525cd6de5"
+    },
+    "index": "harness",
+    "models": {
+      "generation": "example-model"
+    },
+    "prompts": {
+      "generation": "Answer from the context only."
+    },
+    "retrieval": {
+      "top_k": 3
+    },
+    "reranking": {
+      "enabled": false
+    },
+    "context": {
+      "max_articles": 2
+    },
+    "limits": {
+      "timeout_seconds": 20,
+      "max_calls": 4
+    },
+    "seeds": {},
+    "concurrency": 1,
+    "prices": [
+      {
+        "model": "example-model",
+        "usd_per_million_input_tokens": 1.0,
+        "usd_per_million_output_tokens": 2.0
+      }
+    ],
+    "experiment": null
+  }
+}

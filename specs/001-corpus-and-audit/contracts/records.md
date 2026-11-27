@@ -153,6 +153,27 @@ Written by `index audit` when the audit ran to the end (FR-015): to the file giv
 | `outcome` | string | `passed` or `failed` |
 | `audited_at` | string | The time of the audit |
 
+**Added on 2026-11-27 by spec 2** (`specs/002-evaluation-harness`, FR-008): an audit that names a question set (`index audit --set V`) writes three more fields inside `question_set`, after `questions`. An audit that names none writes the document above, unchanged, and a document without the three fields is read as one of an audit that named no set.
+
+```json
+"question_set": {
+  "description": "question set golden-001 (golden)",
+  "parts": ["wixqa_expertwritten", "wixqa_simulated"],
+  "questions": 200,
+  "version": "golden-001",
+  "role": "golden",
+  "fingerprint": "…"
+}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `question_set.description` | string | `question set <version> (<role>)` |
+| `question_set.parts` | list of strings | The parts the set takes questions from |
+| `question_set.version` | string | The version of the question set |
+| `question_set.role` | string | `golden` or `held-out` |
+| `question_set.fingerprint` | string | The SHA-256 of the set's record |
+
 An audit that is not carried out writes no file; its exit code is 2 (see [cli.md](cli.md)).
 
 ## `snapshot.json`: where the dump of an index is kept

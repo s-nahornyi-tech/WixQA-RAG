@@ -2,8 +2,8 @@
 
 The binding rules of the study. `PROJECT.md` records the project's facts and decisions and states
 each measurement rule with its reason; this file gives the exact definitions. The terms *gold
-article*, *golden set*, *run*, *run registry*, *baseline*, *judge*, *calibration* and *slice* are
-defined in the glossary of `PROJECT.md`.
+article*, *golden set*, *held-out set*, *run*, *run registry*, *baseline*, *judge*, *calibration*
+and *slice* are defined in the glossary of `PROJECT.md`.
 
 ## Core Principles
 
@@ -15,7 +15,8 @@ Before a run retrieves anything, the index MUST be audited against the dataset:
 
 - the article ids held in the index MUST be exactly the `id` values of `wix_kb_corpus`: none
   missing, none extra;
-- every `article_ids` value of every golden-set question MUST be among them.
+- every `article_ids` value of every question of the question set that the run is made on MUST
+  be among them.
 
 The audit queries the index that retrieval uses; a check of files on disk does not satisfy it. Any
 difference stops the run, and the audit result is part of the run record.
@@ -47,10 +48,23 @@ pipeline version MUST be evaluated on the same golden set. Two versions are comp
 number of questions that became correct and the number that became incorrect are both reported.
 
 The golden set changes only by an amendment that the owner approves and that gives it a new
-version. Runs on different golden-set versions MUST NOT be compared.
+version.
+
+Besides the golden set the study may keep *held-out sets*. A *question set* is the golden set or
+a held-out set. A held-out set is recorded in the repository as the golden set is: the list of
+question identifiers together with the selection rule and, where the rule draws at random, the
+seed, under a version; it changes only as the golden set does.
+
+- A held-out set MUST NOT be used to choose a setting of the pipeline.
+- A held-out set is run only at the baseline and at milestones that the owner names.
+- An experiment run and its baseline run MUST be on the golden set.
+- Runs on different question sets, or on different versions of one question set, MUST NOT be
+  compared.
 
 Rationale: an average can stay flat while single questions flip in both directions. Only a fixed
-set shows which ones.
+set shows which ones. A pipeline whose every setting was chosen on one set of questions can
+become fitted to that set; questions that took part in no decision show whether it also works on
+others.
 
 ### IV. A Human Label Belongs to One Answer
 
@@ -65,7 +79,7 @@ nobody read.
 ### V. Judge Calibrated on Every Labelled Run
 
 A run is *labelled* when the owner has hand-labelled answers of that run; which answers are
-labelled is decided with the golden set's composition (open decision 1 in `PROJECT.md`).
+labelled is open decision 1 in `PROJECT.md`.
 
 - For every labelled run the report MUST carry the judge's TPR and TNR measured against that
   run's labels.
@@ -93,7 +107,7 @@ Rationale: when two parameters change together, the effect of each cannot be sep
 
 ### VII. Failures Are Separate Categories
 
-Every golden-set question of a run ends in exactly one status: answered, no answer ("I don't
+Every question of a run's question set ends in exactly one status: answered, no answer ("I don't
 know"), error, timeout, or call limit exhausted. The count of each status MUST be reported for
 every run. A failure that kept retrieval from completing is never counted as a retrieval miss.
 
@@ -120,6 +134,8 @@ decision from one that improves them at no cost.
 - Every decision to adopt or reject a change to the pipeline (a model, a retrieval method, a
   reranker, chunking, a prompt, a parameter value) MUST cite the identifiers of the runs that
   justify it.
+- A decision cites only runs on the golden set. A run on a held-out set justifies no decision
+  about the pipeline (Principle III).
 - The configuration that produces the baseline is a starting point. It is recorded as chosen, not
   as found.
 - No spec states a numeric quality target before the baseline run exists. From then on, targets
@@ -189,7 +205,7 @@ set of distinct article ids of its items.
 When nothing reorders or cuts the list between retrieval and generation, the two lists are the
 same list, and both sets of numbers are still reported.
 
-**Status** (Principle VII). Each golden-set question of a run has exactly one:
+**Status** (Principle VII). Each question of a run's question set has exactly one:
 
 | Status | Meaning |
 |---|---|
@@ -199,12 +215,12 @@ same list, and both sets of numbers are still reported.
 | `timeout` | The time limit for one question was exceeded |
 | `call_limit` | The limit on model or tool calls for one question was exhausted |
 
-The limits are parameters of the run config. The status counts add up to the size of the golden
-set.
+The limits are parameters of the run config. The status counts add up to the size of the run's
+question set.
 
 **Answer quality** (Principle V). `correct` = 1 when the judge accepts the answer under the rubric
 of spec 4, otherwise 0; a question whose status is not `answered` has `correct` = 0. For a run:
-the share of golden-set questions with `correct` = 1.
+the share of the questions of the run's question set with `correct` = 1.
 
 **Calibration** (Principle V), on the labelled answers of one run:
 
@@ -215,8 +231,8 @@ the share of golden-set questions with `correct` = 1.
 Each rate is reported with its numerator and denominator. A rate with a zero denominator is
 reported as undefined.
 
-**Pairwise comparison** (Principle III), for two runs on the same golden-set version and one 0/1
-outcome per question (`all_found` on the generation list, or `correct`):
+**Pairwise comparison** (Principle III), for two runs on the same version of the same question
+set and one 0/1 outcome per question (`all_found` on the generation list, or `correct`):
 
 - `gained` = the number of questions with outcome 0 in the first run and 1 in the second;
 - `lost` = the number of questions with outcome 1 in the first run and 0 in the second.
@@ -235,8 +251,8 @@ an index is recorded with its own cost; a run names the index it used.
 
 **Latency** (Principle IX). For each question: wall-clock seconds from the moment the pipeline
 receives the question until it returns an answer or fails. For a run: the median and the 95th
-percentile over all golden-set questions. The concurrency setting is part of the run config;
-latencies measured under different settings are not compared.
+percentile over all questions of the run's question set. The concurrency setting is part of the
+run config; latencies measured under different settings are not compared.
 
 ## Run Record Format
 
@@ -244,13 +260,14 @@ The run registry is `evals/runs/`. One run is one directory, `evals/runs/<run-id
 files in JSON or JSON Lines. A run record MUST contain:
 
 - **Identity:** the run id, the start time in UTC, and the commit of the code that produced it.
-- **Config:** everything needed to repeat the run: the dataset revision, the golden-set version,
-  the index used, each model's identifier, the prompts, the retrieval and reranking settings, the
-  context size, the limits, the seeds, the concurrency setting, and the price list used for cost.
-  An experiment run also names the baseline run and the one parameter that differs.
-- **Results, one entry per golden-set question:** the question identifier; the status; the
-  retrieved list and the generation list as ordered article ids; the context passed to the
-  generator in a form from which its exact text can be restored; the answer and its hash
+- **Config:** everything needed to repeat the run: the dataset revision, the question set with
+  its version and whether it is the golden set or a held-out set, the index used, each model's
+  identifier, the prompts, the retrieval and reranking settings, the context size, the limits,
+  the seeds, the concurrency setting, and the price list used for cost. An experiment run also
+  names the baseline run and the one parameter that differs.
+- **Results, one entry per question of the run's question set:** the question identifier; the
+  status; the retrieved list and the generation list as ordered article ids; the context passed
+  to the generator in a form from which its exact text can be restored; the answer and its hash
   (SHA-256 of the answer's UTF-8 text); token counts, cost and latency.
 - **Summary:** the audit result of Principle I, the status counts, and every metric of "Metric
   Definitions" in the three breakdowns with its denominators.
@@ -343,4 +360,4 @@ been measured yet. A public text claims only what the repository contains at tha
   review agent checks every pull request against the principles. A violation blocks the merge
   until the change is corrected or the constitution is amended.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-25
+**Version**: 1.2.0 | **Ratified**: 2026-11-23 | **Last Amended**: 2026-11-27

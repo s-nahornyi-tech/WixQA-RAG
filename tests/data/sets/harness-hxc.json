@@ -1,0 +1,41 @@
+{
+  "version": "harness-hxc",
+  "role": "held-out",
+  "dataset": {
+    "name": "harness",
+    "revision": null,
+    "parts": [
+      {
+        "name": "hxc",
+        "rows": 2,
+        "sha256": "78f31241fa70f1937c75fd52213714c7efd99447a37887c0fdf7c91bb5439f68"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "draw",
+    "method": "sha256-order-v1",
+    "seed": 1,
+    "take": [
+      {
+        "part": "hxc",
+        "questions": 2
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "hxc-001",
+      "article_ids": [
+        "hx-001"
+      ]
+    },
+    {
+      "id": "hxc-002",
+      "article_ids": [
+        "hx-002"
+      ]
+    }
+  ],
+  "count": 2
+}

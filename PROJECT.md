@@ -88,7 +88,7 @@ Our seven additions, adopted by the owner on 2026-11-19:
 Notes for whoever wires these in:
 
 - Spec Kit keeps a spec technology-agnostic. The checks of addition 3 name commands, so they sit in their own section, apart from the user scenarios and success criteria.
-- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Additions 3, 5 and 7 are carried by project-local overrides in `.specify/templates/overrides/`: `spec-template.md` adds the "Acceptance Checks" and "Evidence" sections, and `tasks-template.md` makes tests required and first. Spec Kit reads an override in place of its own template, which stays unchanged. The constitution (version 1.1.0) states the rules of additions 1, 2, 5, 6 and 7. The experiment template of addition 4 is not implemented yet; its mechanism is chosen when it is implemented.
+- Spec Kit offers presets, project-local template overrides, and extensions for changes like these. Additions 3, 5 and 7 are carried by project-local overrides in `.specify/templates/overrides/`: `spec-template.md` adds the "Acceptance Checks" and "Evidence" sections, and `tasks-template.md` makes tests required and first. Spec Kit reads an override in place of its own template, which stays unchanged. The constitution (version 1.2.0) states the rules of additions 1, 2, 5, 6 and 7. The experiment template of addition 4 is not implemented yet; its mechanism is chosen when it is implemented.
 
 ## Roles and cycle
 
@@ -115,7 +115,7 @@ Cycle for one spec:
 - Approach: spec-driven development with GitHub Spec Kit, plus the seven additions listed under "Process".
 - Spec Kit version 1.4.2, initialised for Claude Code with shell scripts; its files live in `.specify/` and `.claude/skills/`.
 - Templates: the spec and tasks templates in `.specify/templates/overrides/` are this project's versions, made from the Spec Kit 1.4.2 templates. After a Spec Kit upgrade they are compared with the new stock templates.
-- Constitution: version 1.1.0, in `.specify/memory/constitution.md`. Version 1.0.0 was approved by the owner on 2026-11-23; the amendment of 2026-11-25 records the Python tooling.
+- Constitution: version 1.2.0, in `.specify/memory/constitution.md`. Version 1.0.0 was approved by the owner on 2026-11-23; the amendment of 2026-11-25 records the Python tooling; the amendment of 2026-11-27 adds the rules for held-out sets.
 - Implementation language: Python.
 - Language of specs, README, and UI: English.
 - Source code: GitHub. Task tracking: a GitHub Project, one issue per spec; a spec's tasks stay in its `tasks.md`.
@@ -125,6 +125,7 @@ Cycle for one spec:
 - Vector store: PostgreSQL with the pgvector extension.
 - Python tooling: Python 3.14; uv manages the environment and the dependencies, and `uv.lock` is the lock file; tests run with pytest; CI runs on GitHub Actions.
 - Where the commands run (owner's decision of 2026-11-24): every command that needs the dataset host or the embedding provider runs on GitHub Actions, started by hand, with the provider key stored as a repository secret.
+- Question sets (owner's decision of 2026-11-27, which replaces the composition decided on 2026-11-26). The golden set, on which decisions are taken: 100 questions of `wixqa_expertwritten` and 100 of `wixqa_simulated`, drawn at random with a recorded seed. The held-out set: the other 100 + 100 questions of the same two parts. The synthetic held-out set: 300 questions of `wixqa_synthetic`, drawn at random with a recorded seed, reported on its own. A held-out set is used rarely, at the baseline and at milestones the owner names, and never to choose a setting; the reason is that a system tuned on one set of questions can become fitted to it.
 - Lessons from another project are collected in the owner's private notes (`personal-notes/`, kept out of the repository).
 
 ### Open
@@ -133,7 +134,7 @@ The owner decides. Answers move to "Decided".
 
 | # | Decision | Blocks spec |
 |---|---|---|
-| 1 | Golden set composition: which WixQA parts, how many questions, how many are hand-labelled | 2 |
+| 1 | Hand labelling: how many questions of the golden set are hand-labelled | 4 |
 | 2 | Generation model for baseline | 3 |
 | 3 | Budget for one full evaluation run | 3 |
 | 4 | Judge model | 4 |
@@ -144,7 +145,8 @@ The owner decides. Answers move to "Decided".
 
 - **Gold article** — an article listed in a question's `article_ids`.
 - **Golden set** — the fixed list of questions on which all pipeline versions are compared.
-- **Run** — one execution of the pipeline on the golden set, with config and results recorded.
+- **Held-out set** — a fixed list of questions kept apart from the golden set: used rarely, and never to choose a setting.
+- **Run** — one execution of the pipeline on the golden set or on a held-out set, with config and results recorded.
 - **Run registry** — where all runs are stored; the source of numbers for specs.
 - **Baseline** — the first full run of the end-to-end skeleton; the reference point for thresholds.
 - **Judge** — an LLM that scores an answer against a rubric.

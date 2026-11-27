@@ -1,0 +1,134 @@
+{
+  "run_id": "20261101T100000Z-example-a",
+  "question_set": {
+    "version": "harness",
+    "role": "golden",
+    "fingerprint": "33d428462709fa439a74a1b44b53c19a72a973646401977e8583c5b525cd6de5"
+  },
+  "questions": 8,
+  "audit": {
+    "index": "harness",
+    "dataset": {
+      "name": "harness",
+      "revision": null
+    },
+    "question_set": {
+      "description": "question set harness (golden)",
+      "parts": [
+        "hxa",
+        "hxb"
+      ],
+      "questions": 8,
+      "version": "harness",
+      "role": "golden",
+      "fingerprint": "33d428462709fa439a74a1b44b53c19a72a973646401977e8583c5b525cd6de5"
+    },
+    "articles_in_corpus": 6,
+    "articles_in_index": 6,
+    "missing_from_index": [],
+    "not_in_corpus": [],
+    "unknown_references": [],
+    "questions_without_article_ids": 0,
+    "outcome": "passed",
+    "audited_at": "2026-11-01T09:59:00Z"
+  },
+  "breakdowns": {
+    "all": {
+      "questions": 8,
+      "status": {
+        "answered": 4,
+        "no_answer": 1,
+        "error": 1,
+        "timeout": 1,
+        "call_limit": 1
+      },
+      "generation_list": {
+        "questions": 6,
+        "mean_share_found": 0.5277777777777778,
+        "all_found": 2,
+        "share_all_found": 0.3333333333333333
+      },
+      "retrieved_list": {
+        "questions": 7,
+        "mean_share_found": 0.7857142857142857,
+        "all_found": 5,
+        "share_all_found": 0.7142857142857143
+      },
+      "cost_usd": {
+        "total": 0.0128,
+        "per_question": 0.0016
+      },
+      "latency_seconds": {
+        "median": 4.5,
+        "p95": 30.0
+      }
+    },
+    "single_article": {
+      "questions": 4,
+      "status": {
+        "answered": 2,
+        "no_answer": 0,
+        "error": 1,
+        "timeout": 0,
+        "call_limit": 1
+      },
+      "generation_list": {
+        "questions": 3,
+        "mean_share_found": 0.3333333333333333,
+        "all_found": 1,
+        "share_all_found": 0.3333333333333333
+      },
+      "retrieved_list": {
+        "questions": 3,
+        "mean_share_found": 0.6666666666666666,
+        "all_found": 2,
+        "share_all_found": 0.6666666666666666
+      },
+      "cost_usd": {
+        "total": 0.006,
+        "per_question": 0.0015
+      },
+      "latency_seconds": {
+        "median": 3.5,
+        "p95": 7.0
+      }
+    },
+    "multi_article": {
+      "questions": 4,
+      "status": {
+        "answered": 2,
+        "no_answer": 1,
+        "error": 0,
+        "timeout": 1,
+        "call_limit": 0
+      },
+      "generation_list": {
+        "questions": 3,
+        "mean_share_found": 0.7222222222222222,
+        "all_found": 1,
+        "share_all_found": 0.3333333333333333
+      },
+      "retrieved_list": {
+        "questions": 4,
+        "mean_share_found": 0.875,
+        "all_found": 3,
+        "share_all_found": 0.75
+      },
+      "cost_usd": {
+        "total": 0.0068,
+        "per_question": 0.0017
+      },
+      "latency_seconds": {
+        "median": 6.0,
+        "p95": 30.0
+      }
+    }
+  },
+  "retrieval_misses": [
+    "hxa-002",
+    "hxa-003",
+    "hxa-004",
+    "hxb-002"
+  ],
+  "questions_without_gold_articles": 0
+}

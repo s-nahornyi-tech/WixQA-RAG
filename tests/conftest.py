@@ -16,6 +16,7 @@ the setting in `settings_printed`.
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,21 @@ SETTING_NAMES = ("DATABASE_URL", "OPENAI_API_KEY")
 SHORTEST_VALUE_LOOKED_FOR = 8
 
 EXAMPLE_DATA = REPOSITORY_ROOT / "tests" / "data" / "example"
+
+# The verdict lines of the commands of spec 1 and of spec 2 (their contracts/cli.md, "Verdict
+# lines").
+VERDICT_LINE = re.compile(
+    r"(dataset fetch|dataset check|index build|audit|set build|set check"
+    r"|run report|run check|run compare): (done|passed|failed|refused|not carried out)"
+)
+
+HARNESS_DATA = REPOSITORY_ROOT / "tests" / "data" / "harness"
+EXAMPLE_SETS = REPOSITORY_ROOT / "tests" / "data" / "sets"
+
+# Where an acceptance check of spec 2 writes the question sets that it builds from example
+# data: `--sets-dir data/sets`, in the folder `data/` that Git ignores
+# (specs/002-evaluation-harness/data-model.md, "Question set").
+BUILT_SETS = REPOSITORY_ROOT / "data" / "sets"
 
 # A full commit hash that is not the pinned revision of the repository, so that a place or an
 # address in a test can only come from the `dataset.json` of the temporary repository root.
@@ -64,6 +80,29 @@ class CommandResult:
         """The last line of standard output: the verdict line (contracts/cli.md, "Output")."""
         lines = self.lines
         return lines[-1] if lines else ""
+
+    def blocks(self) -> list[list[str]]:
+        """The lines of standard output, one list for each command of a line that chains
+        several commands with `&&`: a command prints its verdict line last, so a block ends
+        with a verdict line. Lines after the last verdict line form a block of their own."""
+        blocks: list[list[str]] = [[]]
+        for line in self.lines:
+            blocks[-1].append(line)
+            if VERDICT_LINE.fullmatch(line):
+                blocks.append([])
+        return blocks if blocks[-1] else blocks[:-1]
+
+    @property
+    def reasons(self) -> list[str]:
+        """The `reason:` lines of standard output, without the `reason: ` in front."""
+        return [line[len("reason: ") :] for line in self.lines if line.startswith("reason: ")]
+
+    @property
+    def differences(self) -> list[str]:
+        """The `difference:` lines of standard output, without the `difference: ` in front."""
+        return [
+            line[len("difference: ") :] for line in self.lines if line.startswith("difference: ")
+        ]
 
 
 def _environment(changes: Mapping[str, str | None] | None) -> dict[str, str]:
@@ -303,3 +342,230 @@ def pinned_example(tmp_path: Path) -> PinnedExample:
         {"name": example.name, "revision": example.revision, "parts": list(parts)}
     )
     return example
+
+
+# --- The example data of spec 2 (specs/002-evaluation-harness) --------------------------------
+
+
+@pytest.fixture
+def built_sets() -> Path:
+    """`data/sets` of the checkout, empty of what an earlier test or an operator left there.
+
+    Several acceptance checks of spec 2 build question sets with `--sets-dir data/sets`, typed
+    at the repository root, and the command line of a check is not changed. A version is
+    written once, so a record left by another test would change the outcome. The fixture
+    removes the folder `data/sets` before the test and again after it. `data/` is ignored by
+    Git, and nothing outside `data/sets` is touched: never `evals/`.
+    """
+    shutil.rmtree(BUILT_SETS, ignore_errors=True)
+    yield BUILT_SETS
+    shutil.rmtree(BUILT_SETS, ignore_errors=True)
+
+
+def canonical_record(document: object) -> bytes:
+    """The canonical form of a question-set record (specs/002-evaluation-harness/contracts/
+    records.md, "The canonical form"), written here without code of the package."""
+    return (json.dumps(document, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+@dataclass(frozen=True)
+class HarnessCopy:
+    """A temporary repository root with a copy of the example data of spec 2.
+
+    `root` holds `dataset.json`, the data directory `data/harness` (a copy of
+    `tests/data/harness`) and the sets directory `data/sets` (a copy of `tests/data/sets`). A
+    test changes the copies as it needs and never a file of the checkout. A command is typed
+    in `root` with the relative paths `DATA_DIR` and `SETS_DIR`.
+    """
+
+    root: Path
+
+    DATA_DIR = "data/harness"
+    SETS_DIR = "data/sets"
+
+    @property
+    def data_dir(self) -> Path:
+        return self.root / "data" / "harness"
+
+    @property
+    def sets_dir(self) -> Path:
+        return self.root / "data" / "sets"
+
+    def rows(self, part: str) -> list[dict]:
+        text = (self.data_dir / f"{part}.jsonl").read_text(encoding="utf-8")
+        return [json.loads(line) for line in text.split("\n") if line.strip()]
+
+    def change_rows(self, part: str, change: Callable[[list[dict]], None]) -> None:
+        """Change the rows of one part and write the manifest again from the file, so that
+        the data directory still passes the dataset check."""
+        rows = self.rows(part)
+        change(rows)
+        data = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows).encode("utf-8")
+        (self.data_dir / f"{part}.jsonl").write_bytes(data)
+        manifest = json.loads((self.data_dir / "manifest.json").read_text(encoding="utf-8"))
+        for entry in manifest["parts"]:
+            if entry["name"] == part:
+                entry.update(
+                    rows=len(rows), bytes=len(data), sha256=hashlib.sha256(data).hexdigest()
+                )
+        text = json.dumps(manifest, indent=2) + "\n"
+        (self.data_dir / "manifest.json").write_text(text, encoding="utf-8")
+
+    def part_entry(self, part: str) -> dict:
+        """A part as a question-set record names it: name, rows and SHA-256 of its file."""
+        data = (self.data_dir / f"{part}.jsonl").read_bytes()
+        return {"name": part, "rows": count_rows(data), "sha256": hashlib.sha256(data).hexdigest()}
+
+    def gold(self) -> dict[str, list[str]]:
+        """Question identifier -> the `article_ids` of its row, for the three question parts."""
+        return {
+            f"{part}-{number:03d}": row["article_ids"]
+            for part in ("hxa", "hxb", "hxc")
+            for number, row in enumerate(self.rows(part), 1)
+        }
+
+    def record(self, version: str) -> dict:
+        """The document of a record of the sets directory."""
+        return json.loads((self.sets_dir / f"{version}.json").read_text(encoding="utf-8"))
+
+    def fingerprint(self, version: str) -> str:
+        return hashlib.sha256((self.sets_dir / f"{version}.json").read_bytes()).hexdigest()
+
+    def write_record(self, document: dict) -> Path:
+        """Write a record by hand, in the canonical form, under its `version`."""
+        file = self.sets_dir / f"{document['version']}.json"
+        file.write_bytes(canonical_record(document))
+        return file
+
+    def change_record(self, version: str, change: Callable[[dict], None]) -> dict:
+        """Change one record of the sets directory by hand and write it again."""
+        document = self.record(version)
+        change(document)
+        (self.sets_dir / f"{version}.json").write_bytes(canonical_record(document))
+        return document
+
+    def rewrite_records(self) -> None:
+        """Bring the records `harness`, `harness-hxc`, `harness-half` and `harness-half-rest`
+        in line with the data directory after `change_rows`: the fingerprints of the parts,
+        the gold article ids of every question, and `of_fingerprint` of the complement. The
+        questions that each record holds stay as they are."""
+        gold = self.gold()
+        for version in ("harness", "harness-hxc", "harness-half", "harness-half-rest"):
+            document = self.record(version)
+            document["dataset"]["parts"] = [
+                self.part_entry(part["name"]) for part in document["dataset"]["parts"]
+            ]
+            for question in document["questions"]:
+                question["article_ids"] = gold[question["id"]]
+            if document["rule"]["kind"] == "complement":
+                document["rule"]["of_fingerprint"] = self.fingerprint(document["rule"]["of"])
+            self.write_record(document)
+
+    def sets(self) -> dict[str, bytes]:
+        """Every file below the sets directory: its path inside it -> its bytes."""
+        if not self.sets_dir.is_dir():
+            return {}
+        return {
+            file.relative_to(self.sets_dir).as_posix(): file.read_bytes()
+            for file in sorted(self.sets_dir.rglob("*"))
+            if file.is_file()
+        }
+
+
+@pytest.fixture
+def harness_copy(temporary_root: Path) -> HarnessCopy:
+    """A temporary repository root with a copy of `tests/data/harness` and of
+    `tests/data/sets`; see `HarnessCopy`. It is not the current directory of the test."""
+    copy = HarnessCopy(root=temporary_root)
+    shutil.copytree(HARNESS_DATA, copy.data_dir)
+    shutil.copytree(EXAMPLE_SETS, copy.sets_dir)
+    return copy
+
+
+EXAMPLE_RUNS = REPOSITORY_ROOT / "tests" / "data" / "runs"
+EXAMPLE_RUNS_INVALID = REPOSITORY_ROOT / "tests" / "data" / "runs-invalid"
+
+
+@dataclass(frozen=True)
+class RegistryCopy:
+    """A temporary repository root with copies of the example registries of spec 2.
+
+    `root` holds `dataset.json`, the sets directory `data/sets` (a copy of `tests/data/sets`)
+    and the two runs directories `data/runs` and `data/runs-invalid` (copies of
+    `tests/data/runs` and `tests/data/runs-invalid`). A test changes the copies by hand,
+    without code of the package, and never a file of the checkout. A command is typed in
+    `root` with the relative paths `RUNS_DIR`, `RUNS_INVALID_DIR` and `SETS_DIR`.
+    """
+
+    root: Path
+
+    RUNS_DIR = "data/runs"
+    RUNS_INVALID_DIR = "data/runs-invalid"
+    SETS_DIR = "data/sets"
+
+    @property
+    def runs_dir(self) -> Path:
+        return self.root / "data" / "runs"
+
+    @property
+    def runs_invalid_dir(self) -> Path:
+        return self.root / "data" / "runs-invalid"
+
+    @property
+    def sets_dir(self) -> Path:
+        return self.root / "data" / "sets"
+
+    def file(self, run: str, name: str, registry: Path | None = None) -> Path:
+        return (self.runs_dir if registry is None else registry) / run / name
+
+    def run_document(self, run: str, registry: Path | None = None) -> dict:
+        return json.loads(self.file(run, "run.json", registry).read_text(encoding="utf-8"))
+
+    def entries(self, run: str, registry: Path | None = None) -> list[dict]:
+        text = self.file(run, "results.jsonl", registry).read_text(encoding="utf-8")
+        return [json.loads(line) for line in text.split("\n") if line]
+
+    def summary(self, run: str, registry: Path | None = None) -> dict:
+        return json.loads(self.file(run, "summary.json", registry).read_text(encoding="utf-8"))
+
+    def change_run(self, run: str, change: Callable[[dict], None]) -> dict:
+        """Change `run.json` of a run of `data/runs` by hand and write it again."""
+        document = self.run_document(run)
+        change(document)
+        self.file(run, "run.json").write_bytes(canonical_record(document))
+        return document
+
+    def change_entries(self, run: str, change: Callable[[list[dict]], None]) -> list[dict]:
+        """Change the entries of a run of `data/runs` by hand and write `results.jsonl`."""
+        entries = self.entries(run)
+        change(entries)
+        text = "".join(json.dumps(entry, ensure_ascii=False) + "\n" for entry in entries)
+        self.file(run, "results.jsonl").write_text(text, encoding="utf-8")
+        return entries
+
+    def change_summary(self, run: str, change: Callable[[dict], None]) -> dict:
+        """Change `summary.json` of a run of `data/runs` by hand and write it again."""
+        document = self.summary(run)
+        change(document)
+        self.file(run, "summary.json").write_bytes(canonical_record(document))
+        return document
+
+    def files(self) -> dict[str, bytes]:
+        """Every file below the temporary root: its path inside it -> its bytes."""
+        return {
+            file.relative_to(self.root).as_posix(): file.read_bytes()
+            for file in sorted(self.root.rglob("*"))
+            if file.is_file()
+        }
+
+
+@pytest.fixture
+def registry_copy(temporary_root: Path) -> RegistryCopy:
+    """A temporary repository root with copies of `tests/data/sets`, `tests/data/runs` and
+    `tests/data/runs-invalid`; see `RegistryCopy`. It is not the current directory of the
+    test."""
+    copy = RegistryCopy(root=temporary_root)
+    shutil.copytree(EXAMPLE_SETS, copy.sets_dir)
+    shutil.copytree(EXAMPLE_RUNS, copy.runs_dir)
+    shutil.copytree(EXAMPLE_RUNS_INVALID, copy.runs_invalid_dir)
+    return copy

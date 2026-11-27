@@ -1,0 +1,1829 @@
+{
+  "version": "synthetic-001",
+  "role": "held-out",
+  "dataset": {
+    "name": "Wix/WixQA",
+    "revision": "d662dc42479c14e202eccd832f8c4b66a035c4cc",
+    "parts": [
+      {
+        "name": "wixqa_synthetic",
+        "rows": 6221,
+        "sha256": "1d7e79f328db46537934081b3d9814b02dd0098d67a072cac5dadac636432054"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "draw",
+    "method": "sha256-order-v1",
+    "seed": 20261127,
+    "take": [
+      {
+        "part": "wixqa_synthetic",
+        "questions": 300
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "wixqa_synthetic-016",
+      "article_ids": [
+        "9dbf43e1a13c691c4ac016af067a723ca51613c639d878f7c556dd1a1fbc3018"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-043",
+      "article_ids": [
+        "2e85936634da64bedcced01de30599a0a523ad14d1a8e8d810b7efba5853d541"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-063",
+      "article_ids": [
+        "2a042ef117e64cfd201fa02a841eb6d13fc09dbbef7ceae690125f5ca4d85a9a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-075",
+      "article_ids": [
+        "7650f8b4efc2dc05b31634c04f0866a3e12386648f9eb5f37b758c98ff5ad219"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-089",
+      "article_ids": [
+        "72a52f4fcd8fa24a32732827c9b707d47220fcc49f77c148e15157d9acaabfbf"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-112",
+      "article_ids": [
+        "f5d3c679d96a2f0535df660e6ffd353cf67bf1d9430da9ed9497a180db3b710a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-135",
+      "article_ids": [
+        "275615d3ab1decbb03e455891fca72e02f33c67bb41f09ea00fe46d4303e3cd3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-154",
+      "article_ids": [
+        "6561d7bec992e3a43fe6c6564e2f6995261b7fb06e83f828e925c7dad4ed18b5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-180",
+      "article_ids": [
+        "3485fd3984d716b5402c5cc7d16f476e16ce43713985f203745eae0516fd93b7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-191",
+      "article_ids": [
+        "d97f81a1f4be4fbc7ba1ad619d08da54e9d89cde19332863524e82b69bdf5fef"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-230",
+      "article_ids": [
+        "af08cbebcd5b2a886d4392ff0400872265223ca63810b71063c9556f54409a42"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-247",
+      "article_ids": [
+        "0d09cf4f9649df8c971367785d2a9bca9847f2de703197629c499a35f54b9e72"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-312",
+      "article_ids": [
+        "d0a9d4f19233a26e6922f1db7bb03adb0b53baa85e74be463dd0f0123cefda23"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-318",
+      "article_ids": [
+        "7ccd1a9278fc1868865563acc0217c1d235e1ce76037eafcde2c68cef64a8134"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-352",
+      "article_ids": [
+        "eb87db0f7310e0b9b8a5b83412a37dd9b16733e4325bf775f2d465175e6bf617"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-398",
+      "article_ids": [
+        "e5d34e889ceed8d650b9872c0a28358a3c79bfb379582e91f2ab1260fe7a63df"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-436",
+      "article_ids": [
+        "36e7c2a0419b630ed12f12697c3aa35b21e52ef790c3ce2bbce45a67fb04c52b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-439",
+      "article_ids": [
+        "9a3b921edab4426787c67ec516bb2e0a4c9b2a0c5f4c5abb3e75a7a6cc4b63dc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-490",
+      "article_ids": [
+        "4ca65b3c84d72a6244250267a8f5b12e359d77fb8cd9946878ffa12aee0c5f97"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-530",
+      "article_ids": [
+        "085e4d36ca87e3caa5403c4a9fd6e2e147826bf93f1bb909f23e8f2f0167aab4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-536",
+      "article_ids": [
+        "f3e0aac0cf535b900606f90bd2f06b1ab135de35b63d46d6a1c8d35eb3716c00"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-581",
+      "article_ids": [
+        "e95528b9222cf84adb3b189e9371069a633263ef1ae45562709d348c8e07ea61"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-598",
+      "article_ids": [
+        "e416247ad3fc53b60c98cd1cc450dc74244eae41901f93eab7a9ab4c1dff366b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-601",
+      "article_ids": [
+        "7471668487ce9a64d004472cf3bc0fae6feaebbf06c1cc22df0f855a39b2382f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-617",
+      "article_ids": [
+        "9d03d5cf8288bbca91f926ba63e744cfe117bdab756bdfd88502eee12d2e7612"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-635",
+      "article_ids": [
+        "fd9b98b0190137bdb118bc8364040dcb4f2f676c48ae9ab477492b9ec7a8b918"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-713",
+      "article_ids": [
+        "78b66b605b985aeaefb9e9ee913f76748073accc69f84976cc968b792224f356"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-716",
+      "article_ids": [
+        "0c4ff19f8d9cda739e12a432072ac0b8a1f89d86e4a028329fd84e3323fe8dc9"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-736",
+      "article_ids": [
+        "116fadba066537f8bce3108c75d3be41913f93663ba366c1cbcc41e61578543a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-768",
+      "article_ids": [
+        "d0f9a11dabbebadfd68f2f2e642dd32dfbd883f22a3feaa7ca2b080475983c1c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-790",
+      "article_ids": [
+        "5e44eddb7b4f7b51e9b87c475e2f68f705efd6d2cab4b3e26badd00aaa8d0bb0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-813",
+      "article_ids": [
+        "7fa46312c341a6e31b0e9a0485f4a62e4df2dc2d121544386e46971ec34569d0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-861",
+      "article_ids": [
+        "faa70e199f37c043b5ce026943a60a7d8b741309c80ddbf94a34ce5426b6686c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-863",
+      "article_ids": [
+        "bcaadc34ba067bcb581331f18550a1914d4e9236be744bf26e7da09f5596be53"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-871",
+      "article_ids": [
+        "2afaad68bc7e46ac6c948508181ebe614c3812953ce53950c4b30a076258de0d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-891",
+      "article_ids": [
+        "cfa3177e59ad8a1fe7bb2cbf2acd0fbcbc6bfc9b9fc621e050ed0432c12a6b8e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-899",
+      "article_ids": [
+        "dcd26190e5bf37d2d711b62d03976515d5c102e44ca83c5bbfd1fe76f958c4cb"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-908",
+      "article_ids": [
+        "5947e93bc3984231a28020c19f1233e27124425305d87a7a7a6d09dd437da42d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-909",
+      "article_ids": [
+        "7c1dba816fc4534da3188a0dadb30315d65b13528730003ff27031ed8f0653db"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-934",
+      "article_ids": [
+        "01ca3589270f63ed19726699955561ff5b3f015dae08d31e141409eec581da29"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-969",
+      "article_ids": [
+        "1dc896cf13d5fe1aef9c95e7507dd35258527223a97120688da815e815e132c9"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-999",
+      "article_ids": [
+        "6ee05822e09f119ec86efb096622a3f06a2dfeec4a3b8b13794e0ab83f456dbc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1003",
+      "article_ids": [
+        "c939ab4b68f2ec1e27489b9f3f4b963ae11294f6410d2f3bc409493a91bea325"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1040",
+      "article_ids": [
+        "30b856637aa4e46cea691194a75ce207ec196ac43e57616cfc585783c845bc67"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1052",
+      "article_ids": [
+        "0334404fd03d2d81b076c9d07d9865665ea3e344e5ad07f6a819b992bf19e389"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1115",
+      "article_ids": [
+        "31a104790ec0a73f97507f42f0ef6bb72aa4576c797c90956e3b61977373cc04"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1144",
+      "article_ids": [
+        "803c3bad18a4ee431d5db8bd09e02b8e78dc28b3365a4728b9e5e028c5b4bad7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1159",
+      "article_ids": [
+        "dc9cfbf2529e4df4089a37ce999c837a902014ae44de64dbd2ca8655f89ad6db"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1160",
+      "article_ids": [
+        "6b523ef7da6e12adaa23cfd922677cd5b23a6ba7145f849813e075be21cd729a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1227",
+      "article_ids": [
+        "5aa8c4fc86301500f3369f79ec9d4cdfdfa2704d50e42432b106fc12d7bc388f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1241",
+      "article_ids": [
+        "4a884887dbe001d7c38119ef0a988b20192536b565bf1e83bd5d21e2eccda492"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1247",
+      "article_ids": [
+        "0e54c4bd881d92925f0c9c1f366f9c62d7e23fd03343d6edafa95bdb23eca1c2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1256",
+      "article_ids": [
+        "0764b529be762c67f4749914ce9ba0819bd0eca75898c0b130c759cad0a647c4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1308",
+      "article_ids": [
+        "b4a84acf4c4cbc994016195de1b6914b17875f7a9b293e8195082509fa66fcd5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1317",
+      "article_ids": [
+        "05fe04f34f4e837df5df9c9cb46c507fde63db952a190d465359b53dbc10153f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1334",
+      "article_ids": [
+        "854597df70f38c555568b53c4ab9c004994afb557dc321433ffe9a1b6a2d6959"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1339",
+      "article_ids": [
+        "4cdd045694e80178f9b7e764c603d47dd2bf9375ca5bcee137b259806be8daf7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1348",
+      "article_ids": [
+        "ac1ee76381822ee903de841ecd5695746dea45fbc385722ce7e94b0cda50062a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1371",
+      "article_ids": [
+        "039e199a2bedd780035b059e2c11497c1be8d00956da661bbd5b17086c7c317b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1401",
+      "article_ids": [
+        "f4e14ee71aeeddec7145d1942fdd706a29ade8fc25e819d88cff1880e8e3b9fc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1402",
+      "article_ids": [
+        "4d3919de51adc63bbab41ad832bfa746af543fed2f6d46187e96f38692befd75"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1422",
+      "article_ids": [
+        "0b67d2739fa16c997aeaadc80f0ec83bc39463f029cb8b413503399361065ec2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1440",
+      "article_ids": [
+        "bfc40ade4d104d22a494439441caf6af2d91cf9fc6706c6cbaf150d6670b7380"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1460",
+      "article_ids": [
+        "75f11d4aea1da5fd1dd88d09d24d8cc8df0885e9198363b8e97c616263edbc8f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1510",
+      "article_ids": [
+        "f2f3fc41f873ff7907c7feb75d1de58149233a37d2f443f4c2846597e4ccd47d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1545",
+      "article_ids": [
+        "8eec001dd7d045e7db14f1a777c4a1fb12b84cfe00ad32c01a451849f47aa4f3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1555",
+      "article_ids": [
+        "379d8f77e442810f70d8f4f9c46643922fb53843f06cf3af1f63925b40c9d4d6"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1558",
+      "article_ids": [
+        "8accd8909f4f3a5e52c163634e7fd0da61fc8f61072e4fac828d5308f9a8bf64"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1568",
+      "article_ids": [
+        "fe138cfd9bcb580ff43b79a0145309dc68ba149a5fecf229459365474bc2c072"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1580",
+      "article_ids": [
+        "8835d90e67b4d44d17ca3b174fa8902a518573ab1615e60ff5112c4e50c0a68d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1611",
+      "article_ids": [
+        "775cd97e4f0bfe92f6292649dbe7e03be2c5dd2e59b3b299065e693786456143"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1646",
+      "article_ids": [
+        "e27ac4aa42dd25b8a8cb17903b154b916760a845c974e6d23da1957fd57a828f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1847",
+      "article_ids": [
+        "df80d42af1aba0c9932d3b00d0b85b7220c1c769851203fefbff0ffafb4a23dc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1856",
+      "article_ids": [
+        "e356eff5ecf9b579bee61dc8d67d7e62ae04477e406ba88587d1d0674525987c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1890",
+      "article_ids": [
+        "b298607daaaea1dd679fa9f448e2d73e5e490b551c359a965a4dd033c5d3a753"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1895",
+      "article_ids": [
+        "c0a05c92e5586ff5a642a55b909f522a5fe201a83c428db0af9ac7d7e14f7acd"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1907",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-1995",
+      "article_ids": [
+        "f16913d53db677dd04344ce1faba3422d952b090da5101d396832c8332fab403"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2002",
+      "article_ids": [
+        "8a1041a0aec6f3613b6996497e4b0476a1fbce93a2c3507b7b40ce9499459558"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2014",
+      "article_ids": [
+        "7b42cab8c30739252671f938d0c69c71a51a4cdb19b9f6e56a5378a332b18e55"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2050",
+      "article_ids": [
+        "ab2ad9806cb024f02dd85e50aa6b1a69d0043e04475c0390222652218e8cc12b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2082",
+      "article_ids": [
+        "15bc08366a069219b8cc1c5c71a194527fbb777e64bd3be57db4a4f086d833ee"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2135",
+      "article_ids": [
+        "812a130a701ad608edacf1ffbd1bd167b45e83a1b5d8fd41e86464a3dd7ff3e7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2174",
+      "article_ids": [
+        "78517ca3535cc1690c389781c4c9f178a8d0ef09760bab906e39e5fc82ae4267"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2180",
+      "article_ids": [
+        "ff1e4d5bfd0e0b9254a7facb70b44ce5a9ed6ee20bf107dee272e012bcec05f4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2216",
+      "article_ids": [
+        "0dada44a45a2c2bdb88c75cc8cbf4059324bcf6ee7888c0f1895d054490f698d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2229",
+      "article_ids": [
+        "d66ce286f64a9b3e9e8ea260e40d9889db460a557470bc8910748d35d6f85d79"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2269",
+      "article_ids": [
+        "39158650c97235d1f9b98a71be41c5222ddb3ee3e497cfb1d10ef3bd0bc166cf"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2309",
+      "article_ids": [
+        "8a01f7c263693e3165ff5d2dbe8be55cc93a230b5ebe35c930e947d82f69fbaf"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2332",
+      "article_ids": [
+        "25970cf750e7e13ac7680906a5d7fc20ec265364229947125790f89912893cfa"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2348",
+      "article_ids": [
+        "53e365befb02392deb7a735f90e9a86107db2e02c6fc7852275051dcfbc70824"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2351",
+      "article_ids": [
+        "b482493763b0c317309c45907198d3cdd10aff3dd6b64bb84bd14ba030cb7119"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2360",
+      "article_ids": [
+        "4246d7c074b682070cfcfb70f7be3cc084fdc0a6755c18ee3b4ce1dca372d73a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2396",
+      "article_ids": [
+        "e736860bf3a4b106dd4d4ddb3571972e93a2f0eb84d34dcb58d1bab3d0f6a1aa"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2406",
+      "article_ids": [
+        "41536da0a7fa854e5c168bff651626fe963b1e7b6f9bc1ae01382e3837a0a69e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2413",
+      "article_ids": [
+        "15ff6e4bf0c9ba64bc7b9e9daf83080144c80d02ec45d6e377a350136757003c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2421",
+      "article_ids": [
+        "349cc481714b8dc465bebae1c7f2bbe30600369e9e325a24ae2e92aea4bfcc9d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2436",
+      "article_ids": [
+        "3f112a4df2c5a57cd6882883fea347eec59f44f4e8a387ede877cfaea491bf23"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2446",
+      "article_ids": [
+        "b24fd822fcf50a1f4147326e97539307214e323d239a449cc17b08ba6369e51a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2466",
+      "article_ids": [
+        "2df3cc9ca1ef3aa264a5a49b71a62079762b49ec6893c8c14de44775b9d47eef"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2476",
+      "article_ids": [
+        "0bd55a6a525618b58e660277ee8d3ac40cd7c46d7d41ec80155b753e3a8f923d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2547",
+      "article_ids": [
+        "f7e69294c283129ef2762e645a47d2939739e5cdcc39f34b30ea79d09bf7c86c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2548",
+      "article_ids": [
+        "f4a7a61c7d96b5869bfed58e4b088a4652599916114a54a6d513592408732ed9"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2586",
+      "article_ids": [
+        "496dc81877ff4ec732efe7b32c3bb178090a0f3d5b7014398e2d83f11dcbb17e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2596",
+      "article_ids": [
+        "476ede8763f497346ce9374fc5d3fd5105504fcb5b6e3c03e21d5346c41b8ef0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2625",
+      "article_ids": [
+        "a953dae4c1ed60710d49de221e76a932f1e6ed95d125e101360ddaf068aed621"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2633",
+      "article_ids": [
+        "ce39b208f3f2a9630e2150b968773e1278f0311c23a6885e39a8c68a161853b3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2634",
+      "article_ids": [
+        "2d2313593a6d93ceed58105a0fdfd7e6f26d15274c36d51281940fe0de1d87ea"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2635",
+      "article_ids": [
+        "76147b1471d71f9d7cc7234cfe6bddfc17482da894bcf074ef70cc6c1d7090cd"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2637",
+      "article_ids": [
+        "1f98ff3d8eb4927afeaeb4728a77f9e2fac141cc169d4841d7fe185ab629a450"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2667",
+      "article_ids": [
+        "dd7827690d9dade0ef47cf2a10fef1937269ade7b58f11b3257716053dc49c0d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2743",
+      "article_ids": [
+        "4950042067e3a7a70f777a4e64b429f49008c2b5434a457c2827fdd2572e75a3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2745",
+      "article_ids": [
+        "b98290a0a78516f3543780e4747dad2dedb47fdeb5f6137fa57f01fa1b650a62"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2775",
+      "article_ids": [
+        "86918b7ddbd3b61b317f9309ad86c9d386283718f3e0329020f29298d5d16920"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2781",
+      "article_ids": [
+        "e3888a7fb859fd46c209fb60514fd38a6840594c1789f6c68a0f6bbbccee9521"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2788",
+      "article_ids": [
+        "ecef436469fd4cde6fac8de885fd0ae17c13b86caceeedb75ebfaffb74756104"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2792",
+      "article_ids": [
+        "1403d508164e4e5696497050cb9d3cd4dd37144fda63a38cffed6ebdbeb0d511"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2812",
+      "article_ids": [
+        "e9834351bb7987445d24f29104b581667ca246bcd6933e8659bec6aae45f23d4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2837",
+      "article_ids": [
+        "24e091769b03c9d1b51ec91c639b42d1fed814a70c011158ca4f9c6bac6a1968"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2848",
+      "article_ids": [
+        "9b95cbc00971f87cf4fe0c29f245799fc2c351b899ea97488ccc2ff475e0427d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2897",
+      "article_ids": [
+        "9a5d71018a62d5ccd5a942c7698f7d85b13ea3d3a839b4e104f73fc8714c64f8"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2914",
+      "article_ids": [
+        "436530334c1b8eb4149ceb97281923bc85ad371a518ba4343dca0998997a4f1b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2935",
+      "article_ids": [
+        "a9506f7d071f2aaa74ddf6094e75637815bc4ec0402dc4a3661e9751240fcfc7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2943",
+      "article_ids": [
+        "5bca50f20afa2f00e69a4140a7339da07f3deb1596be0f6268c6dcd20f0f8d08"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-2997",
+      "article_ids": [
+        "d22b8cf6e599e0b87d177e1f66a122ce604d5b9b7ace1e7a54649f684f322ae1"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3005",
+      "article_ids": [
+        "a7950f7294d677e45f4794b3fc326216664f9405e27cb53a99f434b07914512c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3011",
+      "article_ids": [
+        "faf462e130d83a4e250f74c70f9a1ee1789f06ad040fccc445ace0dae31128d7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3026",
+      "article_ids": [
+        "a65dfe74a440a9e34a2902bd6a84a97d0e11f03cb9c3a195a33f7e5684207e23"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3039",
+      "article_ids": [
+        "937b358656e7ca61452cf3722deb8d5b50a13c02d9c23460949ca45e81c9c6d0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3065",
+      "article_ids": [
+        "1f2d126ecb782ce35c6e749b02a92927073d7b0d6685bc6e88ea0eefc34c1182"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3088",
+      "article_ids": [
+        "89944e67a4166d03527c30db41dfeaf088194afafd3a86de3892b091e873557e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3097",
+      "article_ids": [
+        "df97370b1142610d30a8783558dfcb24e49b064f5b692d8d9f10edbcf5bac53e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3120",
+      "article_ids": [
+        "3e3cac61514556efebc460d28445c4ea70cdd6535ef534a72d7ec6e1aaafcc1e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3135",
+      "article_ids": [
+        "31203c9b4315761764dd67b4fb584dbdae95add2bcad402dcace8d47f710262c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3169",
+      "article_ids": [
+        "6a7862f6ca0a3d60fdfc2d47e567c95590d6c63e871c479a8672bfda6a84602b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3172",
+      "article_ids": [
+        "afee392ef2ea7c06c2e7abb3314ef2d6aaefc8f03da4bd5fbc1e7c18f26a4748"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3203",
+      "article_ids": [
+        "e256f541a2af99925a57923cd99a1489e870f7c68316c6c999ac98333f1e94a2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3216",
+      "article_ids": [
+        "303d6b81d88a2609a94bd88a301a221dd9a39a27026440ed7b12119c5714568e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3223",
+      "article_ids": [
+        "76e09fb9e2d5c77d485ae8bcce8f77e3eb9dc734408a0b1a47b0f1c6a74708a9"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3229",
+      "article_ids": [
+        "b06d44237139bd878d9e8958dee2369cb0b0ea9f98ac0d6eaa40cba38a92088a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3236",
+      "article_ids": [
+        "67a3f221fd534154171587f82582316d351abcc1e6170a670477a0e6ddd8df07"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3291",
+      "article_ids": [
+        "698dc6c25dc3aa59760bb51b611e51455f95c3f66ef597a07255b743fb588205"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3351",
+      "article_ids": [
+        "7ef1db752c15f037f778928543f5998d04230bd4dfa8cc82c769208c7333a661"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3363",
+      "article_ids": [
+        "1c75794bda59dfc3e62aeb1f33c7f9325e3e5ea9d04d7a6c1e8030bc80ba3ff0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3391",
+      "article_ids": [
+        "5f06ad3bca00492d7fdc8320dae965a4c92bb67333a898b06feaa76f8184cf7a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3435",
+      "article_ids": [
+        "d9baace3c6537562ab9a2312bccc322fec448b955354ae68cb969fab6ac5a680"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3443",
+      "article_ids": [
+        "23fe45058bf055210d18206c64e3a09792be77a8faf6d4437240bbb21f38eead"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3450",
+      "article_ids": [
+        "8bb553868784fbe89fcedba20ec7e95bbfa05c06d1011d02fd062a5c64ab6ebe"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3451",
+      "article_ids": [
+        "853ff60a8b19d337d380ab7fd9d205ee4a7afe2beb82d63948d979b52c98c916"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3476",
+      "article_ids": [
+        "5d7c3749ad06b43a2dd99885aeb3442e15a484921b8a1898ccd7acba95b3f505"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3519",
+      "article_ids": [
+        "2daaaa42bcd8c41b743c0a14c086c1f86df4582d8e65c35b8de22b84d0d987ac"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3535",
+      "article_ids": [
+        "33e7817c003deadf9e7de08832c4138f9cce603b1608d8c3842ed07f389d8796"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3536",
+      "article_ids": [
+        "6699f00afa1d6ce8659b7311c40726309f604505f7429c229f6cbff5c83ae766"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3542",
+      "article_ids": [
+        "ed189fa2ace6f9fe82232bbcc7474e5fc0c59c52262a8ce3bb795f62a74f5a75"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3567",
+      "article_ids": [
+        "c909365452a23c6e0de3855b25e286d8babc89b82262e9fbbaa5396785645314"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3586",
+      "article_ids": [
+        "0a4b6283ef873e4d0c601cfa0ad91af97ed5152c5d538cc367d4c385b1315689"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3614",
+      "article_ids": [
+        "109d6bb02ab24636bb3a7096a02d69f4827fdbddad471b641a95676a164d3f24"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3652",
+      "article_ids": [
+        "c988998f78a2128bc9133b3efba86d9da6c3e957d17181396ff10aaa1fb73d3f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3676",
+      "article_ids": [
+        "151008146c293070b6f088aabe7eb20d53677d88e9837bc09aabd9562caa9586"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3684",
+      "article_ids": [
+        "d3356e0ee84faa0984f325ea53fa8508ffc04003d9f9f46378d9c3d445d9cd0d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3695",
+      "article_ids": [
+        "92b9cedff6a82b2a3fd34ce6bc8aefaa135a9e05faff0719897e39c18ed80079"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3698",
+      "article_ids": [
+        "f1be6368c97e2ead76766938076eb875b75aac76e01bda839a6690fb26562f1d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3711",
+      "article_ids": [
+        "302c26bd3ff9c7c03832d3b24565d4c322c4cbab6523ae642d30b8b3b84c3786"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3719",
+      "article_ids": [
+        "884f33b55fcac07fa65ce3962318e19ff00be0fb9d7e30789a4a512100f66fb4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3739",
+      "article_ids": [
+        "c7ae70c96ef074229138113575fbe96d42464dd2a1ae2ada2af2ff521d3eede6"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3747",
+      "article_ids": [
+        "57ce9b42be24221045dd221deddb64ac5fafd33e052a355ffc0c8f4946cd14a7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3749",
+      "article_ids": [
+        "0240cbd7080e9cbab1b508adb50a5d0702b768c36bd50234811c7a627bc8369b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3763",
+      "article_ids": [
+        "1b9bb0e74d29e63b98bb6deb46ab123a6733468d0f1fc2cf5d3de4ca494bb9bc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3771",
+      "article_ids": [
+        "f2f9aa91fc9ec766d9ecc54a4d1a687a71379f2d71503c884fc3c17225daa628"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3773",
+      "article_ids": [
+        "4aa0bc784ca4a1d5552526d60cb40703cceb86ab970628c1588afcbf589d27af"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3787",
+      "article_ids": [
+        "4b50f28b372d8fcc97595398fd6eebf2ae55a91ec9834183a60639e6fb10c484"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3849",
+      "article_ids": [
+        "c6ccf8a979e772bffb713b07bb42f14eaa05854bbc06c168774181cb22fdedef"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3872",
+      "article_ids": [
+        "b334da53084a4ffb8dcc5abc24d35c75f4cd62512dffef997ae0e6cec7d600a3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3876",
+      "article_ids": [
+        "b25c6efb27a0b9feae21fe8ebef3a7e76676fbe3dc0f619f1f85999f7415eb59"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3887",
+      "article_ids": [
+        "42530cf2722f9ddb8a3c77c63f80e94a41d7ba60c3760245b1706372d3f14c46"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3924",
+      "article_ids": [
+        "2646f8824dd6117bb5d9154cd66191288f67086ff25beeb781a94a24b638c24d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3949",
+      "article_ids": [
+        "a053bd1715875661e54dfe4f91e83b376561769ae63b45a7c705b0ce87e20c60"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3958",
+      "article_ids": [
+        "9726c6d50aef91f1c989f4e960bb234e073c174a715be20cfac7da6848425856"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3966",
+      "article_ids": [
+        "10c430da52ae2d712e766835a879676f0ad4ca023ea9b25ae1264c40a8703643"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-3972",
+      "article_ids": [
+        "637e60f4d4e8521d9b83ff12da4be46e6af5f2eb48f06b2fcc13e8263f603017"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4055",
+      "article_ids": [
+        "9e230552c57c597d79764383be9d3e6adbcbff05f4922ee80f5e022d243b236e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4059",
+      "article_ids": [
+        "02287623c6425cc93a0d5bc5e044ed18302202cb4eec9d3b271441fdbc4fd1c8"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4061",
+      "article_ids": [
+        "4c79371027f31081e1ccec0bb3d047c31879454c6274d7a18f50bb7bb648171f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4065",
+      "article_ids": [
+        "e578afc8b016ed1532df4ba57fe9362649aeec074e6338f92412192024c8c09c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4080",
+      "article_ids": [
+        "92d60f7eda33a65f2f496d066445e8fa8c032ed20c023288a246493560d49d6a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4082",
+      "article_ids": [
+        "c40e58a91511eb8696e0a6f1a81b015e2e3f5d66b36c6500d89dea2aa8fc0c28"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4102",
+      "article_ids": [
+        "d5b246124dc3e13b85de67704e3fcf30f30c990d0381a7b3a3c667f33f01f8e4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4104",
+      "article_ids": [
+        "c682f5d29587203114b9a682506c1aac8eeb7593839d59c5ebde23d500139a82"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4155",
+      "article_ids": [
+        "89e3241511eef9fe3ca4e81fb6f85fcc8dea656c4e8276becddd933053bbab51"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4205",
+      "article_ids": [
+        "74457d866fc4950e4c4b0f0299392c26f8b4334bd8550f5ce74777f249c07825"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4223",
+      "article_ids": [
+        "0da8b97954c5fd727f865ac8d7816e7a79ab1413e924ba1806a690457bfb127c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4236",
+      "article_ids": [
+        "3a558ce095a588a9ec0b90abf9c30fe79f25b7d219e6c84cbbe8c4833f2af75f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4286",
+      "article_ids": [
+        "99499c14c12f12f30d6bde107d4ea5d26a273bfdd48c6166b2abdb03066b2061"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4359",
+      "article_ids": [
+        "4555fae18b8d2cd79191148d2f931853d2ee3cfad9bd8f1ccb94b144b4bcc77e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4380",
+      "article_ids": [
+        "54828cc90c922611ec413590f5460d612e93fa1618c960bf173420a73f4a9a4c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4406",
+      "article_ids": [
+        "0d8ec032fb65cc109236d017d4a84791b9c89819297387506b50b4dba544a91e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4413",
+      "article_ids": [
+        "f7dffd2675edffc3b65e4dabb9a5a676626987bb41a060e84763631abad871d7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4414",
+      "article_ids": [
+        "dc7158ad74427f5ddd59ecdddd053990a083afa6855495badf9f3c6ffe279c4d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4445",
+      "article_ids": [
+        "5e93ce403eaa80249f1ea018ff4777bc46f1e1efab2fb28820a01df473ab48cd"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4484",
+      "article_ids": [
+        "35bb023caf8d093c06e7e071d64d2fe7bfa5449657e0560d1fc939661671352e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4500",
+      "article_ids": [
+        "0bb4e2239263052866303f9ff9483056c8a43d6462040fccbb19d6e8dc3ad5b0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4505",
+      "article_ids": [
+        "5210cdca4d870589b6592929fc4c22e507131c80310b328afe9ebee2e404ead3"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4560",
+      "article_ids": [
+        "e82702a4080484b5e627b81b6776ba4611182184d591ab889c191cc1fc8a552d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4602",
+      "article_ids": [
+        "44ac80104f2840a040407f38c3c6ed70d6b93277419d8a5b16d34d60ed86423b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4642",
+      "article_ids": [
+        "7d0e3b54b97be625d3a60f24a026c9510b0521d717bb329e0c88be2898687d9b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4657",
+      "article_ids": [
+        "c533eec6cd2f0b29d86818fc460ab7cd087d46265d4fac1ea35135808b3cfef5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4689",
+      "article_ids": [
+        "42e1220dc4bb5ed6d0defbf1af3089e4e8b5c9ecb2e9f181fa6ecff4bee7bd5b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4697",
+      "article_ids": [
+        "7f30596eb40a43e65a607ff51acfc7827032c1d34ac0dd781fb38dfc4d7df09c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4706",
+      "article_ids": [
+        "eba3da732c23cb353b5f62587d4acda568c5577e89eb8111c450479c15055b8c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4756",
+      "article_ids": [
+        "564961a496faa267fbe2bd8a9d3776fb22e7140f6ef3191c35a10556e5fe796d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4761",
+      "article_ids": [
+        "2cc2dc261c2e8ac1b5c9e9adb956bdca90ee9d9aaaa5948fd823cde0104e7763"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4795",
+      "article_ids": [
+        "76f467a6f07dedfe956e5c2587bdfbc6d1e75e955efafb23605310cb93b2a658"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4805",
+      "article_ids": [
+        "1e8707d2912b6c0c26ea506d28cb7ebfdf894faad3e02dbfa62b12385ec9e3ed"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4824",
+      "article_ids": [
+        "64c612dc0e4263eaf2dc3a7ec55e6639020f309273995794779229a5cb5a72f7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4841",
+      "article_ids": [
+        "6f0d0a595ee849dae55b16ce3ba23df9bb99530111db90682dd1006d7fb83fea"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4860",
+      "article_ids": [
+        "7a2a95eef86788654dd78c208baa0f8adc5ba65cdf05d27b90ebf747d87ca171"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4863",
+      "article_ids": [
+        "6af2cf8c23f9ed54314d3747d54a6c9665d101df0b2ee928fbad9a41ecca8cee"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4866",
+      "article_ids": [
+        "955e349465d216d2b75c723ec3da05937bb1cd9d070c655067ea9632d37025da"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4879",
+      "article_ids": [
+        "fe6393d8648dd1a3b4c6c7ad77875a8ef43461242b2012d06ab287ff2c32e156"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4928",
+      "article_ids": [
+        "5388940e8bd28209a1d599863edcab8db462bec58f57855f354ba0f9f757e701"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4930",
+      "article_ids": [
+        "0cad4f12f1ee2441d9c5b53ed275055d6f8827b9a5f1084a4bea6d019b102581"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4952",
+      "article_ids": [
+        "91d7c9ff1f5c407f172352b6e5dd7e658f661f6d0c4e010a67399a65aa3526e8"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4954",
+      "article_ids": [
+        "d391b02530f6843867433bcba72089474f2971b9e64e4afebc4fb3d5ab741008"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-4991",
+      "article_ids": [
+        "2bf787b652c17520254d0e6d24e4b749ee1dfe830db6b5c28abf33b91766f83d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5015",
+      "article_ids": [
+        "730551e2a11e27a18971e43c99f4b6a7eca3f57911f73e0d12a22060767853bb"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5019",
+      "article_ids": [
+        "c7f850bcc1fe002744a31e7d349d515912b821c94e8644b7d62ca05128a90de5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5021",
+      "article_ids": [
+        "ee6bad30af6913686039e2d9d3489fbdf6cd3d6e438a209a920ae13623943e2d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5094",
+      "article_ids": [
+        "731ad8ba6822b7d8fa285582ed3d24d245fc9aca258c768f80c04c2bb45ee3e5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5141",
+      "article_ids": [
+        "ba3a5c26b9e1666f8db94ba30f086ed335819bd4d9051c61dc0e4dad852beb5f"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5152",
+      "article_ids": [
+        "c15f5317ffccc67142c746754b455f149cac41f0cb550bd61a09face9f42c98c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5175",
+      "article_ids": [
+        "49cabe70190c49ea0e518611a20c41bb3abfa1b0f7f8d200b1e6b2aa287b0916"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5176",
+      "article_ids": [
+        "b7505952ea647f14dba28f37e79337a02be5ae3ec8766e83ce3c736a4f0978ff"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5186",
+      "article_ids": [
+        "f4cc0c1013da390b273f9c473fb09744b4d2bddb48756dd82da66452a685f19d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5195",
+      "article_ids": [
+        "1b347bdcb2e5fb7af4417c4905fbe53895009ff325bad417d5661e13c06099a7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5209",
+      "article_ids": [
+        "d5af9c6538fdcf001d38f53d38ae59c43c7d190218829c31a40240e63efddec0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5215",
+      "article_ids": [
+        "773602488f4a5deec9880ff8c6582d3df6dff1d5024907c2707d4a1bf9ffc4d2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5224",
+      "article_ids": [
+        "aa10154bcd5d626d5cc081f9242033fe39b4d9b7a6b89f3f48001b4be825e984"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5234",
+      "article_ids": [
+        "2c44fd32ae52acbaac0fae2750b5c93d2b005888e169d92093445f1703154b18"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5239",
+      "article_ids": [
+        "6142a91c3e8f8aa5b3bfbf53643703a7a1caccb0ce50a5e05db0eba1ae983fb7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5286",
+      "article_ids": [
+        "078a2524b547973255dd53904131770561601fbddd498f2ad9e99b46c197c6d4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5289",
+      "article_ids": [
+        "fb573b1d9dcc70edd4e5ef49cacd4311ed3e8bac4722d20c3ce70d292c353c9d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5309",
+      "article_ids": [
+        "2a6e9464bfc8b240abd14dadacf9f978b9e4e6267a88b97e8b96f3fb0f8983cd"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5311",
+      "article_ids": [
+        "72d1e860aae4be40ec1f7bd9f5fb47fc24af33069ba34cdeaf6501d9d4a9c9c2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5319",
+      "article_ids": [
+        "731485d3298993f0d568996beb061fcd55926c403e5ec3f0697562cc34c14dc7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5328",
+      "article_ids": [
+        "ea778b40bbefc2e87c3d494efc2da9723019386dac6a233d9ab85ea738a5a826"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5336",
+      "article_ids": [
+        "bab1f6681dd7dee7a4c8487d66c99361dadbcd7a9bd77b08352f4875dbb359af"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5356",
+      "article_ids": [
+        "d362a7c27058e0fa0dec805e1b2d6884f1d59f8233f3f28f831c5f0ffae1b6d4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5357",
+      "article_ids": [
+        "d9ca4be93f8840731a76df2f1c17407b81983db984fe78c0c8cbf0b7cbeb61df"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5363",
+      "article_ids": [
+        "45b701b7a0fd05d18ecbac0b2aca1369b36d567c07fe2d3c28ff0f5cc199fbfd"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5375",
+      "article_ids": [
+        "f16eae6a6f52dc5892d4b4ff59f53cd1df026122cf5c239d9b6b69d7b4110997"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5377",
+      "article_ids": [
+        "8355a228e57d0a766b3bdfd591d86a12b060f7e7f7d4fd19c468cb8f1c336721"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5400",
+      "article_ids": [
+        "7da481b1ad349cd68739926281cf3cb8836908622f0c63c6fcc02a06650eb8d9"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5414",
+      "article_ids": [
+        "ff90eb357000721da1372be13a4fa125327a93df486c93a63d5dc1bd58b330e7"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5452",
+      "article_ids": [
+        "f5b2414b3adff52a906566d7507ad59e9dc2e657c6ad3912ee243b50cbf45e2b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5475",
+      "article_ids": [
+        "2ab2d1d87dd042e0edafd77f6dfd8f82fb623528dc1632d1c4edfbc29ef3cb01"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5481",
+      "article_ids": [
+        "7a49619f637ed0508bca64c0995e2726276d8faba2907d97350e0f01384709af"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5510",
+      "article_ids": [
+        "705e9bce5f419c2228f656b9098d9a8301759ba7a010ef9cb67134b232e44640"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5552",
+      "article_ids": [
+        "bd733148693e4c9af276c5f4f8ada235a658ba858f18ca1bebb8bb98cb201b94"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5605",
+      "article_ids": [
+        "f0db1871672565eefc093ad3bafcdff7e0a6eb58104edf17ab88d6ccb3003e5b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5606",
+      "article_ids": [
+        "be7dc55f18f09992ba827908f0e022346f4e05c76aabd81090798aa28714ff0d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5616",
+      "article_ids": [
+        "59ebfd997e44c54b2b1aa8abd8b32441e5db1592faaa642bdf4e43e79268da1b"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5623",
+      "article_ids": [
+        "5a2b6e217f9323f10fd56eb3edb1c7bf1359c23986b4a0f2c18d48af24a84b7e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5657",
+      "article_ids": [
+        "3774f0a306c92c27c3532f8bf4fc34205dac140976db7b2af6076b1f457af93e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5684",
+      "article_ids": [
+        "533cfd5834c9899cc617303c436760665cd3a454e9b58012d26931214741b270"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5696",
+      "article_ids": [
+        "e1de10f8b2f4abfeaf7aa5725d9b6863fa53d4fadc6d4d99c7fd509a60802101"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5708",
+      "article_ids": [
+        "f05bd389d06667cda35739eb1ec3204d545cbbe82af8274bad2cd107d1c525ac"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5746",
+      "article_ids": [
+        "d7113791e44cd37735438840a7ffa14c24a38e862b214af542841a649b658fbc"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5760",
+      "article_ids": [
+        "d56cc797742e7d0f98c27dec5f1af036c473f5563e4ae7cc066db75c78d800ef"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5764",
+      "article_ids": [
+        "e94ea69d0053d0fc8250e2411223e56f3d5d9017fa8f3d0980c30fc50ba68dd4"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5770",
+      "article_ids": [
+        "4d67d4b89df26275fc54eaf3ce2549826f6ad7ced9914d2aa0ef91ba37441900"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5790",
+      "article_ids": [
+        "8bdaa02807bf1db3d8680c39301b587b161e883404c51c8c4a9d71ca5d185d29"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5809",
+      "article_ids": [
+        "9409d7b410ad13663ce9f68153855ee502d29970f9fba34ec1c28b0f6202c3c6"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5824",
+      "article_ids": [
+        "a4e961a185fa6ceaa1bce7766f2ae55a7b1a1e337493f07fa6cf68a10834bb1c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5842",
+      "article_ids": [
+        "b24fbc836f2db27f372e83de9bcf03c4096f1cf4856d40eaf37fb8df916d2d2a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5869",
+      "article_ids": [
+        "d7bb4266543946d34e4692d46816bdd58b464b43d9b46765419ce38fbd894872"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5879",
+      "article_ids": [
+        "91a3dce5658c24d3997e54060fa4165b2c79d63412cd9763750d61ad1c014f78"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5885",
+      "article_ids": [
+        "3a7f071d449b515129fa3438027557400cdf2a631ad0bce0a70104636016576e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5935",
+      "article_ids": [
+        "85a369d064f103f8d11657eb3fba58e7519b3e7bcdc2adaf87c8e78ff530c316"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5944",
+      "article_ids": [
+        "640a0be05b019b446a8c6e514fb2b066263315660653106e1cf7dab454cb7602"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5968",
+      "article_ids": [
+        "287091b697570e3e0d4066cf3831abeeae02b4db719063c22e53c567d872656a"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5976",
+      "article_ids": [
+        "4aa2d7ede41320c80c144ceba3da0f29b9115fc9e27e7affbe63636d7229fcae"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-5980",
+      "article_ids": [
+        "02af2de6eeac21b22fe06d5b045a23f2d7195b3f4d7a8805ec7e4bb0cb5bdb44"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6028",
+      "article_ids": [
+        "00fbb2d2c2d38938abcd1f3915e9c6b84e2115feba253a6c98a207f14d81ef02"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6034",
+      "article_ids": [
+        "acbda10e10f5abf2587b39469ec6f525d9b65361c961e3c8af2d0a4ccf5560c1"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6039",
+      "article_ids": [
+        "91556289aee37f085a54a911dbeff00c0ee46ec97cb183916e210c6af9c1edc0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6077",
+      "article_ids": [
+        "68a24c9d71959d7c46db838d5cbc848f6f3eb947e2b71dd2a5d4c2c9deea56ac"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6078",
+      "article_ids": [
+        "501e36854daad9734507fe4018e52a61843b992b523e7725f8f0024117d856d0"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6089",
+      "article_ids": [
+        "56584d2b226c6722a6b95851df6e49608b98b1b86d4e8e030a6a5eddaa4bb99c"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6090",
+      "article_ids": [
+        "04b26eef5da0742cc2e6b2fa8e05e1ae87cf4e2bb6244f5f7d1ee05af8dbec6e"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6095",
+      "article_ids": [
+        "b6bcae67ce1f4de92766921f85fd3eed3dd08f185bc2673d21972edc294f0425"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6115",
+      "article_ids": [
+        "09d9b435727d2a99e34da31adffe0ff1162564ed3cea8ac8774c855eb69931c5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6116",
+      "article_ids": [
+        "e06f0a1986e764b3b7c00c87558ec08ce2e169fbf150dd8199903f8e3da291e5"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6138",
+      "article_ids": [
+        "b441225040a0ba6d9a698830bb4409931c31ecb31cf3e4f8bec65cd363e0c6b1"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6166",
+      "article_ids": [
+        "555199c2a4920eb27c6ba5a25846015954a56cfb4c233f3c8cc928447bcd39c8"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6173",
+      "article_ids": [
+        "0df548f92f34463c358e9c56767a833ef932b4276713756834b2ede86d75a9f2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6182",
+      "article_ids": [
+        "a03ea252a48c7413316db6449f8cfc21032990f82e599411952d1f751e07b4f2"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6190",
+      "article_ids": [
+        "0831f2b08fd5f65f7b748d3675e217b064a640691334237f5fd1572f01cf5214"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6195",
+      "article_ids": [
+        "77e0db48f8847cdf58336a331bd5070b8d6dc02c7372128f1f3c54b51fee20b6"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6198",
+      "article_ids": [
+        "061f90494b31e2652f19a257f9d10c8a77099368f9bfb1ee55d91d3678ad871d"
+      ]
+    },
+    {
+      "id": "wixqa_synthetic-6214",
+      "article_ids": [
+        "0df6872a49be2cf3ff12b13bd7bcfcd45b502f8c679c2a693a425b1b3cdeb583"
+      ]
+    }
+  ],
+  "count": 300
+}

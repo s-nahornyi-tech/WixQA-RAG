@@ -1,0 +1,1271 @@
+{
+  "version": "held-out-001",
+  "role": "held-out",
+  "dataset": {
+    "name": "Wix/WixQA",
+    "revision": "d662dc42479c14e202eccd832f8c4b66a035c4cc",
+    "parts": [
+      {
+        "name": "wixqa_expertwritten",
+        "rows": 200,
+        "sha256": "a1bb6888a8394f980bc88f0d09b873fcd283ff4c9782600bc203f8103c2f1bad"
+      },
+      {
+        "name": "wixqa_simulated",
+        "rows": 200,
+        "sha256": "9a2b9f42c081467b3de5bd92511e770bca3cc7977f169526fd78dd3c985ac4a8"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "complement",
+    "of": "golden-001",
+    "of_fingerprint": "c5c7e3997778cd85cfb824c4605e771354a9c929ec061e5c06a3b62ebb71a2fa"
+  },
+  "questions": [
+    {
+      "id": "wixqa_expertwritten-003",
+      "article_ids": [
+        "de6e96935f0b3321cf29416ec164482247b5035f1d2e12b36e203be8126ca8b8"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-007",
+      "article_ids": [
+        "5f02fc2f8937d16a4d8cdca47da36ae34429e0b279fb0cc56af72e2d91991a28"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-008",
+      "article_ids": [
+        "65806b123ff355cef16c8abe4301f1df982e2c3bddcd33b81ed446b92a79e336",
+        "db6a6c4be5c11fae531b4fdd546601bab6d4a26b669a8a7ea6063c62a045e9d4"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-010",
+      "article_ids": [
+        "6b97c2a01f5c925927be970c1f768a4b628c6b52071dec733aa3a1719d17332e",
+        "7a49619f637ed0508bca64c0995e2726276d8faba2907d97350e0f01384709af"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-015",
+      "article_ids": [
+        "8309620f90a06cbd6b28930591ae59e9f479687ecac060543c69b26214815aab",
+        "3407d197c71652bee58835ba148794a8be7e70cf9e25c599044b823c82db29fd"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-017",
+      "article_ids": [
+        "81815895cb357ab2acbf1da52c91beff481c88fe49d416c853b3fb88a4ae92ea"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-019",
+      "article_ids": [
+        "8c2e56296ddb7b441238ff06cfa9b38204aca9e27371386689b1fa4643cdfbff"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-021",
+      "article_ids": [
+        "add129d0bc54006961811dd5065b2a69281974d794e372f68bc07c93696113dd"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-022",
+      "article_ids": [
+        "0a229edfd466b96f849627494fb95e837c7c603cb7fdc5faeadef815a4d24804",
+        "035b36b995402d769a3117eb0ad63257a662e2eeef678b16ba740925985e7ef8"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-023",
+      "article_ids": [
+        "b254fcee6b0ae875da5b74071a0d306ab6eabd8ec17634d257638716fb529809"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-024",
+      "article_ids": [
+        "49d9e88fadbf11fa4e685c847590078ff9394c2fe7566094f504f53ca4aca465"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-025",
+      "article_ids": [
+        "49d9e88fadbf11fa4e685c847590078ff9394c2fe7566094f504f53ca4aca465"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-027",
+      "article_ids": [
+        "f353775648c196649a0cf3bf26ddea340192587efe7c0813b798325f1c412d9f"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-029",
+      "article_ids": [
+        "f3dbc14fb416feb03a8bcf6c1712d81cda4c6febe412e6acdfd8f471ed79adf8",
+        "8fd246f6ccd03e386abc914642c48d78e1e434c6895b6e98f7c690eb18f3a5a1",
+        "0dc521e6f3cba224285bf32a1a21752313474992f3be4ac874a7b93ca2f7dda6"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-032",
+      "article_ids": [
+        "a4bf9c1cccd5e7ae04d0fc890eaff145b933ab55a52c6cead06a9cd4caa8b6da"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-035",
+      "article_ids": [
+        "2b832f8ff9989b6dede601a3c6452990cb582aed046dabac16fbc38d73e65ffd"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-036",
+      "article_ids": [
+        "b4717557702f3383d3d4d7bf071c2ab5558b34fc62860d2879f9d48f86ec2de8"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-041",
+      "article_ids": [
+        "7ccd1a9278fc1868865563acc0217c1d235e1ce76037eafcde2c68cef64a8134"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-046",
+      "article_ids": [
+        "9127986712d7e0b33baf120a91ba5ea476a3b62e99269a561dd5e530db3df2b0"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-047",
+      "article_ids": [
+        "3a7ba684b5e7faa2655c89d099e584de6ee63108a373400a59695da8167db572"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-048",
+      "article_ids": [
+        "8cb92704d3a87aa92be4860f006c3f7a959143b5f8cf4f962940508288b0dc04"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-049",
+      "article_ids": [
+        "89e39fdcca5874eb36d1ac6e359aad2cd93b601cac1cf7b8743449ff7893ead8",
+        "fd36cb06f2de70a197a60c3d2e28ec709fb884cad11153f4bb6086f82755bd5a"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-052",
+      "article_ids": [
+        "83dafaa7fb8598367f32ef2d9fb39c1aa49650ca2f64f1509f7823fc117b664a"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-053",
+      "article_ids": [
+        "7a2109a7643cefe52eaad4779d868dd6fc845b8ab32bc8f131c4c63d53cb7456"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-054",
+      "article_ids": [
+        "c5d82d4a0741f072da98db371148bfb349e37561fd94b32c1326dd77d44a4ca0"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-056",
+      "article_ids": [
+        "979c6547854102876ed45799be73f2318ec3d52c2705586f883e9d5f9b204a15"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-057",
+      "article_ids": [
+        "78dc0abf7cd09064c04990aea88a340dffa118def85ee43bf18ec4eb315d47fe"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-058",
+      "article_ids": [
+        "fee90bfe3add5c0b9da4bf8c8c34b2d0ef79e802d7b8410b961c46df370ce336"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-060",
+      "article_ids": [
+        "bb528ecfbf28534c702f7e30e97e1709741bb421299f376de6cb2bc8d8226fc4"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-061",
+      "article_ids": [
+        "0cb65c6c64d2b1d3c54f04b08cd7c801334d1984fc5f07e6e1396b12fb9e1a08"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-062",
+      "article_ids": [
+        "4c851bd1efd1009bb75a387d406fb7914e906fda9016127529184916bd23aaf9",
+        "8001def9f1cf8810f2685ae0f68ee4b4bca089212d77a99e0a129a1feb80370f",
+        "040613a5d53923efc2955eb8cfaf4573d7543dd0236bf90be63e40613359e4cf"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-063",
+      "article_ids": [
+        "1c468e44c3b2e17cc74bea4b83e6037bfd26c1b527d04f9641dd61c8fe54f551",
+        "e4b87cd9f38d652e0a018619be5ab7f6065f07e1bd2556d629fb34e693feff91"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-064",
+      "article_ids": [
+        "13b7554664bd39da1825c1d396cefbb0afd2d9989c1a15659dd158b0a46b916c"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-065",
+      "article_ids": [
+        "1c468e44c3b2e17cc74bea4b83e6037bfd26c1b527d04f9641dd61c8fe54f551"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-069",
+      "article_ids": [
+        "91eeefd48d7dcfda197a6162b7259e942579b5e6a53f50def1b09fecaad9ee1d",
+        "c767f27f3884550a922260527f188d9b32ded399a5f36d4f0b060253348764ed"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-071",
+      "article_ids": [
+        "dbe0a26325502a70afa42a8484e6e062fc31132896f4319cb0fc34f834551ee0"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-073",
+      "article_ids": [
+        "b3e00d9ee8731d8ba3a2b6a598661814748800e26861ceae1043dd13aedcf7be"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-074",
+      "article_ids": [
+        "79455d545b2391bcf2def8c7df43ee5d3ae9aab18a36e789313c94e1f8765be8",
+        "261156aa199b397241f9cee31209331949be17ff75a2a42e53c561f2fd676951"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-075",
+      "article_ids": [
+        "8cb92704d3a87aa92be4860f006c3f7a959143b5f8cf4f962940508288b0dc04"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-076",
+      "article_ids": [
+        "be7dc55f18f09992ba827908f0e022346f4e05c76aabd81090798aa28714ff0d"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-082",
+      "article_ids": [
+        "db8689fb79cbb114d40d38ef89019ee4ee0498e18d25fcd9d53fc2fa42a27f80",
+        "7a49619f637ed0508bca64c0995e2726276d8faba2907d97350e0f01384709af"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-083",
+      "article_ids": [
+        "de6e96935f0b3321cf29416ec164482247b5035f1d2e12b36e203be8126ca8b8",
+        "1403e3db0171995eea2a0db5b92dd93976f60c48784dbe752b45b337a386adf5"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-086",
+      "article_ids": [
+        "c260289b0947792bce0e1eac376a70ecf0d3482c1cde01fa22d8f44e6f7c0ee0"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-088",
+      "article_ids": [
+        "9b19fff16487d6d81f188358b3be7959490e4d7291d43c35a71c5bb8b86814bc",
+        "5ffac2b71ea454640d6b2ff424935c68ca726a8d32036290d1c9f1a80d22667c"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-091",
+      "article_ids": [
+        "9dbf43e1a13c691c4ac016af067a723ca51613c639d878f7c556dd1a1fbc3018",
+        "62b26d2236aba83295c706d5285e063a5fa09be6fc2d892d642540a04b1c4d85"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-094",
+      "article_ids": [
+        "7f54f872dcefc45fec8d7bcaabce47769bccfd8f4efa5ffe8e8232fe11aa24c0"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-095",
+      "article_ids": [
+        "68cbfcb0aff2ca1fdf344999c66e4d87d40a216564a892512ff8018cf2bfe253",
+        "7d8d492c5a4e6bf7d47764f9674e840b6fc652c98689d1791c3442f306478613"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-096",
+      "article_ids": [
+        "be8f488cde5a1ed4c46d21398144c082d689a03c700094b17d1c9ebb1ee6902e"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-099",
+      "article_ids": [
+        "91eeefd48d7dcfda197a6162b7259e942579b5e6a53f50def1b09fecaad9ee1d"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-101",
+      "article_ids": [
+        "fa04af5bc8c305f900f1f6bcea2fe66b5a4e6b1a84450b1f6a980084d3d4addc"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-105",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-106",
+      "article_ids": [
+        "8a5d43f98c713e756106a2550c8ead9e4a16c91d2b55f9a240f82bb75fd12782"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-107",
+      "article_ids": [
+        "568140964e5e7c1628d295e9991367ed4d3c2090a79105d435231030b620a506"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-108",
+      "article_ids": [
+        "9fc70d88423ae68403ccb81a8aac36ddb5fd9a7ac9d57c35ba163e3dcb841417"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-111",
+      "article_ids": [
+        "d43e89aeb2f79d5105520f40f84f47ad11f15dcf092e5fe3376bc368dd152b80"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-113",
+      "article_ids": [
+        "7e10270b7ecd05d2573050a9ca7541e71edcb7b2b82220e5079404417d10d7dd",
+        "01e329b27ef95b8d6da00ab4ef5edde1b08837190925fefaaa23a1cbbc5bf855"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-115",
+      "article_ids": [
+        "df9f74cf9a89d202a31987b14b341e2568b71e795d65c737c3cc7c8b1f19061a"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-119",
+      "article_ids": [
+        "50d02c7ce566adb08742f7cc810bfceab55f9a7c43fcd7fe73f932c2cd8c88b1"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-120",
+      "article_ids": [
+        "3b3edb8700d3099ded98be8cb0c41785b964f5fc4c21db11cd1c6f96250b8f51",
+        "c8783e7cee11b09c015c396cebcd60a7c1c93a4be6d73383d41d11369527cde3"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-121",
+      "article_ids": [
+        "f971216b06eba45cab4e5bdea5cea4196024af8360a81ed603a36266bbc6f926",
+        "085e4d36ca87e3caa5403c4a9fd6e2e147826bf93f1bb909f23e8f2f0167aab4"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-124",
+      "article_ids": [
+        "fff4ccf96f0bf0a2c3b82d0734f384299bd9a621212087f9268941acd38f8d36"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-126",
+      "article_ids": [
+        "7e10270b7ecd05d2573050a9ca7541e71edcb7b2b82220e5079404417d10d7dd",
+        "1d9d696fc7b02666984ce70a49e3b106ce8bf6f4fefe351d2cd4d1ec98253aac"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-130",
+      "article_ids": [
+        "67b2ea3d053a9791a200c8dbdded565fa8ccccb50d375cca1c745ecefba17e88"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-133",
+      "article_ids": [
+        "7be79d27b2ef237124f1629a4f23d8b41c90ebf31dc773ca90e86aadb95fa09f"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-134",
+      "article_ids": [
+        "93b0b3e9143597ad88074cb36a60e73fc02d9d5e7ebe707b1537847cda6f2cb1",
+        "ef059ae18c89167addcdbf182f654898434af7b6ca75577fdc7e006c65568be1"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-137",
+      "article_ids": [
+        "4410ec7a468ff3fbc16226eaed066aa4eedb099aec7d62d9190586d9b814cdf4",
+        "52491d805ef26f5b0173acea8a0de24c75364577bf69eb1ba6442d8ae449b738",
+        "bd21131f1c6bf94859aa1162f8e4d7c1e91e5596a86e873f0a65a5b87dddfd58"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-139",
+      "article_ids": [
+        "0f62233f56e2ec9872da8bf74fda8cf9af0dad4b186d40e3cd8284495d2027a3"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-140",
+      "article_ids": [
+        "63feacd4199e7305e277fb785d3ee7a86252a753036d619d4a940b4cc36d5f82"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-141",
+      "article_ids": [
+        "c8ecc53ea0624b4a821db3a01ce700772ef6415db04a456ed9f06bd55e1d1fe6"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-142",
+      "article_ids": [
+        "7702378a3ae3fe2d928d1610769855c7f506efa705b43039177cfcd85e93766a"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-144",
+      "article_ids": [
+        "10d6ad17a475d203890657d1d3bde15f4e5534bc4b0c1f87ca79bd29f73fd2a7"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-145",
+      "article_ids": [
+        "a58c7cf097e081353986990a4ed90f8045245be5295358d7e81a7475f1204e09"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-146",
+      "article_ids": [
+        "8f75535d9e4da125f409c551a9606beda8b8475d6c1351f783dd13914103962f"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-148",
+      "article_ids": [
+        "77c054b29c894610643f474b8ddf92ab5d587006d3e23d13d38da92df7944d8e"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-149",
+      "article_ids": [
+        "a58c7cf097e081353986990a4ed90f8045245be5295358d7e81a7475f1204e09"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-151",
+      "article_ids": [
+        "0585250f004dcd17b373021e5e3b007fe355250034fe47d554a98b3c448a5f06",
+        "a3c3c5e722dc8315970e6716f6437f346b313e57b347f50df990006cea519384"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-152",
+      "article_ids": [
+        "76f467a6f07dedfe956e5c2587bdfbc6d1e75e955efafb23605310cb93b2a658"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-153",
+      "article_ids": [
+        "7a2109a7643cefe52eaad4779d868dd6fc845b8ab32bc8f131c4c63d53cb7456"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-154",
+      "article_ids": [
+        "da2dea4c3119a1a60712c89c0a28e6364574434e36bf8a40621a5f4af08da9a8"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-155",
+      "article_ids": [
+        "869eb0229f712d95946eba23a8eb9aa28569a8c0122194b342135ced4d59c1fb"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-162",
+      "article_ids": [
+        "61aecb220fb63759dba4322f38aee10901bd2b2e1634d2602a0a6077b18da072"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-164",
+      "article_ids": [
+        "153d5a847abdb50f5a761f9051a4dd86544d59b3df8535dd1b0181fdad85b3ce"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-165",
+      "article_ids": [
+        "708a5fa702a563c41598a4d2b446735e9e382ecec5b1e8a9b63a23c20fca6b47"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-166",
+      "article_ids": [
+        "2a73ce56cfb6d899bd155abfa319d863360de062a21d82959a45463086aee274"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-167",
+      "article_ids": [
+        "31b175af682a7a0437661ebdca352fb3a8bb648ca4b2c165ea92f9b6dc26b71f"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-168",
+      "article_ids": [
+        "0585250f004dcd17b373021e5e3b007fe355250034fe47d554a98b3c448a5f06"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-170",
+      "article_ids": [
+        "e21d28bf471b3d8bff54d979e90a89561cc441d8e64f700edb9a90083b7fa4a8",
+        "64c2cd062c241c4f313d58c772508e30fe3b4d4a66a210a9f32661c22ad0b400"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-171",
+      "article_ids": [
+        "2c1cfbdffd686c067c718ba09df4f1be69152ef1944991c80ef7eee8502cc946"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-173",
+      "article_ids": [
+        "568140964e5e7c1628d295e9991367ed4d3c2090a79105d435231030b620a506"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-178",
+      "article_ids": [
+        "8eb9087663e148864e022b06c70b4c81bda356bdf88cc2ba28dcf874ceff1d2c",
+        "386e74ab93c52d0695c73f765d338c795de37dffd976c98b932bcd6a89fc3248",
+        "89bd8fb2548fafd8d6efe52f176c2b81df7e40aa83b04cc87efc31ffe44ecc90"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-179",
+      "article_ids": [
+        "79dc16843d8a0dfd5b12f8e260801c1f27e02c813cff37b75e04f023b01cee8c"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-180",
+      "article_ids": [
+        "32b870b67f3290a2bc22e736b2e2e84c3e5837be7ee447d88bd4efb73d4e8b00"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-181",
+      "article_ids": [
+        "3e67c7354f82374d09126f1c6dbbd0cc6faf8b4f4ffda2f9dd8dd941a94900ce"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-182",
+      "article_ids": [
+        "568140964e5e7c1628d295e9991367ed4d3c2090a79105d435231030b620a506"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-184",
+      "article_ids": [
+        "c847ec20daef72ad69151d50ab17df712f69a345d67ad325f3cb79c7af1dd013"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-185",
+      "article_ids": [
+        "80fcb5fecede003f96127d01abb7581d7064e1794c279cb679d2df6fa20085e6"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-190",
+      "article_ids": [
+        "0c7a0fe78a0902c8b6c608792cd420cad12d1930769664eb7cd6fbc776a5eef5"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-192",
+      "article_ids": [
+        "7e10270b7ecd05d2573050a9ca7541e71edcb7b2b82220e5079404417d10d7dd"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-196",
+      "article_ids": [
+        "7c0a599789c8ec5db8e5a8bea387803a28f09d070cb5ffb282f0ffcb571a01dd",
+        "703407f8c458eae47456d67598acf9d8074440e21c16467aac692c8a60d4c5e6"
+      ]
+    },
+    {
+      "id": "wixqa_expertwritten-197",
+      "article_ids": [
+        "cb6b0342764eae6b79f220a5c257bd78c798cf2d3bb048b30f513593a44cd99c"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-002",
+      "article_ids": [
+        "b0deddf5fd90fdbbc6bb0642864cd677ad15ce670b5e11c15c2d7e1866b20941"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-004",
+      "article_ids": [
+        "e50de10192b5400200a660fbb369e74b41e34993d266575c850adb5f133ad8ec"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-006",
+      "article_ids": [
+        "30e947f31d1aa3cce6c8a56a558ad7b26c8b832019ad1fc43a77c968948bc543"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-008",
+      "article_ids": [
+        "30e947f31d1aa3cce6c8a56a558ad7b26c8b832019ad1fc43a77c968948bc543"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-009",
+      "article_ids": [
+        "7d0da53c57e9fdef4a2e84fdbc3131664c9d589ccd3ba35b7204832ff649fe8e"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-010",
+      "article_ids": [
+        "8cb92704d3a87aa92be4860f006c3f7a959143b5f8cf4f962940508288b0dc04"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-012",
+      "article_ids": [
+        "274d6e98ad9fb6507f3b060889c3bfb9b970ce889712802ff5253321c473b320"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-013",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-016",
+      "article_ids": [
+        "0cb65c6c64d2b1d3c54f04b08cd7c801334d1984fc5f07e6e1396b12fb9e1a08"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-017",
+      "article_ids": [
+        "5fbc47de05f77213b05973a3ad35aa082c84b11e939a70914ed66ab02fc8b617",
+        "568140964e5e7c1628d295e9991367ed4d3c2090a79105d435231030b620a506",
+        "7a41c2861f9b080e4c17b7dd870e5b3bdd92a9a8ba284b6f0018788f5d4abbbc"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-018",
+      "article_ids": [
+        "e9366441d1e037a1470c9bad57455dbadc24db0ca931791edd0f3b026ea6a58f"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-020",
+      "article_ids": [
+        "31b175af682a7a0437661ebdca352fb3a8bb648ca4b2c165ea92f9b6dc26b71f"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-024",
+      "article_ids": [
+        "79dc16843d8a0dfd5b12f8e260801c1f27e02c813cff37b75e04f023b01cee8c",
+        "086889ad91fb2f346a1726ab309948ff3f13c8b82401780cd57d9eeed03d9846"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-025",
+      "article_ids": [
+        "57f174d79dd398a4e383da8032d17a65e0b13464a772fd1bebdea4ec42c72356"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-026",
+      "article_ids": [
+        "30e947f31d1aa3cce6c8a56a558ad7b26c8b832019ad1fc43a77c968948bc543"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-027",
+      "article_ids": [
+        "056bff264f2a5f5a0812b24253519f1442441f3de5bb499edcbb9771042166a4",
+        "94f56a17d8ed9cdcbe129b8f738abb2a8bce8fc5df564cb10fc2b1cf6af8c947"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-029",
+      "article_ids": [
+        "9f2a29ed9ee07c2f4dd36e3b76e11d6db791d599c7c29c7fe150fb2ef7122e03"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-030",
+      "article_ids": [
+        "0cb65c6c64d2b1d3c54f04b08cd7c801334d1984fc5f07e6e1396b12fb9e1a08"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-032",
+      "article_ids": [
+        "b4ebdad50c19030ab2055b012c18112697eacfbfe74d225309af98b588ca7d21"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-034",
+      "article_ids": [
+        "bfba00a6b50e760754cf2f0488322ad185519a8764219f3593299bd4ae4bc287"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-038",
+      "article_ids": [
+        "58a8c12fee654106b4b102a102fc1849dd84c65307d7fd5631b11e425533d6ed"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-043",
+      "article_ids": [
+        "67a1ead59779fb94271c1d295e7fd159b79c78fe8baa8c628dc980c12818567c"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-047",
+      "article_ids": [
+        "c5d82d4a0741f072da98db371148bfb349e37561fd94b32c1326dd77d44a4ca0",
+        "5eb416fe9b1828587d4420cc44170ffbecf7cf59da5eba0826dcc8c88977d359"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-049",
+      "article_ids": [
+        "03a4b265f07434ae2902fea205586fc65e3a67157283b02fcd566e08d94c1925"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-050",
+      "article_ids": [
+        "b04d70eee300e05d32a3690a44f947cdeb5bc389edf039bc8538873d2c5f5d01",
+        "e6c75e305dee6a7b7c825546d563986086aee0ccf497b6adda458d53cd0ef1ef"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-051",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-054",
+      "article_ids": [
+        "09c5b027c3bc064fce040e3026d4c53857ea73d1044bbe51bcf3de0dfa08efbc"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-056",
+      "article_ids": [
+        "59d93fe87c11976a1762f5f0b66281fa3abaa794311b4797740eb2fc17a04514"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-057",
+      "article_ids": [
+        "eb89aff474f99df5060003e2ed1fac7d5e1d45b13f8fdd1cba21f01c395810b5"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-060",
+      "article_ids": [
+        "433babaff419a5eb8f4382da82d0ce678a40213b164dd45d973a7c53fcb67baa"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-061",
+      "article_ids": [
+        "30e947f31d1aa3cce6c8a56a558ad7b26c8b832019ad1fc43a77c968948bc543"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-063",
+      "article_ids": [
+        "a4cc1ee6d897b9047536a42e242d8f3faecb8262b7e079e250c11c16ba055597"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-065",
+      "article_ids": [
+        "40471df3893c34657f809704ef972c7856250e5cd15f8724e1569f72ffcf4d4a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-071",
+      "article_ids": [
+        "a523339043576f53538adc22688f8a186f08fc11d65ed5a9815c4a45a32876b0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-072",
+      "article_ids": [
+        "956bbf707c268c79e6569bcd9b8f8cb3cbcf85eedc7a1b6e265057eda71b17fc"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-073",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-077",
+      "article_ids": [
+        "3f18e67ea2bccc600c1e980728eaaf0ac1f6d5a479c746659b71dc335a69610d"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-079",
+      "article_ids": [
+        "d43e89aeb2f79d5105520f40f84f47ad11f15dcf092e5fe3376bc368dd152b80"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-080",
+      "article_ids": [
+        "6f6ae57fef0e4a673bacf3026b4536cffc110ca6b41b9eea84ce4b713da56bc9"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-082",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-083",
+      "article_ids": [
+        "5af9f8d065ffc9499873f23f912e41b1e3adcbb03ad072cc7f7f1ee4eb011b76"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-085",
+      "article_ids": [
+        "d262c28f3f0024e0dfb60eb25002640afa800a29d6b4263c4158996b59cd3b51"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-087",
+      "article_ids": [
+        "342d28a33c5d389b3c95e85b92edf70ef645f4b4847cce4834926b25bf4fb5a0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-088",
+      "article_ids": [
+        "5af9f8d065ffc9499873f23f912e41b1e3adcbb03ad072cc7f7f1ee4eb011b76",
+        "03db5358176ca06a9fcf2354b3ce13d9f084ddd595f105104190e31b8931fb4a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-091",
+      "article_ids": [
+        "5d91682a3ccf89e0b666cd84cf7ce3ffa54627a528f9fd22a30fe9f3166f01ab"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-092",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-094",
+      "article_ids": [
+        "24c9dc3527c72792a1fad6b1e797d7076ae164d3b713c883981b0d3d436b483d"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-096",
+      "article_ids": [
+        "4a2853d7fa4660c1214cc9ead8ade3c206435e28e89aab97ec577f78768a0597"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-097",
+      "article_ids": [
+        "b641c07ad43b492a7868f722ecc0d71960832f05f33a39d791733c6c35435299"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-098",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-099",
+      "article_ids": [
+        "26f430a890330f28e45b56a877d2fee2be3fbe1165f32e27fc9a8dca06f44362"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-100",
+      "article_ids": [
+        "f5c9f44a576976e96ae75ac06e549213af0178daa4bdfd6c89e1bd4fce5fbc95"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-101",
+      "article_ids": [
+        "d262c28f3f0024e0dfb60eb25002640afa800a29d6b4263c4158996b59cd3b51"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-103",
+      "article_ids": [
+        "40471df3893c34657f809704ef972c7856250e5cd15f8724e1569f72ffcf4d4a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-106",
+      "article_ids": [
+        "2df3cc9ca1ef3aa264a5a49b71a62079762b49ec6893c8c14de44775b9d47eef"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-108",
+      "article_ids": [
+        "3a298780639ec3835829c6f157c3abdb350758b67332ee656cfb75c86a89b509"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-109",
+      "article_ids": [
+        "0818abadd5ad83b3f396db90f9b5720cda7b873449c63b9e0518e668992f8545"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-111",
+      "article_ids": [
+        "77e0db48f8847cdf58336a331bd5070b8d6dc02c7372128f1f3c54b51fee20b6"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-114",
+      "article_ids": [
+        "d262c28f3f0024e0dfb60eb25002640afa800a29d6b4263c4158996b59cd3b51"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-118",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8",
+        "2d2313593a6d93ceed58105a0fdfd7e6f26d15274c36d51281940fe0de1d87ea"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-119",
+      "article_ids": [
+        "fee90bfe3add5c0b9da4bf8c8c34b2d0ef79e802d7b8410b961c46df370ce336"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-120",
+      "article_ids": [
+        "03db5358176ca06a9fcf2354b3ce13d9f084ddd595f105104190e31b8931fb4a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-121",
+      "article_ids": [
+        "6972e00a444818846c8a01ae4b9034c331de3e25b76e8d88d90d8056d1c69b5e"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-122",
+      "article_ids": [
+        "d3642a56325a2f02f8eb896a7928901fb0010cedfe15a2ea5cf49144cfd13db2",
+        "a4e961a185fa6ceaa1bce7766f2ae55a7b1a1e337493f07fa6cf68a10834bb1c"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-123",
+      "article_ids": [
+        "67a1ead59779fb94271c1d295e7fd159b79c78fe8baa8c628dc980c12818567c"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-124",
+      "article_ids": [
+        "ac52db95f0cfec00e71b43d37c7428fb694f9bc262cd7f2770fe661de581c8be"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-127",
+      "article_ids": [
+        "fee90bfe3add5c0b9da4bf8c8c34b2d0ef79e802d7b8410b961c46df370ce336"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-129",
+      "article_ids": [
+        "ca8580cca10d5bd3fb0257e79a60d30785eca79e1917a033692f47dbfffc1f5a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-130",
+      "article_ids": [
+        "09c5b027c3bc064fce040e3026d4c53857ea73d1044bbe51bcf3de0dfa08efbc"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-131",
+      "article_ids": [
+        "cd971374b10725bed95dd234503cb892ce38b2363d73586abfbca59afd78917a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-132",
+      "article_ids": [
+        "040613a5d53923efc2955eb8cfaf4573d7543dd0236bf90be63e40613359e4cf"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-134",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-135",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8",
+        "2d2313593a6d93ceed58105a0fdfd7e6f26d15274c36d51281940fe0de1d87ea"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-137",
+      "article_ids": [
+        "3b1f8740cf430811f1b642145d1245e0a4500fe90c2b59a8059b02bc627007d4"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-138",
+      "article_ids": [
+        "5ac8b5aca71fd129fee573d34097f56d7027fee87759363b598173604794f1a9",
+        "a5bc5c2e9c8a6e8e6488d016f792e13d2b075ec5b291ea09c850b266ca62bb83"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-140",
+      "article_ids": [
+        "c8ecc53ea0624b4a821db3a01ce700772ef6415db04a456ed9f06bd55e1d1fe6"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-142",
+      "article_ids": [
+        "0c4ff19f8d9cda739e12a432072ac0b8a1f89d86e4a028329fd84e3323fe8dc9"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-148",
+      "article_ids": [
+        "54dc2d121b3355bf1cf57a7a2d23d216fa441bab3b10dcf427dc311a95fbe5fa"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-150",
+      "article_ids": [
+        "3a298780639ec3835829c6f157c3abdb350758b67332ee656cfb75c86a89b509",
+        "ca8580cca10d5bd3fb0257e79a60d30785eca79e1917a033692f47dbfffc1f5a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-155",
+      "article_ids": [
+        "c46a87559179be8c7da03a856a180cbe420362437f129969782ae7718a498bc5"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-158",
+      "article_ids": [
+        "bfea4b80bdf769ab6fab69e9af1957a5b56ba9e96edb45674982aca7ec2f6f9b"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-160",
+      "article_ids": [
+        "cf18d0def5791d095b0b422d562fa99eae8e40d0821d65ae59ea60fb51de48d2",
+        "23eae82e9cf478eb99fb3209b8b0fc8e293350496808ea360600808902270228"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-168",
+      "article_ids": [
+        "dae8c63e84d73a8c4816fc6137396a6e384a0d10bfddd7fc43fea983f95824a0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-169",
+      "article_ids": [
+        "07f6bfabc9072e3da52b359c8f83cfc485f2de700cc246955a65fc5db2ad8357"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-170",
+      "article_ids": [
+        "59d93fe87c11976a1762f5f0b66281fa3abaa794311b4797740eb2fc17a04514"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-172",
+      "article_ids": [
+        "ec8f72aa903614901593a38336bb9d82c594bd75c6cf3a34cfaed687c8fa0eb8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-175",
+      "article_ids": [
+        "8fd4c40c8dcc70e52c32b23e8ae0ec665e9fb64103b1f139d8f21ffd94c80f90"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-177",
+      "article_ids": [
+        "0cb65c6c64d2b1d3c54f04b08cd7c801334d1984fc5f07e6e1396b12fb9e1a08"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-179",
+      "article_ids": [
+        "89e39fdcca5874eb36d1ac6e359aad2cd93b601cac1cf7b8743449ff7893ead8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-181",
+      "article_ids": [
+        "58a8c12fee654106b4b102a102fc1849dd84c65307d7fd5631b11e425533d6ed"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-185",
+      "article_ids": [
+        "b06d44237139bd878d9e8958dee2369cb0b0ea9f98ac0d6eaa40cba38a92088a"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-186",
+      "article_ids": [
+        "501e36854daad9734507fe4018e52a61843b992b523e7725f8f0024117d856d0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-187",
+      "article_ids": [
+        "501e36854daad9734507fe4018e52a61843b992b523e7725f8f0024117d856d0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-188",
+      "article_ids": [
+        "2051f5ae38a64fba6031c1de9330ede2dde1a3edffa1f4cde7d5adcc3ebe8861"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-189",
+      "article_ids": [
+        "ffaaf313a97814dd8efb425857a3f05bfa5a7dd5a7ec6ae5eccb9d6bb32d79ea"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-190",
+      "article_ids": [
+        "897d73c3084173d159d367aa61cce9023498b0442335cec40e899aa310bcd14d",
+        "89e39fdcca5874eb36d1ac6e359aad2cd93b601cac1cf7b8743449ff7893ead8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-192",
+      "article_ids": [
+        "e4ca27f7596f17c593c3b87e29d09b1bd68b614c03ea7d9b06c63394adb1d0c6"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-193",
+      "article_ids": [
+        "c260289b0947792bce0e1eac376a70ecf0d3482c1cde01fa22d8f44e6f7c0ee0"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-194",
+      "article_ids": [
+        "5641574289f2768293891471cfcc69b935623ef2723abd28fcb9dddf430ce5e8"
+      ]
+    },
+    {
+      "id": "wixqa_simulated-198",
+      "article_ids": [
+        "19c646352aff99a496a337e57ec2609112a136102d1246d92cfd823b6c0ef460"
+      ]
+    }
+  ],
+  "count": 200
+}

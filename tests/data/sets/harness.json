@@ -1,0 +1,91 @@
+{
+  "version": "harness",
+  "role": "golden",
+  "dataset": {
+    "name": "harness",
+    "revision": null,
+    "parts": [
+      {
+        "name": "hxa",
+        "rows": 5,
+        "sha256": "2cea478da0c4b4c40a70fe4dac41da0ac6934905658a8301a4b622be726e3070"
+      },
+      {
+        "name": "hxb",
+        "rows": 3,
+        "sha256": "18b3c17b664b747b4f813ae4c6b8fefa20ad03256cf4a961e2e2c17d185fb5a2"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "draw",
+    "method": "sha256-order-v1",
+    "seed": 1,
+    "take": [
+      {
+        "part": "hxa",
+        "questions": 5
+      },
+      {
+        "part": "hxb",
+        "questions": 3
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "hxa-001",
+      "article_ids": [
+        "hx-001"
+      ]
+    },
+    {
+      "id": "hxa-002",
+      "article_ids": [
+        "hx-002"
+      ]
+    },
+    {
+      "id": "hxa-003",
+      "article_ids": [
+        "hx-001",
+        "hx-003"
+      ]
+    },
+    {
+      "id": "hxa-004",
+      "article_ids": [
+        "hx-002",
+        "hx-003",
+        "hx-004"
+      ]
+    },
+    {
+      "id": "hxa-005",
+      "article_ids": [
+        "hx-005"
+      ]
+    },
+    {
+      "id": "hxb-001",
+      "article_ids": [
+        "hx-004",
+        "hx-005"
+      ]
+    },
+    {
+      "id": "hxb-002",
+      "article_ids": [
+        "hx-006"
+      ]
+    },
+    {
+      "id": "hxb-003",
+      "article_ids": [
+        "hx-001",
+        "hx-006"
+      ]
+    }
+  ],
+  "count": 8
+}

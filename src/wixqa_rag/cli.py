@@ -1,14 +1,17 @@
 """The command line, `python -m wixqa_rag` (contracts/cli.md, "General rules").
 
-The frame: the two groups `dataset` and `index`, the kinds of output line, and the mapping of
-every outcome to an exit code.
+The frame: the four groups `dataset`, `index`, `set` and `run`, the kinds of output line, and
+the mapping of every outcome to an exit code.
 
 A command is added to its group in `build_parser` with `_add_command`: the start of its
 verdict line and `run`, a function that takes the parsed arguments, prints the result lines,
-ends with `verdict(...)` and returns its exit code. `main` calls it through `carry_out`.
+ends with `verdict(...)` and returns its exit code. `main` calls it through `carry_out`. A
+command whose arguments have a rule that holds between them sets `wrong`, a function that
+takes the parsed arguments and returns the reason for which they are wrong, or None.
 """
 
 import argparse
+import re
 import sys
 import traceback
 from collections.abc import Callable, Sequence
@@ -126,7 +129,124 @@ def _index_build(arguments: argparse.Namespace) -> int:
 def _index_audit(arguments: argparse.Namespace) -> int:
     from wixqa_rag import audit
 
-    return audit.command(arguments.index, arguments.data_dir, arguments.json)
+    return audit.command(
+        arguments.index, arguments.data_dir, arguments.json, arguments.set, arguments.sets_dir
+    )
+
+
+def _wrong_index_audit(arguments: argparse.Namespace) -> str | None:
+    if arguments.sets_dir is not None and arguments.set is None:
+        return "--sets-dir is given without --set"
+    return None
+
+
+def _set_build(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import questionsets
+
+    return questionsets.build(
+        arguments.version,
+        arguments.role,
+        arguments.take,
+        arguments.seed,
+        arguments.complement_of,
+        arguments.data_dir,
+        arguments.sets_dir,
+    )
+
+
+def _wrong_set_build(arguments: argparse.Namespace) -> str | None:
+    """contracts/cli.md, "`set build`": exactly one of the two rules is given, and no part
+    is given twice."""
+    draws = arguments.take is not None or arguments.seed is not None
+    if draws and arguments.complement_of is not None:
+        return "--complement-of is given together with --take or --seed: a set has one rule"
+    if arguments.complement_of is None:
+        if not draws:
+            return "no rule is given: --take with --seed, or --complement-of"
+        if arguments.take is None:
+            return "--seed is given without --take"
+        if arguments.seed is None:
+            return "--take is given without --seed"
+        parts = [part for part, _ in arguments.take]
+        for part in parts:
+            if parts.count(part) > 1:
+                return f"--take names the part {part} more than once"
+    return None
+
+
+def _set_check(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import questionsets
+
+    return questionsets.check(arguments.version, arguments.data_dir, arguments.sets_dir)
+
+
+def _run_report(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.report(
+        arguments.run_id, arguments.per_question, arguments.runs_dir, arguments.sets_dir
+    )
+
+
+def _run_check(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.check(arguments.run_id, arguments.runs_dir, arguments.sets_dir)
+
+
+def _run_compare(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.compare(arguments.first, arguments.second, arguments.runs_dir, arguments.sets_dir)
+
+
+def _add_registry(command) -> None:
+    """The options `--runs-dir` and `--sets-dir` of the commands of the group `run`."""
+    command.add_argument(
+        "--runs-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"the run registry; without it, {settings.RUNS_DIR.as_posix()}",
+    )
+    command.add_argument(
+        "--sets-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"where question-set records are kept; without it, {settings.SETS_DIR.as_posix()}",
+    )
+
+
+def _take(text: str) -> tuple[str, int]:
+    """The value of `--take`: `PART=N` with a whole number N of 1 or more."""
+    found = re.fullmatch(r"([^=]+)=([0-9]+)", text)
+    if found is None or int(found.group(2)) < 1:
+        raise argparse.ArgumentTypeError(
+            f"{text} is not of the form PART=N with a whole number N of 1 or more"
+        )
+    return found.group(1), int(found.group(2))
+
+
+def _seed(text: str) -> int:
+    """The value of `--seed`: a whole number, 0 or greater."""
+    if re.fullmatch(r"[0-9]+", text) is None:
+        raise argparse.ArgumentTypeError(f"{text} is not a whole number of 0 or more")
+    return int(text)
+
+
+def _add_directories(command) -> None:
+    """The options `--data-dir` and `--sets-dir` of the commands of the group `set`."""
+    command.add_argument(
+        "--data-dir",
+        type=Path,
+        metavar="DIR",
+        help="the data directory; without it, the default data directory",
+    )
+    command.add_argument(
+        "--sets-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"where question-set records are kept; without it, {settings.SETS_DIR.as_posix()}",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -194,6 +314,80 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="where the result is written; without it, data/audits/ID/<time>.json",
     )
+    audit.add_argument("--set", metavar="V", help="the version of the question set to audit with")
+    audit.add_argument(
+        "--sets-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"where the record of --set is read; without it, {settings.SETS_DIR.as_posix()}",
+    )
+    audit.set_defaults(wrong=_wrong_index_audit)
+
+    sets = _add_group(groups, "set", "The question sets: the golden set and the held-out sets.")
+    build = _add_command(
+        sets,
+        "build",
+        "set build",
+        _set_build,
+        "Produce a question set from a data directory by a rule and write its record.",
+    )
+    build.add_argument("--version", required=True, metavar="V", help="the version of the set")
+    build.add_argument(
+        "--role", required=True, choices=("golden", "held-out"), help="the role of the set"
+    )
+    build.add_argument(
+        "--take",
+        action="append",
+        type=_take,
+        metavar="PART=N",
+        help="draw N questions from the question part PART; needs --seed",
+    )
+    build.add_argument("--seed", type=_seed, metavar="S", help="the seed of the draw")
+    build.add_argument(
+        "--complement-of",
+        metavar="W",
+        help="the set is the complement of the set W of the same sets directory",
+    )
+    _add_directories(build)
+    build.set_defaults(wrong=_wrong_set_build)
+    check = _add_command(
+        sets,
+        "check",
+        "set check",
+        _set_check,
+        "Check the record of a question set against a data directory.",
+    )
+    check.add_argument("--version", required=True, metavar="V", help="the version of the set")
+    _add_directories(check)
+
+    # The parsed arguments hold the function of a command as `run`, so the option `--run`
+    # is kept as `run_id`.
+    runs = _add_group(groups, "run", "The records of the run registry.")
+    report = _add_command(
+        runs, "report", "run report", _run_report, "Print the numbers of one run."
+    )
+    report.add_argument("--run", dest="run_id", required=True, metavar="ID", help="the run")
+    report.add_argument(
+        "--per-question", action="store_true", help="also print one line for every question"
+    )
+    _add_registry(report)
+    check_run = _add_command(
+        runs,
+        "check",
+        "run check",
+        _run_check,
+        "Check one run record, or every run of the registry.",
+    )
+    check_run.add_argument(
+        "--run", dest="run_id", metavar="ID", help="the run; without it, every run of the registry"
+    )
+    _add_registry(check_run)
+    compare = _add_command(
+        runs, "compare", "run compare", _run_compare, "Compare two runs on one question set."
+    )
+    compare.add_argument("--first", required=True, metavar="ID", help="the first run")
+    compare.add_argument("--second", required=True, metavar="ID", help="the second run")
+    _add_registry(compare)
     return parser
 
 
@@ -207,4 +401,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         if name is None:
             parser.error(message)
         return _wrong_arguments(name, message)
+    # A command may look at its arguments together: `wrong` gives the reason, or None.
+    wrong = getattr(arguments, "wrong", None)
+    message = None if wrong is None else wrong(arguments)
+    if message is not None:
+        return _wrong_arguments(arguments.verdict_name, message)
     return carry_out(arguments.verdict_name, lambda: arguments.run(arguments))

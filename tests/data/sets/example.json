@@ -1,0 +1,48 @@
+{
+  "version": "example",
+  "role": "golden",
+  "dataset": {
+    "name": "example",
+    "revision": null,
+    "parts": [
+      {
+        "name": "exq",
+        "rows": 3,
+        "sha256": "0c84d93ce3bb97ad62bcdbe162e4937a763476f890981f7cf8bd46f522a52a57"
+      }
+    ]
+  },
+  "rule": {
+    "kind": "draw",
+    "method": "sha256-order-v1",
+    "seed": 1,
+    "take": [
+      {
+        "part": "exq",
+        "questions": 3
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "exq-001",
+      "article_ids": [
+        "ex-001"
+      ]
+    },
+    {
+      "id": "exq-002",
+      "article_ids": [
+        "ex-002",
+        "ex-003"
+      ]
+    },
+    {
+      "id": "exq-003",
+      "article_ids": [
+        "ex-004"
+      ]
+    }
+  ],
+  "count": 3
+}

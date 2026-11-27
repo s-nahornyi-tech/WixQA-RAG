@@ -3,3 +3,7 @@
 
 # Example data is fingerprinted byte by byte: never convert its line endings
 tests/data/** -text
+
+# Question sets and run records are fingerprinted byte by byte: never convert their line endings
+evals/golden/** -text
+evals/runs/** -text

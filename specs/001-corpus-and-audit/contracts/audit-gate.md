@@ -30,6 +30,18 @@ result = require_passed_audit("wixqa-001")
 - `data_dir`: the data directory to audit against. Without it, the default data directory of the pinned dataset.
 - `questions`: the question set, as pairs of a question identifier and its list of article ids. Without it, every question of every question part of the data directory, named by question reference (data-model.md, "Question"). Spec 2 passes the golden set here.
 
+**Added on 2026-11-27 by spec 2** (`specs/002-evaluation-harness`, FR-008): two keyword arguments of `audit_index` and of `require_passed_audit`.
+
+```python
+result = require_passed_audit("wixqa-001", question_set="golden-001")
+result = audit_index("example", data_dir=Path("tests/data/example"), question_set="example", sets_dir=Path("tests/data/sets"))
+```
+
+- `question_set`: the version of a question set of spec 2. The call reads its record, checks it against the data directory with the check of `set check`, and audits with its questions and their gold article ids. The result names the set: `question_set_version`, `question_set_role` and `question_set_fingerprint` of the `AuditResult`, which are `None` when no set was named. `question_set` and `questions` are not given together; a call with both raises `ValueError`.
+- `sets_dir`: where the record is read; without it, `evals/golden`.
+
+A record that does not exist, or that does not match the data directory, gives `NOT_CARRIED_OUT` with the reason (rule 4). `command(index, data_dir=None, json_file=None, question_set=None, sets_dir=None)` is the command `index audit` with the two new options.
+
 ## Rules
 
 1. The call reads the article ids from the store, from the table that retrieval queries. It does not read them from a file (FR-011).
