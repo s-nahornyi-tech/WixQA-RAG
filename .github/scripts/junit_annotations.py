@@ -10,7 +10,9 @@ opening a log. This script reads the JUnit report that pytest wrote and prints w
 - with --verdicts: one notice with the verdict lines that the commands under test printed, for
   example "audit: passed". They are read from the output that pytest captured for each test,
   so the report has to be written with "-o junit_logging=all", and a test has to pass the
-  output of its command on to its own standard output. A second notice states how long each
+  output of its command on to its own standard output. When a "set build" ended as done, a
+  second notice gives its line "question set: <version>", which ends with "(already written)"
+  when the record was there before and had the same bytes. A last notice states how long each
   test took, which for the test that builds an index is the time of the build.
 
 The same facts are added to the summary page of the job.
@@ -38,10 +40,20 @@ DETAIL_LIMIT = 3000
 SUMMARY_LIMIT = 500
 LIST_LIMIT = 20000
 
-# The verdict lines of specs/001-corpus-and-audit/contracts/cli.md, as whole lines.
+# The verdict lines of specs/001-corpus-and-audit/contracts/cli.md and of
+# specs/002-evaluation-harness/contracts/cli.md, as whole lines.
 VERDICT_LINE = re.compile(
-    r"(?:dataset fetch|dataset check|index build|audit): "
+    r"(?:dataset fetch|dataset check|index build|audit"
+    r"|set build|set check|run report|run check|run compare): "
     r"(?:done|passed|failed|refused|not carried out)"
+)
+# The first line of the report of "set build" (spec 2's contracts/cli.md, "set build"). It ends
+# with "(already written)" when the record existed with the same bytes.
+BUILT_SET_LINE = re.compile(r"question set: \S+(?: \(already written\))?")
+BUILD_DONE = "set build: done"
+BUILT_SETS_HEADING = (
+    'Question sets that "set build" reported as done; "(already written)" marks a record that '
+    "was there before with the same bytes:"
 )
 # A place in a pytest failure text, for example "tests/unit/test_cli.py:12: AssertionError".
 LOCATION_LINE = re.compile(r"^(?P<path>[^\s:]+\.py):(?P<line>\d+): ", re.MULTILINE)
@@ -57,6 +69,7 @@ class Case:
     reason: str = ""
     line: int | None = None
     verdicts: list[str] = field(default_factory=list)
+    built_sets: list[str] = field(default_factory=list)
     seconds: float = 0.0
 
 
@@ -163,12 +176,23 @@ def read_case(testcase: ET.Element, root: Path) -> Case:
         reasons.append("\n\n".join(part for part in (summary, details) if part))
         line = line_of_failure(details, file) or line
 
+    # A command prints its verdict line last, so the line "question set: ..." that belongs to a
+    # "set build: done" is the last one printed since the verdict line before it. "set check"
+    # and "run check" print such a line too; theirs is dropped at their own verdict line.
     verdicts = []
+    built_sets = []
     for child in testcase:
         if child.tag in ("system-out", "system-err"):
+            named_set = None
             for captured in (child.text or "").splitlines():
-                if VERDICT_LINE.fullmatch(captured.strip()):
-                    verdicts.append(captured.strip())
+                printed = captured.strip()
+                if VERDICT_LINE.fullmatch(printed):
+                    verdicts.append(printed)
+                    if printed == BUILD_DONE and named_set is not None:
+                        built_sets.append(named_set)
+                    named_set = None
+                elif BUILT_SET_LINE.fullmatch(printed):
+                    named_set = printed
 
     return Case(
         test_id=test_id,
@@ -177,6 +201,7 @@ def read_case(testcase: ET.Element, root: Path) -> Case:
         reason=keep_end("\n\n".join(reasons), DETAIL_LIMIT),
         line=line,
         verdicts=verdicts,
+        built_sets=built_sets,
         seconds=seconds_of(testcase),
     )
 
@@ -194,7 +219,9 @@ def listing(lines: list[str], limit: int) -> str:
     return "\n".join(kept)
 
 
-def write_job_summary(name: str, counts: str, failed: list[Case], verdicts: list[str]) -> None:
+def write_job_summary(
+    name: str, counts: str, failed: list[Case], verdicts: list[str], built_sets: list[str]
+) -> None:
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if not path:
         return
@@ -206,6 +233,10 @@ def write_job_summary(name: str, counts: str, failed: list[Case], verdicts: list
     if verdicts:
         lines += ["Verdict lines of the commands:", ""]
         lines += [f"- {verdict}" for verdict in verdicts]
+        lines.append("")
+    if built_sets:
+        lines += [BUILT_SETS_HEADING, ""]
+        lines += [f"- {built_set}" for built_set in built_sets]
         lines.append("")
     with open(path, "a", encoding="utf-8") as summary:
         summary.write("\n".join(lines) + "\n")
@@ -267,6 +298,7 @@ def main(arguments: list[str]) -> int:
             )
 
     verdicts: list[str] = []
+    built_sets: list[str] = []
     if options.verdicts:
         verdicts = [
             f"{verdict}  [{case.test_id}, {case.status}]"
@@ -282,6 +314,18 @@ def main(arguments: list[str]) -> int:
                 title=f"{name}: verdict lines",
             )
 
+        built_sets = [
+            f"{built_set}  [{case.test_id}, {case.status}]"
+            for case in cases
+            for built_set in case.built_sets
+        ]
+        if built_sets:
+            emit(
+                "notice",
+                listing([BUILT_SETS_HEADING, *built_sets], LIST_LIMIT),
+                title=f"{name}: question sets built",
+            )
+
         emit(
             "notice",
             listing(
@@ -292,7 +336,7 @@ def main(arguments: list[str]) -> int:
             title=f"{name}: how long each test took",
         )
 
-    write_job_summary(name, counts, failed, verdicts)
+    write_job_summary(name, counts, failed, verdicts, built_sets)
     return 0
 
 

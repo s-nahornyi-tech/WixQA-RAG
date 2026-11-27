@@ -231,7 +231,8 @@ jobs:
           exit "${status}"
 
       # Failed tests become errors, and the verdict lines of the commands, such as
-      # "audit: passed", become a notice.
+      # "audit: passed", become a notice. A second notice names each question set that a
+      # "set build" reported, with "(already written)" when its record was in the checkout.
       - name: Publish the results and the verdict lines as annotations
         if: ${{ !cancelled() && (steps.tests_real_data.outcome == 'success' || steps.tests_real_data.outcome == 'failure') }}
         run: >-

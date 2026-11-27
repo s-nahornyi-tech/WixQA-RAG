@@ -213,7 +213,7 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 ## Phase 6: User Story 4 - Compare two runs pairwise (Priority: P4)
 
-**Order changed on 2026-11-28 (orchestrator)**: T081 tests the wrong arguments and the settings of `run compare`, which T097 implements. So that no test stays red between T088 and T097, the tests T090 to T094 are written right after the red run of T082, and T096 and T097 are implemented together with T083 to T087. Tests still come first: the red run of T095 is made before T096 starts, and the green runs of T088 and T098 are one run.
+**Order changed on 2026-11-27 (orchestrator)**: T081 tests the wrong arguments and the settings of `run compare`, which T097 implements. So that no test stays red between T088 and T097, the tests T090 to T094 are written right after the red run of T082, and T096 and T097 are implemented together with T083 to T087. Tests still come first: the red run of T095 is made before T096 starts, and the green runs of T088 and T098 are one run.
 
 **Goal**: The operator names two runs on the same question set and learns which questions were gained and which were lost
 
