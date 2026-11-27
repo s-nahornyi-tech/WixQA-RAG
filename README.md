@@ -2,7 +2,7 @@
 
 What actually makes a support knowledge-base assistant answer better? An open, reproducible study on the [WixQA](https://huggingface.co/datasets/Wix/WixQA) dataset: every design decision is backed by a measurement you can re-run.
 
-**Status:** early. The dataset is pinned, and the retrieval index of the corpus is built and audited: 6,221 articles in 11,656 passages, with zero mismatches against the dataset (records in [`evals/indexes/wixqa-001/`](evals/indexes/wixqa-001/)). Nothing retrieves from the index or generates answers yet. No evaluation run and no results yet.
+**Status:** early. The dataset is pinned, and the retrieval index of the corpus is built and audited: 6,221 articles in 11,656 passages, with zero mismatches against the dataset (records in [`evals/indexes/wixqa-001/`](evals/indexes/wixqa-001/)). The three question sets are fixed and recorded in [`evals/golden/`](evals/golden/): the golden set `golden-001` with 200 questions (100 of `wixqa_expertwritten` and 100 of `wixqa_simulated`, drawn with a recorded seed; 159 single-article and 41 multi-article), the held-out set `held-out-001` with the other 200 questions of the same two parts (162 single-article and 38 multi-article), and the synthetic held-out set `synthetic-001` with 300 questions of `wixqa_synthetic`, all single-article. Each record can be produced again and checked against the dataset (`set build`, `set check`), and the audit of the index passed with each of the three sets on 2026-11-27 (workflow run 46016911377). The commands that check, report and compare runs do not exist yet. Nothing retrieves from the index or generates answers yet. No evaluation run and no results yet.
 
 ## Approach
 
@@ -25,7 +25,7 @@ The rules and their reasons are in `PROJECT.md` under "Measurement invariants"; 
 | `.claude/agents/` | The role files of the five agents: testing, coding, code review, DevOps and spec |
 | `specs/` | One folder per feature: its spec, plan, contracts and task list |
 | `dataset.json` | The pinned revision of the dataset, with the path and the row count of each part |
-| `evals/` | Everything used to measure quality: the golden set, hand labels, the run registry, and the records of indexes |
+| `evals/` | Everything used to measure quality: the golden set and the two held-out sets, hand labels, the run registry, and the records of indexes. Three question sets are recorded; there are no labels and no runs yet |
 | `evals/indexes/` | For each index built from the pinned dataset: its build record, the audit made right after the build, and where its snapshot is kept |
 | `src/` | The system's code |
 | `tests/` | Tests, and the small example datasets they use |
