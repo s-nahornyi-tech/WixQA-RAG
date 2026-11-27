@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-26
 
-**Status**: Draft
+**Status**: Approved by the owner on 2026-11-27
 
 **Input**: User description: "Evaluation harness (spec 2 of the "Spec order" table in PROJECT.md): golden set, retrieval metrics, run registry. First the ruler, then what it measures. Fix the golden set as a record in the repository with its selection rule and its identity; by the owner's decision of 2026-11-26 it consists of all questions of the parts wixqa_expertwritten and wixqa_simulated (200 + 200 = 400 questions), and wixqa_synthetic is not in it. Compute the article-level retrieval metrics exactly as the constitution defines them: on the ordered list passed to generation and separately on the list before reranking, the share of gold articles found and the "all found" flag, the breakdown into single-article and multi-article questions, and failures as separate categories. Fix the run record format and the run registry as the constitution defines them, with a check of a run record. Compare two runs on the golden set pairwise: how many questions became correct and how many became incorrect. No retrieval, no generation, no judge and no real run is built here; acceptance is by tests on a small example with a known answer, and by checks on the real golden set that need no pipeline."
 
