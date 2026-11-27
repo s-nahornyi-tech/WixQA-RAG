@@ -192,6 +192,8 @@ python -m wixqa_rag index audit --index ID [--data-dir DIR] [--json FILE]
 
 Audits the index `ID` against a data directory (FR-011 to FR-016). Without `--data-dir` it uses the default data directory. The result is written to `FILE`, or to `data/audits/ID/<time>.json` when `--json` is not given.
 
+**Added on 2026-11-27 by spec 2** (`specs/002-evaluation-harness`, FR-008): the options `--set V` and `--sets-dir DIR`. With `--set` the audit takes the question set `V` as its question set, after one more step, 4a: the record of `V` exists and matches the data directory. The report then has the line `question set: V (<role>)` after `revision:`, and the result names the set. Without `--set` the command is unchanged. The details are in [spec 2's contracts/cli.md](../../002-evaluation-harness/contracts/cli.md), "`index audit`: the options `--set` and `--sets-dir`".
+
 The command works in this order, and it stops at the first step that does not hold:
 
 1. `ID` is a valid index identifier.
