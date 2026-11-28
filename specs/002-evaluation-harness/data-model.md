@@ -139,6 +139,7 @@ The check also *reports*, without failing for them:
 The name of a run (FR-018): the start time in UTC to the second, in the form `20261201T093000Z`, a hyphen, and a name of lower-case letters, digits and single hyphens that starts and ends with a letter or a digit and has at most 40 characters. Example: `20261201T093000Z-baseline`.
 
 - The time part is the `started_at` of the run, to the second.
+- An identifier is checked by its form only: eight digits, `T`, six digits, `Z`, a hyphen and the name. Whether the digits name a day and a time that exist is not checked. `started_at` is checked by its form in the same way, and the two are compared as texts.
 - The directory of a run in the registry is named by its identifier, so an identifier cannot occur twice in a registry. It is never reused.
 
 ## Run record
@@ -276,6 +277,14 @@ For a question, *G* is the set of its distinct gold article ids. For a list, *A*
 | 16 | Experiment only: the configs differ in a parameter other than the one named; they do not differ in the one named; `baseline_value` or `value` is not the value in the respective config |
 
 A file that cannot be read stops the examination of what depends on it; every difference that can still be found is reported.
+
+How the check proceeds where the table leaves room:
+
+- **A line that cannot be read.** A line of `results.jsonl` that is not a JSON object is reported with its number: `results.jsonl line <n> is not a JSON object`. The other lines are still examined, entry by entry. The question of the unreadable line is not known, so "has no entry" is then reported for no question.
+- **Order of the entries.** The check does not compare the order of the lines of `results.jsonl` with the order of the set. An entry is found by its `question_id`, and every number is computed with the entries in the order of the set.
+- **Difference 12.** The numbers of the breakdowns and the retrieval misses of the summary are compared only when they can be computed from the other files: `run.json` and the record of the question set can be read, `config.prices` has its form and names no model twice, every line of `results.jsonl` can be read, there is exactly one entry for every question of the set and no other, and every entry has a sound status, sound lists, sound `tokens` and a sound latency. Otherwise the defects of the entries are reported and these numbers of the summary are not compared. `questions` and `questions_without_gold_articles` are compared with the record of the question set in either case.
+- **Difference 13.** The baseline is checked as a record, by the differences 1 to 12, and not as an experiment: when the baseline is itself an experiment run, the differences 13 to 16 are not looked for in it. A run that names itself as its baseline fails with `the baseline <run id> is the run itself`, and nothing more is compared with the baseline.
+- **Differences 14 and 16.** When the baseline is on another question set, that is reported once, as difference 14. The parameters under `question_set` are then not listed again as differences of the two configs.
 
 The check is *not carried out* when the run does not exist in the registry, or when the registry or the sets directory cannot be read.
 

@@ -204,8 +204,8 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 - [x] T085 [US3] Implement in `src/wixqa_rag/runs.py` the check of a record: `RunExamination` and `examine`, with the differences 1 to 16 and equality of numbers without a tolerance (data-model.md, "Check of a run record"; "Run record", "Results": `question_id`, `status`, `retrieved_list`, `generation_list`, `context`, `answer`, `answer_sha256`, `tokens`, `cost_usd`, `latency_seconds`, and the four rules across fields; "Identity and config": `limits`, `concurrency`, `prices`, `experiment`; "Role"; FR-020, FR-022, FR-023, FR-035; depends on T084)
 - [x] T086 [US3] Implement the command `run check`, for one run and for the registry: `check` in `src/wixqa_rag/runs.py` and its arguments in `src/wixqa_rag/cli.py`, with the lines of both outputs, the two counts by role and every verdict of the table (contracts/cli.md, "`run check`"; data-model.md, "Check of a run record", "Check of the registry"; FR-024, FR-030, FR-034; depends on T085)
 - [x] T087 [US2] Implement the command `run report`: `report` in `src/wixqa_rag/runs.py` and its arguments in `src/wixqa_rag/cli.py`, with the three steps, the lines of the report in their order, the block of `--per-question`, the digits of each kind of number and `undefined`, and the refusal for a record that fails its check (contracts/cli.md, "`run report`" and "Numbers in the output"; FR-014 to FR-016, FR-025, FR-034; depends on T086)
-- [ ] T088 [US2] Run the tests of User Stories 2 and 3 in the workspace, and `checks` for the pull request, and confirm that each passes, with no test changed: AC-012 to AC-029, AC-042 and AC-043 among them
-- [ ] T089 [US2] Update the sentence of `specs/002-evaluation-harness/quickstart.md` that says what has run, and the status line of `README.md` if it no longer says what the repository contains: a run record can be checked and reported; no run exists
+- [x] T088 [US2] Run the tests of User Stories 2 and 3 in the workspace, and `checks` for the pull request, and confirm that each passes, with no test changed: AC-012 to AC-029, AC-042 and AC-043 among them
+- [x] T089 [US2] Update the sentence of `specs/002-evaluation-harness/quickstart.md` that says what has run, and the status line of `README.md` if it no longer says what the repository contains: a run record can be checked and reported; no run exists
 
 **Checkpoint (green)**: User Stories 1, 2 and 3 work on the example data, and their tests pass unchanged
 
@@ -236,7 +236,7 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 - [x] T096 [US4] Implement `compare` in `src/wixqa_rag/metrics.py` (data-model.md, "Pairwise comparison": left out, compared, gained, lost; FR-027, FR-028)
 - [x] T097 [US4] Implement the command `run compare`: `compare` in `src/wixqa_rag/runs.py` and its arguments in `src/wixqa_rag/cli.py`, with the four steps, the lines of the output, the line for a held-out set, and every verdict of the table (contracts/cli.md, "`run compare`"; data-model.md, "Role"; FR-025, FR-029, FR-033, FR-034, FR-036; depends on T096)
-- [ ] T098 [US4] Run the tests of User Story 4 in the workspace, and `checks` for the pull request, and confirm that each passes, with no test changed; every test of the feature without a marker passes
+- [x] T098 [US4] Run the tests of User Story 4 in the workspace, and `checks` for the pull request, and confirm that each passes, with no test changed; every test of the feature without a marker passes
 
 **Checkpoint (green)**: All four stories work on the example data: 36 of the 46 checks pass in every tier, AC-010 and AC-011 passed in the scope `example` (T050), and the eight real-data checks passed in the scope `full` (T053)
 
@@ -248,9 +248,9 @@ Single project: the package in `src/wixqa_rag/`, tests in `tests/`, workflows in
 
 ### Texts
 
-- [ ] T099 [P] Update `README.md`: the status line, true to that day; the rows for `evals/golden/` (the golden set and the two held-out sets) and `evals/runs/` (the form of a run record; no run yet); the commands of this feature that can be tried with nothing else installed; a pointer to `specs/002-evaluation-harness/quickstart.md`
-- [ ] T100 [P] Update `evals/README.md`: the rows for `golden/` and `runs/`, each with the file names of its records and the command that checks them; the sentence "File formats are fixed by the specs" names the two contracts
-- [ ] T101 [P] Run part A of `specs/002-evaluation-harness/quickstart.md` in the workspace, step by step, and confirm each expected outcome; correct in quickstart.md what does not match the commands as built, and update its sentence on what has run
+- [x] T099 [P] Update `README.md`: the status line, true to that day; the rows for `evals/golden/` (the golden set and the two held-out sets) and `evals/runs/` (the form of a run record; no run yet); the commands of this feature that can be tried with nothing else installed; a pointer to `specs/002-evaluation-harness/quickstart.md`
+- [x] T100 [P] Update `evals/README.md`: the rows for `golden/` and `runs/`, each with the file names of its records and the command that checks them; the sentence "File formats are fixed by the specs" names the two contracts
+- [x] T101 [P] Run part A of `specs/002-evaluation-harness/quickstart.md` in the workspace, step by step, and confirm each expected outcome; correct in quickstart.md what does not match the commands as built, and update its sentence on what has run
 
 **Checkpoint (review)**: Before T102 starts, the code review agent has checked the whole diff of the pull request against spec.md and the constitution, and its findings are closed, each fix with its test first. The last run is made on the code as reviewed
 

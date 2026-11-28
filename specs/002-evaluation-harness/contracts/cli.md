@@ -69,6 +69,8 @@ The command works in this order, and it stops at the first step that does not ho
 5. The record is computed. If `<sets directory>/V.json` exists and has the same bytes, the set is reported as already written. If it exists with other bytes, the build is refused.
 6. The record is written under a temporary name and then given its final name, and the report is printed.
 
+In step 6 the final name is given with a hard link, and the temporary name is then removed. The sets directory must therefore be on a file system that supports hard links. On one that does not, the command ends as `set build: not carried out` with a `reason:` line, and no record is left behind.
+
 Output of a build with a draw:
 
 ```text
@@ -244,6 +246,8 @@ The command works in this order:
 2. Its record passes the check of `run check`.
 3. The numbers are computed from `results.jsonl` and the question-set record, and the report is printed.
 
+When step 2 does not hold, the command prints the `reason:` line and the verdict and nothing else: no result line and no `difference:` line. The differences are those that `run check --run ID` prints.
+
 Output for `tests/data/runs/20261101T100000Z-example-a`:
 
 ```text
@@ -333,6 +337,7 @@ For an experiment run the line `baseline: <run id>` follows `questions:`. The li
 | Experiment: a second parameter differs | `difference: the config differs from the baseline <run id> in <parameter>, which is not the parameter the experiment names` |
 | Experiment: the named parameter does not differ | `difference: the config does not differ from the baseline <run id> in <parameter>` |
 | Experiment: the baseline is absent, or on another set | `difference: the baseline <run id> …` |
+| Experiment: the run names itself as its baseline | `difference: the baseline <run id> is the run itself` |
 | Any other difference of data-model.md | `difference: …` |
 
 In the line for a number of the summary, the breakdown is written `all questions`, `single-article` or `multi-article`, and a field of a list as in the record: `the summary states all_found 3 for the generation list, all questions; the results give 2`.
