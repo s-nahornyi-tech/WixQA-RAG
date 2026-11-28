@@ -180,6 +180,42 @@ def _set_check(arguments: argparse.Namespace) -> int:
     return questionsets.check(arguments.version, arguments.data_dir, arguments.sets_dir)
 
 
+def _run_report(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.report(
+        arguments.run_id, arguments.per_question, arguments.runs_dir, arguments.sets_dir
+    )
+
+
+def _run_check(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.check(arguments.run_id, arguments.runs_dir, arguments.sets_dir)
+
+
+def _run_compare(arguments: argparse.Namespace) -> int:
+    from wixqa_rag import runs
+
+    return runs.compare(arguments.first, arguments.second, arguments.runs_dir, arguments.sets_dir)
+
+
+def _add_registry(command) -> None:
+    """The options `--runs-dir` and `--sets-dir` of the commands of the group `run`."""
+    command.add_argument(
+        "--runs-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"the run registry; without it, {settings.RUNS_DIR.as_posix()}",
+    )
+    command.add_argument(
+        "--sets-dir",
+        type=Path,
+        metavar="DIR",
+        help=f"where question-set records are kept; without it, {settings.SETS_DIR.as_posix()}",
+    )
+
+
 def _take(text: str) -> tuple[str, int]:
     """The value of `--take`: `PART=N` with a whole number N of 1 or more."""
     found = re.fullmatch(r"([^=]+)=([0-9]+)", text)
@@ -324,8 +360,34 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--version", required=True, metavar="V", help="the version of the set")
     _add_directories(check)
 
-    # The commands of the group `run` are added with `_add_command`.
-    _add_group(groups, "run", "The records of the run registry.")
+    # The parsed arguments hold the function of a command as `run`, so the option `--run`
+    # is kept as `run_id`.
+    runs = _add_group(groups, "run", "The records of the run registry.")
+    report = _add_command(
+        runs, "report", "run report", _run_report, "Print the numbers of one run."
+    )
+    report.add_argument("--run", dest="run_id", required=True, metavar="ID", help="the run")
+    report.add_argument(
+        "--per-question", action="store_true", help="also print one line for every question"
+    )
+    _add_registry(report)
+    check_run = _add_command(
+        runs,
+        "check",
+        "run check",
+        _run_check,
+        "Check one run record, or every run of the registry.",
+    )
+    check_run.add_argument(
+        "--run", dest="run_id", metavar="ID", help="the run; without it, every run of the registry"
+    )
+    _add_registry(check_run)
+    compare = _add_command(
+        runs, "compare", "run compare", _run_compare, "Compare two runs on one question set."
+    )
+    compare.add_argument("--first", required=True, metavar="ID", help="the first run")
+    compare.add_argument("--second", required=True, metavar="ID", help="the second run")
+    _add_registry(compare)
     return parser
 
 

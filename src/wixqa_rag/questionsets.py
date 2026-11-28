@@ -811,23 +811,26 @@ def build(
     # Step 5: a version is written once.
     data = canonical(document)
     file = sets / f"{version}.json"
-    already_written = False
-    if file.exists():
-        existing = file.read_bytes()
-        if existing != data:
-            cli.reason(_why_refused(version, existing, document))
-            return cli.verdict(name, "refused")
-        already_written = True
+    already_written = file.exists()
 
-    # Step 6: the record, under a temporary name first, and the report.
+    # Step 6: the record, under a temporary name first. The final name is given by a link,
+    # which fails when the name is taken: of two builds of one new version at the same
+    # moment, only one puts its record in place, and the other finds it as step 5 does.
     if not already_written:
         sets.mkdir(parents=True, exist_ok=True)
         temporary = sets / f".{version}.json.{os.getpid()}.tmp"
         try:
             temporary.write_bytes(data)
-            os.replace(temporary, file)
+            os.link(temporary, file)
+        except FileExistsError:
+            already_written = True
         finally:
             temporary.unlink(missing_ok=True)
+    if already_written:
+        existing = file.read_bytes()
+        if existing != data:
+            cli.reason(_why_refused(version, existing, document))
+            return cli.verdict(name, "refused")
     _print_report(document, _numbers(document), already_written)
     cli.result("record", file.as_posix())
     return cli.verdict(name, "done")
