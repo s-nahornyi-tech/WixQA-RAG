@@ -216,44 +216,165 @@ def test_the_order_of_the_take_options_is_the_order_of_the_parts_in_the_record(s
     assert result.lines.index("hxb: 3") < result.lines.index("hxa: 5")
 
 
-def test_the_record_is_written_under_a_temporary_name_first(harness_copy, monkeypatch, capfd):
-    """contracts/cli.md, "`set build`", step 6: "The record is written under a temporary
-    name and then given its final name". The test watches the renames of the standard
-    library while `questionsets.build` runs: the final name appears by a rename of another
-    file that already holds the whole record, and no other file stays behind."""
-    questionsets = importlib.import_module("wixqa_rag.questionsets")
-    cli = importlib.import_module("wixqa_rag.cli")
-    monkeypatch.chdir(harness_copy.root)
-    final = (harness_copy.root / BUILT / "harness-half.json").resolve()
-    renames = []
+def watch_the_final_step(monkeypatch, final: Path, before=None) -> list:
+    """Watch how a file gets the name `final` while a build runs.
+
+    The step of contracts/cli.md, "`set build`", step 6, gives a file that was written under
+    a temporary name its final name. The standard library has three calls for that: a rename
+    that replaces (`os.replace`), a rename (`os.rename`), and a link that fails when the
+    name is taken (`os.link`). Each is watched here, also when it is reached through
+    `pathlib` or `shutil`. For every call whose target is `final` the list gets one entry:
+    the source, the bytes of the source at that moment, and whether `final` existed. `before`
+    is then called, still before the step itself happens: the moment after the build has
+    seen that no record exists and before it puts its own in place.
+    """
+    steps = []
 
     def watched(original):
-        def rename(source, target, *arguments, **keywords):
+        def step(source, target, *arguments, **keywords):
             source_file, target_file = Path(source).resolve(), Path(target).resolve()
             if target_file == final:
-                renames.append((source_file, source_file.read_bytes(), final.exists()))
+                steps.append((source_file, source_file.read_bytes(), final.exists()))
+                if before is not None and len(steps) == 1:
+                    before()
             return original(source, target, *arguments, **keywords)
 
-        return rename
+        return step
 
-    monkeypatch.setattr(os, "replace", watched(os.replace))
-    monkeypatch.setattr(os, "rename", watched(os.rename))
+    for name in ("replace", "rename", "link"):
+        monkeypatch.setattr(os, name, watched(getattr(os, name)))
+    return steps
 
-    exit_code = cli.carry_out(
+
+def build_in_this_process(version: str, take: list[tuple[str, int]], seed: int) -> int:
+    """`questionsets.build` of contracts/harness.md, carried out as the command line does."""
+    questionsets = importlib.import_module("wixqa_rag.questionsets")
+    cli = importlib.import_module("wixqa_rag.cli")
+    return cli.carry_out(
         "set build",
         lambda: questionsets.build(
-            "harness-half", "golden", [("hxa", 3), ("hxb", 1)], 7, None, Path(DATA_DIR), Path(BUILT)
+            version, "golden", take, seed, None, Path(DATA_DIR), Path(BUILT)
         ),
     )
 
+
+def test_the_record_is_written_under_a_temporary_name_first(harness_copy, monkeypatch, capfd):
+    """contracts/cli.md, "`set build`", step 6: "The record is written under a temporary
+    name and then given its final name". The test watches the final step while
+    `questionsets.build` runs (see `watch_the_final_step`): the final name appears in one
+    step, from another file that already holds the whole record, and no other file stays
+    behind."""
+    monkeypatch.chdir(harness_copy.root)
+    final = (harness_copy.root / BUILT / "harness-half.json").resolve()
+    steps = watch_the_final_step(monkeypatch, final)
+
+    exit_code = build_in_this_process("harness-half", [("hxa", 3), ("hxb", 1)], 7)
+
     assert exit_code == 0, capfd.readouterr().out
-    assert len(renames) == 1, "the record gets its final name by one rename"
-    source, content, existed_before = renames[0]
+    assert len(steps) == 1, "the record gets its final name in one step"
+    source, content, existed_before = steps[0]
     assert source != final, "the record is first written under another name"
-    assert content == example_bytes("harness-half"), "the whole record is written before the rename"
-    assert not existed_before, "nothing stands under the final name before the rename"
+    assert content == example_bytes("harness-half"), "the whole record is written before the step"
+    assert not existed_before, "nothing stands under the final name before the step"
     assert final.read_bytes() == example_bytes("harness-half")
     assert sorted(file.name for file in final.parent.iterdir()) == ["harness-half.json"], (
+        "no file under a temporary name stays behind"
+    )
+
+
+# --- Two builds of one new version at the same moment (FR-005) ----------------------------------
+#
+# A version is written once, also when two builds of the same new version run at the same
+# moment: both see that no record exists, and each is about to put its own in place. The
+# tests below do not wait for that moment to happen by chance. They use the documented step
+# 6: when the build under test is about to give its file the final name, the test writes the
+# record of the other build under that name, as the other build would have done an instant
+# earlier, and only then lets the step go on. The first record must stay, byte for byte.
+
+
+def a_build_that_was_faster(final: Path, record: bytes):
+    """What the other build did in the window: it put its record under the final name."""
+
+    def put() -> None:
+        assert not final.exists(), "the window: no record stands under the final name yet"
+        final.write_bytes(record)
+
+    return put
+
+
+def test_of_two_builds_at_the_same_moment_the_first_record_is_never_replaced(
+    harness_copy, monkeypatch, capfd
+):
+    """FR-005: "A version of a question set MUST be written once." Another build of the same
+    version, by the same rule, puts its record in place in the window. The build under test
+    writes nothing over it: the file that the other build wrote is still that file, and the
+    report says that the version is already written (contracts/cli.md: "the first line is
+    `question set: harness-half (already written)`")."""
+    monkeypatch.chdir(harness_copy.root)
+    final = (harness_copy.root / BUILT / "harness-half.json").resolve()
+    the_first = {}
+
+    def put() -> None:
+        a_build_that_was_faster(final, example_bytes("harness-half"))()
+        os.utime(final, ns=(1_000_000_000, 1_000_000_000))
+        the_first["file"] = final.stat().st_ino
+
+    steps = watch_the_final_step(monkeypatch, final, before=put)
+
+    exit_code = build_in_this_process("harness-half", [("hxa", 3), ("hxb", 1)], 7)
+
+    lines = capfd.readouterr().out.splitlines()
+    assert steps, "the test saw the step that gives the record its final name"
+    assert final.read_bytes() == example_bytes("harness-half")
+    assert final.stat().st_ino == the_first["file"], "the first record is never replaced"
+    assert final.stat().st_mtime_ns == 1_000_000_000, "the first record is never written again"
+    assert exit_code == 0, lines
+    assert lines[0] == "question set: harness-half (already written)"
+    assert lines[-1] == "set build: done"
+    assert sorted(file.name for file in final.parent.iterdir()) == ["harness-half.json"], (
+        "no file under a temporary name stays behind"
+    )
+
+
+@pytest.mark.parametrize(
+    ("take", "seed", "reason"),
+    [
+        ([("hxa", 3), ("hxb", 1)], 7, "question set harness exists with another selection"),
+        ([("hxa", 5), ("hxb", 3)], 2, "question set harness exists with another seed"),
+    ],
+    ids=["another selection", "another seed"],
+)
+def test_of_two_builds_with_different_rules_at_the_same_moment_the_second_is_refused(
+    harness_copy, monkeypatch, capfd, take, seed, reason
+):
+    """FR-005: "A request for another selection or another seed under an existing version
+    MUST be refused." The other build wrote `harness` in the window: five of `hxa` and three
+    of `hxb` with the seed 1. The build under test asks for the same version by another
+    rule. It is refused with the reason of contracts/cli.md, and the file on disk is the
+    first one's, byte for byte; it is never replaced, not even for a moment."""
+    monkeypatch.chdir(harness_copy.root)
+    final = (harness_copy.root / BUILT / "harness.json").resolve()
+    the_first = {}
+
+    def put() -> None:
+        a_build_that_was_faster(final, example_bytes("harness"))()
+        the_first["file"] = final.stat().st_ino
+
+    steps = watch_the_final_step(monkeypatch, final, before=put)
+
+    exit_code = build_in_this_process("harness", take, seed)
+
+    lines = capfd.readouterr().out.splitlines()
+    assert steps, "the test saw the step that gives the record its final name"
+    assert final.read_bytes() == example_bytes("harness"), (
+        "the record of the first build is on disk, byte for byte"
+    )
+    assert final.stat().st_ino == the_first["file"], "the first record is never replaced"
+    assert exit_code == 2, lines
+    assert lines[-1] == "set build: refused"
+    assert [line for line in lines if line.startswith("reason: ")] == [f"reason: {reason}"]
+    assert "set build: done" not in lines
+    assert sorted(file.name for file in final.parent.iterdir()) == ["harness.json"], (
         "no file under a temporary name stays behind"
     )
 

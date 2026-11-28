@@ -480,3 +480,92 @@ def harness_copy(temporary_root: Path) -> HarnessCopy:
     shutil.copytree(HARNESS_DATA, copy.data_dir)
     shutil.copytree(EXAMPLE_SETS, copy.sets_dir)
     return copy
+
+
+EXAMPLE_RUNS = REPOSITORY_ROOT / "tests" / "data" / "runs"
+EXAMPLE_RUNS_INVALID = REPOSITORY_ROOT / "tests" / "data" / "runs-invalid"
+
+
+@dataclass(frozen=True)
+class RegistryCopy:
+    """A temporary repository root with copies of the example registries of spec 2.
+
+    `root` holds `dataset.json`, the sets directory `data/sets` (a copy of `tests/data/sets`)
+    and the two runs directories `data/runs` and `data/runs-invalid` (copies of
+    `tests/data/runs` and `tests/data/runs-invalid`). A test changes the copies by hand,
+    without code of the package, and never a file of the checkout. A command is typed in
+    `root` with the relative paths `RUNS_DIR`, `RUNS_INVALID_DIR` and `SETS_DIR`.
+    """
+
+    root: Path
+
+    RUNS_DIR = "data/runs"
+    RUNS_INVALID_DIR = "data/runs-invalid"
+    SETS_DIR = "data/sets"
+
+    @property
+    def runs_dir(self) -> Path:
+        return self.root / "data" / "runs"
+
+    @property
+    def runs_invalid_dir(self) -> Path:
+        return self.root / "data" / "runs-invalid"
+
+    @property
+    def sets_dir(self) -> Path:
+        return self.root / "data" / "sets"
+
+    def file(self, run: str, name: str, registry: Path | None = None) -> Path:
+        return (self.runs_dir if registry is None else registry) / run / name
+
+    def run_document(self, run: str, registry: Path | None = None) -> dict:
+        return json.loads(self.file(run, "run.json", registry).read_text(encoding="utf-8"))
+
+    def entries(self, run: str, registry: Path | None = None) -> list[dict]:
+        text = self.file(run, "results.jsonl", registry).read_text(encoding="utf-8")
+        return [json.loads(line) for line in text.split("\n") if line]
+
+    def summary(self, run: str, registry: Path | None = None) -> dict:
+        return json.loads(self.file(run, "summary.json", registry).read_text(encoding="utf-8"))
+
+    def change_run(self, run: str, change: Callable[[dict], None]) -> dict:
+        """Change `run.json` of a run of `data/runs` by hand and write it again."""
+        document = self.run_document(run)
+        change(document)
+        self.file(run, "run.json").write_bytes(canonical_record(document))
+        return document
+
+    def change_entries(self, run: str, change: Callable[[list[dict]], None]) -> list[dict]:
+        """Change the entries of a run of `data/runs` by hand and write `results.jsonl`."""
+        entries = self.entries(run)
+        change(entries)
+        text = "".join(json.dumps(entry, ensure_ascii=False) + "\n" for entry in entries)
+        self.file(run, "results.jsonl").write_text(text, encoding="utf-8")
+        return entries
+
+    def change_summary(self, run: str, change: Callable[[dict], None]) -> dict:
+        """Change `summary.json` of a run of `data/runs` by hand and write it again."""
+        document = self.summary(run)
+        change(document)
+        self.file(run, "summary.json").write_bytes(canonical_record(document))
+        return document
+
+    def files(self) -> dict[str, bytes]:
+        """Every file below the temporary root: its path inside it -> its bytes."""
+        return {
+            file.relative_to(self.root).as_posix(): file.read_bytes()
+            for file in sorted(self.root.rglob("*"))
+            if file.is_file()
+        }
+
+
+@pytest.fixture
+def registry_copy(temporary_root: Path) -> RegistryCopy:
+    """A temporary repository root with copies of `tests/data/sets`, `tests/data/runs` and
+    `tests/data/runs-invalid`; see `RegistryCopy`. It is not the current directory of the
+    test."""
+    copy = RegistryCopy(root=temporary_root)
+    shutil.copytree(EXAMPLE_SETS, copy.sets_dir)
+    shutil.copytree(EXAMPLE_RUNS, copy.runs_dir)
+    shutil.copytree(EXAMPLE_RUNS_INVALID, copy.runs_invalid_dir)
+    return copy
